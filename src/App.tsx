@@ -550,6 +550,7 @@ export default function App() {
       
       if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
       const data = await res.json();
+      const nextMatches = data.response || [];
 
       // Detect Goal Score Updates for toasts
       if (prevMatchesRef.current.length > 0 && nextMatches.length > 0) {
