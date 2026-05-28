@@ -1,43 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
 
-interface SafeImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> {
-  src?: string | null;
-  fallbackType?: "team" | "league" | "avatar" | "flag" | "post";
-}
+export const SafeImage = ({ src, fallbackType, className, alt, ...props }: any) => {
+  const [hasError, setHasError] = useState(false);
 
-export function SafeImage({ src, fallbackType = "team", className, alt = "image", ...props }: SafeImageProps) {
-  const [imgSrc, setImgSrc] = useState<string>("");
-
-  useEffect(() => {
-    if (!src) {
-      setImgSrc(getFallbackUrl(fallbackType));
-      return;
-    }
-
-    // Agora o seu PRÓPRIO servidor vai buscar a imagem e limpar os bloqueios!
-    const proxiedUrl = `http://localhost:3001/api/proxy-image?url=${encodeURIComponent(src)}`;
-    setImgSrc(proxiedUrl);
-  }, [src, fallbackType]);
-
-  const getFallbackUrl = (type: string): string => {
-    if (type === "team") return "https://www.svgrepo.com/show/406145/shield.svg";
-    if (type === "league") return "https://www.svgrepo.com/show/407604/trophy.svg";
-    if (type === "flag") return "https://flagcdn.com/w40/un.png";
-    if (type === "avatar") return "https://api.dicebear.com/7.x/identicon/svg?seed=fallback";
-    return "";
-  };
-
-  const handleError = () => {
-    setImgSrc(getFallbackUrl(fallbackType));
-  };
+  if (hasError || !src) {
+    return (
+      <div className={`flex items-center justify-center bg-slate-100 text-slate-400 ${className}`}>
+        {fallbackType === 'team' ? '🛡️' : fallbackType === 'flag' ? '🏳️' : '🏆'}
+      </div>
+    );
+  }
 
   return (
     <img
-      src={imgSrc}
+      src={src}
       alt={alt}
       className={className}
-      onError={handleError}
+      onError={() => setHasError(true)}
       {...props}
     />
   );
-}
+};
