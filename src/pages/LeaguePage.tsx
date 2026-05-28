@@ -354,7 +354,7 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
                       {scorer.name}
                     </h3>
                     <div className="flex items-center gap-1.5 mt-1">
-                      <img src={scorer.teamLogo} alt={scorer.teamName} className="w-3.5 h-3.5 object-contain" />
+                      <SafeImage src={scorer.teamLogo} alt={scorer.teamName} className="w-3.5 h-3.5 object-contain" fallbackType="team" />
                       <span className="text-[11px] font-semibold text-slate-400">{scorer.teamName}</span>
                     </div>
                   </div>

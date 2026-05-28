@@ -573,14 +573,47 @@ export default function App() {
         const data = await res.json();
         
         let rawEvents: any[] = [];
-        if (data.response && Array.isArray(data.response)) {
-          rawEvents = data.response;
-        } else if (data.response && data.response.matches && Array.isArray(data.response.matches)) {
-          rawEvents = data.response.matches;
+        if (data.response) {
+          if (Array.isArray(data.response)) {
+            rawEvents = data.response;
+          } else if (typeof data.response === "object") {
+            const obj = data.response;
+            if (obj.live && Array.isArray(obj.live)) {
+              rawEvents = [...rawEvents, ...obj.live];
+            }
+            if (obj.matches && Array.isArray(obj.matches)) {
+              rawEvents = [...rawEvents, ...obj.matches];
+            }
+            if (obj.fixtures && Array.isArray(obj.fixtures)) {
+              rawEvents = [...rawEvents, ...obj.fixtures];
+            }
+            if (rawEvents.length === 0) {
+              for (const key of Object.keys(obj)) {
+                if (Array.isArray(obj[key])) {
+                  rawEvents = [...rawEvents, ...obj[key]];
+                }
+              }
+            }
+          }
         } else if (Array.isArray(data)) {
           rawEvents = data;
-        } else if (data.matches && Array.isArray(data.matches)) {
-          rawEvents = data.matches;
+        } else if (data && typeof data === "object") {
+          if (data.live && Array.isArray(data.live)) {
+            rawEvents = [...rawEvents, ...data.live];
+          }
+          if (data.matches && Array.isArray(data.matches)) {
+            rawEvents = [...rawEvents, ...data.matches];
+          }
+          if (data.fixtures && Array.isArray(data.fixtures)) {
+            rawEvents = [...rawEvents, ...data.fixtures];
+          }
+          if (rawEvents.length === 0) {
+            for (const key of Object.keys(data)) {
+              if (Array.isArray(data[key])) {
+                rawEvents = [...rawEvents, ...data[key]];
+              }
+            }
+          }
         }
 
         const mappedList = rawEvents.map((evt: any) => {

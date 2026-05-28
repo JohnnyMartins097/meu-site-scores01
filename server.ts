@@ -954,27 +954,45 @@ app.get("/api/fixtures", async (req, res) => {
         } else if (data.response) {
           if (Array.isArray(data.response)) {
             eventsForDate = data.response;
-          } else if (data.response.matches && Array.isArray(data.response.matches)) {
-            eventsForDate = data.response.matches;
-          } else if (typeof data.response === "object") {
-            const keys = Object.keys(data.response);
-            for (const k of keys) {
-              if (Array.isArray(data.response[k])) {
-                eventsForDate = data.response[k];
-                break;
+          } else if (typeof data.response === "object" && data.response !== null) {
+            const obj = data.response;
+            if (obj.live && Array.isArray(obj.live)) {
+              eventsForDate = eventsForDate.concat(obj.live);
+            }
+            if (obj.matches && Array.isArray(obj.matches)) {
+              eventsForDate = eventsForDate.concat(obj.matches);
+            }
+            if (obj.fixtures && Array.isArray(obj.fixtures)) {
+              eventsForDate = eventsForDate.concat(obj.fixtures);
+            }
+            if (eventsForDate.length === 0) {
+              const keys = Object.keys(obj);
+              for (const k of keys) {
+                if (Array.isArray(obj[k])) {
+                  eventsForDate = eventsForDate.concat(obj[k]);
+                }
               }
             }
           }
-        } else if (data.events && Array.isArray(data.events)) {
-          eventsForDate = data.events;
-        } else if (data.matches && Array.isArray(data.matches)) {
-          eventsForDate = data.matches;
-        } else {
-          const keys = Object.keys(data);
-          for (const k of keys) {
-            if (Array.isArray(data[k])) {
-              eventsForDate = data[k];
-              break;
+        } else if (data && typeof data === "object") {
+          if (data.events && Array.isArray(data.events)) {
+            eventsForDate = eventsForDate.concat(data.events);
+          }
+          if (data.matches && Array.isArray(data.matches)) {
+            eventsForDate = eventsForDate.concat(data.matches);
+          }
+          if (data.live && Array.isArray(data.live)) {
+            eventsForDate = eventsForDate.concat(data.live);
+          }
+          if (data.fixtures && Array.isArray(data.fixtures)) {
+            eventsForDate = eventsForDate.concat(data.fixtures);
+          }
+          if (eventsForDate.length === 0) {
+            const keys = Object.keys(data);
+            for (const k of keys) {
+              if (Array.isArray(data[k])) {
+                eventsForDate = eventsForDate.concat(data[k]);
+              }
             }
           }
         }
@@ -1050,27 +1068,45 @@ app.get("/api/live", async (req, res) => {
       } else if (data.response) {
         if (Array.isArray(data.response)) {
           events = data.response;
-        } else if (data.response.matches && Array.isArray(data.response.matches)) {
-          events = data.response.matches;
-        } else if (typeof data.response === "object") {
-          const keys = Object.keys(data.response);
-          for (const k of keys) {
-            if (Array.isArray(data.response[k])) {
-              events = data.response[k];
-              break;
+        } else if (typeof data.response === "object" && data.response !== null) {
+          const obj = data.response;
+          if (obj.live && Array.isArray(obj.live)) {
+            events = events.concat(obj.live);
+          }
+          if (obj.matches && Array.isArray(obj.matches)) {
+            events = events.concat(obj.matches);
+          }
+          if (obj.fixtures && Array.isArray(obj.fixtures)) {
+            events = events.concat(obj.fixtures);
+          }
+          if (events.length === 0) {
+            const keys = Object.keys(obj);
+            for (const k of keys) {
+              if (Array.isArray(obj[k])) {
+                events = events.concat(obj[k]);
+              }
             }
           }
         }
-      } else if (data.events && Array.isArray(data.events)) {
-        events = data.events;
-      } else if (data.matches && Array.isArray(data.matches)) {
-        events = data.matches;
-      } else {
-        const keys = Object.keys(data);
-        for (const k of keys) {
-          if (Array.isArray(data[k])) {
-            events = data[k];
-            break;
+      } else if (data && typeof data === "object") {
+        if (data.events && Array.isArray(data.events)) {
+          events = events.concat(data.events);
+        }
+        if (data.matches && Array.isArray(data.matches)) {
+          events = events.concat(data.matches);
+        }
+        if (data.live && Array.isArray(data.live)) {
+          events = events.concat(data.live);
+        }
+        if (data.fixtures && Array.isArray(data.fixtures)) {
+          events = events.concat(data.fixtures);
+        }
+        if (events.length === 0) {
+          const keys = Object.keys(data);
+          for (const k of keys) {
+            if (Array.isArray(data[k])) {
+              events = events.concat(data[k]);
+            }
           }
         }
       }

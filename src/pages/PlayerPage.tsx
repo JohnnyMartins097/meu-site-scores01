@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { ChevronLeft, Star, Award, Shield, Calendar, Flame, Activity } from "lucide-react";
+import { SafeImage } from "../components/SafeImage";
 
 interface PlayerPageProps {
   favorites: { players: string[] };
@@ -223,7 +224,7 @@ export default function PlayerPage({ favorites, onToggleFavoritePlayer, language
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5 font-bold">
-                <img src={athlete.teamLogo} alt={athlete.teamName} className="w-5 h-5 object-contain" />
+                <SafeImage src={athlete.teamLogo} alt={athlete.teamName} className="w-5 h-5 object-contain" fallbackType="team" />
                 {athlete.teamName}
               </span>
               <span>•</span>
