@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Award, Calendar, ChevronLeft, Shield, Star, Table, Trophy, Users } from "lucide-react";
 import { SafeImage } from "../components/SafeImage";
@@ -26,40 +26,89 @@ interface StandingRow {
   points: number;
 }
 
+// Custom mock standings for major leagues if offline/simulation
+const getCustomMockStandings = (leagueId: number, leagueName: string): StandingRow[] => {
+  const nameLower = leagueName.toLowerCase();
+  
+  if (leagueId === 71 || nameLower.includes("brasileirão") || nameLower.includes("brazil")) {
+    return [
+      { pos: 1, teamId: 127, teamName: "Flamengo", teamLogo: "https://img.sofascore.com/api/v1/team/5981/image", played: 12, win: 8, draw: 3, lose: 1, gf: 24, ga: 10, gd: 14, points: 27 },
+      { pos: 2, teamId: 121, teamName: "Palmeiras", teamLogo: "https://img.sofascore.com/api/v1/team/1963/image", played: 12, win: 7, draw: 4, lose: 1, gf: 20, ga: 9, gd: 11, points: 25 },
+      { pos: 3, teamId: 126, teamName: "São Paulo", teamLogo: "https://img.sofascore.com/api/v1/team/1981/image", played: 12, win: 6, draw: 4, lose: 2, gf: 18, ga: 11, gd: 7, points: 22 },
+      { pos: 4, teamId: 131, teamName: "Corinthians", teamLogo: "https://img.sofascore.com/api/v1/team/1957/image", played: 12, win: 5, draw: 4, lose: 3, gf: 14, ga: 13, gd: 1, points: 19 },
+      { pos: 5, teamId: 125, teamName: "Grêmio", teamLogo: "https://img.sofascore.com/api/v1/team/1954/image", played: 12, win: 5, draw: 3, lose: 4, gf: 15, ga: 14, gd: 1, points: 18 },
+      { pos: 6, teamId: 130, teamName: "Fluminense", teamLogo: "https://img.sofascore.com/api/v1/team/1961/image", played: 12, win: 4, draw: 4, lose: 4, gf: 13, ga: 14, gd: -1, points: 16 }
+    ];
+  }
+  
+  if (leagueId === 39 || nameLower.includes("premier") || nameLower.includes("england") || nameLower.includes("inglaterra")) {
+    return [
+      { pos: 1, teamId: 17, teamName: "Manchester City", teamLogo: "https://img.sofascore.com/api/v1/team/17/image", played: 12, win: 9, draw: 2, lose: 1, gf: 32, ga: 11, gd: 21, points: 29 },
+      { pos: 2, teamId: 42, teamName: "Arsenal", teamLogo: "https://img.sofascore.com/api/v1/team/42/image", played: 12, win: 8, draw: 3, lose: 1, gf: 26, ga: 8, gd: 18, points: 27 },
+      { pos: 3, teamId: 44, teamName: "Liverpool", teamLogo: "https://img.sofascore.com/api/v1/team/44/image", played: 12, win: 8, draw: 2, lose: 2, gf: 25, ga: 10, gd: 15, points: 26 },
+      { pos: 4, teamId: 38, teamName: "Aston Villa", teamLogo: "https://img.sofascore.com/api/v1/team/38/image", played: 12, win: 7, draw: 3, lose: 2, gf: 21, ga: 15, gd: 6, points: 24 },
+      { pos: 5, teamId: 33, teamName: "Chelsea", teamLogo: "https://img.sofascore.com/api/v1/team/33/image", played: 12, win: 6, draw: 3, lose: 3, gf: 22, ga: 16, gd: 6, points: 21 },
+      { pos: 6, teamId: 35, teamName: "Manchester United", teamLogo: "https://img.sofascore.com/api/v1/team/35/image", played: 12, win: 5, draw: 4, lose: 3, gf: 16, ga: 14, gd: 2, points: 19 }
+    ];
+  }
+  
+  if (leagueId === 140 || nameLower.includes("liga") || nameLower.includes("spain") || nameLower.includes("espanha")) {
+    return [
+      { pos: 1, teamId: 2817, teamName: "Real Madrid", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", played: 12, win: 9, draw: 3, lose: 0, gf: 28, ga: 9, gd: 19, points: 30 },
+      { pos: 2, teamId: 2816, teamName: "Barcelona", teamLogo: "https://img.sofascore.com/api/v1/team/2816/image", played: 12, win: 9, draw: 1, lose: 2, gf: 31, ga: 12, gd: 19, points: 28 },
+      { pos: 3, teamId: 2825, teamName: "Atlético Madrid", teamLogo: "https://img.sofascore.com/api/v1/team/2836/image", played: 12, win: 7, draw: 3, lose: 2, gf: 20, ga: 10, gd: 10, points: 24 },
+      { pos: 4, teamId: 2824, teamName: "Girona", teamLogo: "https://img.sofascore.com/api/v1/team/2893/image", played: 12, win: 7, draw: 2, lose: 3, gf: 23, ga: 15, gd: 8, points: 23 },
+      { pos: 5, teamId: 2814, teamName: "Athletic Club", teamLogo: "https://img.sofascore.com/api/v1/team/2825/image", played: 12, win: 6, draw: 3, lose: 3, gf: 19, ga: 14, gd: 5, points: 21 }
+    ];
+  }
+
+  if (nameLower.includes("champions") || nameLower.includes("europe") || nameLower.includes("uefa") || leagueId === 2) {
+    return [
+      { pos: 1, teamId: 2829, teamName: "Real Madrid", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", played: 6, win: 5, draw: 1, lose: 0, gf: 16, ga: 5, gd: 11, points: 16 },
+      { pos: 2, teamId: 17, teamName: "Manchester City", teamLogo: "https://img.sofascore.com/api/v1/team/17/image", played: 6, win: 5, draw: 0, lose: 1, gf: 18, ga: 7, gd: 11, points: 15 },
+      { pos: 3, teamId: 2816, teamName: "Barcelona", teamLogo: "https://img.sofascore.com/api/v1/team/2816/image", played: 6, win: 4, draw: 1, lose: 1, gf: 12, ga: 6, gd: 6, points: 13 },
+      { pos: 4, teamId: 2673, teamName: "Bayern München", teamLogo: "https://img.sofascore.com/api/v1/team/2674/image", played: 6, win: 4, draw: 1, lose: 1, gf: 11, ga: 6, gd: 5, points: 13 },
+      { pos: 5, teamId: 42, teamName: "Arsenal", teamLogo: "https://img.sofascore.com/api/v1/team/42/image", played: 6, win: 4, draw: 0, lose: 2, gf: 14, ga: 4, gd: 10, points: 12 },
+      { pos: 6, teamId: 44, teamName: "Liverpool", teamLogo: "https://img.sofascore.com/api/v1/team/44/image", played: 6, win: 4, draw: 0, lose: 2, gf: 12, ga: 5, gd: 7, points: 12 }
+    ];
+  }
+
+  // General fallback simulation
+  return [
+    { pos: 1, teamId: 5981, teamName: "Flamengo", teamLogo: "https://img.sofascore.com/api/v1/team/5981/image", played: 10, win: 7, draw: 2, lose: 1, gf: 18, ga: 8, gd: 10, points: 23 },
+    { pos: 2, teamId: 1963, teamName: "Palmeiras", teamLogo: "https://img.sofascore.com/api/v1/team/1963/image", played: 10, win: 6, draw: 3, lose: 1, gf: 15, ga: 7, gd: 8, points: 21 },
+    { pos: 3, teamId: 2829, teamName: "Real Madrid", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", played: 10, win: 5, draw: 4, lose: 1, gf: 17, ga: 9, gd: 8, points: 19 },
+    { pos: 4, teamId: 2816, teamName: "Barcelona", teamLogo: "https://img.sofascore.com/api/v1/team/2816/image", played: 10, win: 5, draw: 3, lose: 2, gf: 14, ga: 11, gd: 3, points: 18 }
+  ];
+};
+
 // Complete realistic standings dataset for major supported leagues
 const STANDINGS_DATA: Record<number, StandingRow[]> = {
   71: [ // Brasileirão Série A
-    { pos: 1, teamId: 121, teamName: "Palmeiras", teamLogo: "https://media.api-sports.io/football/teams/121.png", played: 38, win: 22, draw: 9, lose: 7, gf: 61, ga: 29, gd: 32, points: 75 },
-    { pos: 2, teamId: 127, teamName: "Flamengo", teamLogo: "https://media.api-sports.io/football/teams/127.png", played: 38, win: 21, draw: 10, lose: 7, gf: 68, ga: 35, gd: 33, points: 73 },
-    { pos: 3, teamId: 126, teamName: "São Paulo", teamLogo: "https://media.api-sports.io/football/teams/126.png", played: 38, win: 18, draw: 12, lose: 8, gf: 50, ga: 33, gd: 17, points: 66 },
-    { pos: 4, teamId: 131, teamName: "Corinthians", teamLogo: "https://media.api-sports.io/football/teams/131.png", played: 38, win: 15, draw: 10, lose: 13, gf: 44, ga: 40, gd: 4, points: 55 }
+    { pos: 1, teamId: 121, teamName: "Palmeiras", teamLogo: "https://img.sofascore.com/api/v1/team/1963/image", played: 38, win: 22, draw: 9, lose: 7, gf: 61, ga: 29, gd: 32, points: 75 },
+    { pos: 2, teamId: 127, teamName: "Flamengo", teamLogo: "https://img.sofascore.com/api/v1/team/5981/image", played: 38, win: 21, draw: 10, lose: 7, gf: 68, ga: 35, gd: 33, points: 73 },
+    { pos: 3, teamId: 126, teamName: "São Paulo", teamLogo: "https://img.sofascore.com/api/v1/team/1981/image", played: 38, win: 18, draw: 12, lose: 8, gf: 50, ga: 33, gd: 17, points: 66 },
+    { pos: 4, teamId: 131, teamName: "Corinthians", teamLogo: "https://img.sofascore.com/api/v1/team/1957/image", played: 38, win: 15, draw: 10, lose: 13, gf: 44, ga: 40, gd: 4, points: 55 }
   ],
   140: [ // La Liga España
-    { pos: 1, teamId: 541, teamName: "Real Madrid", teamLogo: "https://media.api-sports.io/football/teams/541.png", played: 38, win: 29, draw: 8, lose: 1, gf: 87, ga: 26, gd: 61, points: 95 },
-    { pos: 2, teamId: 529, teamName: "Barcelona", teamLogo: "https://media.api-sports.io/football/teams/529.png", played: 38, win: 27, draw: 4, lose: 7, gf: 94, ga: 40, gd: 54, points: 85 }
+    { pos: 1, teamId: 2829, teamName: "Real Madrid", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", played: 38, win: 29, draw: 8, lose: 1, gf: 87, ga: 26, gd: 61, points: 95 },
+    { pos: 2, teamId: 2816, teamName: "Barcelona", teamLogo: "https://img.sofascore.com/api/v1/team/2816/image", played: 38, win: 27, draw: 4, lose: 7, gf: 94, ga: 40, gd: 54, points: 85 }
   ]
 };
 
 // Top scorers datasets
 const SCORERS_DATA: Record<number, Array<{ name: string; teamLogo: string; teamName: string; goals: number; assists: number; matches: number }>> = {
   71: [
-    { name: "Pedro", teamLogo: "https://media.api-sports.io/football/teams/127.png", teamName: "Flamengo", goals: 21, assists: 4, matches: 29 },
-    { name: "Estêvão", teamLogo: "https://media.api-sports.io/football/teams/121.png", teamName: "Palmeiras", goals: 12, assists: 8, matches: 28 },
-    { name: "Yuri Alberto", teamLogo: "https://media.api-sports.io/football/teams/131.png", teamName: "Corinthians", goals: 11, assists: 2, matches: 26 }
+    { name: "Pedro", teamLogo: "https://img.sofascore.com/api/v1/team/5981/image", teamName: "Flamengo", goals: 21, assists: 4, matches: 29 },
+    { name: "Estêvão", teamLogo: "https://img.sofascore.com/api/v1/team/1963/image", teamName: "Palmeiras", goals: 12, assists: 8, matches: 28 },
+    { name: "Yuri Alberto", teamLogo: "https://img.sofascore.com/api/v1/team/1957/image", teamName: "Corinthians", goals: 11, assists: 2, matches: 26 }
   ],
   140: [
-    { name: "Robert Lewandowski", teamLogo: "https://media.api-sports.io/football/teams/529.png", teamName: "Barcelona", goals: 24, assists: 5, matches: 31 },
-    { name: "Kylian Mbappé", teamLogo: "https://media.api-sports.io/football/teams/541.png", teamName: "Real Madrid", goals: 20, assists: 6, matches: 29 },
-    { name: "Vinicius Júnior", teamLogo: "https://media.api-sports.io/football/teams/541.png", teamName: "Real Madrid", goals: 18, assists: 9, matches: 28 }
+    { name: "Robert Lewandowski", teamLogo: "https://img.sofascore.com/api/v1/team/2816/image", teamName: "Barcelona", goals: 24, assists: 5, matches: 31 },
+    { name: "Kylian Mbappé", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", teamName: "Real Madrid", goals: 20, assists: 6, matches: 29 },
+    { name: "Vinicius Júnior", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", teamName: "Real Madrid", goals: 18, assists: 9, matches: 28 }
   ]
 };
-
-const DEFAULT_STANDINGS = (leagueName: string): StandingRow[] => [
-  { pos: 1, teamId: 127, teamName: "Flamengo", teamLogo: "https://media.api-sports.io/football/teams/127.png", played: 12, win: 8, draw: 3, lose: 1, gf: 24, ga: 10, gd: 14, points: 27 },
-  { pos: 2, teamId: 121, teamName: "Palmeiras", teamLogo: "https://media.api-sports.io/football/teams/121.png", played: 12, win: 7, draw: 4, lose: 1, gf: 20, ga: 9, gd: 11, points: 25 },
-  { pos: 3, teamId: 541, teamName: "Real Madrid", teamLogo: "https://media.api-sports.io/football/teams/541.png", played: 12, win: 6, draw: 4, lose: 2, gf: 18, ga: 11, gd: 7, points: 22 },
-  { pos: 4, teamId: 529, teamName: "Barcelona", teamLogo: "https://media.api-sports.io/football/teams/529.png", played: 12, win: 5, draw: 4, lose: 3, gf: 14, ga: 13, gd: 1, points: 19 }
-];
 
 export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague, language }: LeaguePageProps) {
   const { id } = useParams<{ id: string }>();
@@ -70,15 +119,85 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
 
   // Lookup in active fixtures to identify details of league
   const fixtureMatch = matches.find(m => m.league.id === leagueId);
-  const leagueName = fixtureMatch?.league.name || (leagueId === 71 ? "Brasileirão Série A" : (leagueId === 140 ? "La Liga" : "Competição de Futebol"));
-  const leagueLogo = fixtureMatch?.league.logo || `https://media.api-sports.io/football/leagues/${leagueId}.png`;
+  const leagueName = fixtureMatch?.league.name || (leagueId === 71 ? "Brasileirão Série A" : (leagueId === 140 ? "La Liga" : (leagueId === 39 ? "Premier League" : "Competição de Futebol")));
+  const leagueLogo = fixtureMatch?.league.logo || `https://www.sofascore.com/api/v1/unique-tournament/${leagueId}/image`;
   const isFav = favorites.leagues.includes(leagueId);
 
-  const standings = STANDINGS_DATA[leagueId] || DEFAULT_STANDINGS(leagueName);
+  // Live standings state
+  const [standings, setStandings] = useState<StandingRow[]>([]);
+  const [loadingStandings, setLoadingStandings] = useState(true);
+
+  const initialList = STANDINGS_DATA[leagueId] || getCustomMockStandings(leagueId, leagueName);
+
+  useEffect(() => {
+    // Populate immediately with visual fallback so layout is fully complete
+    setStandings(initialList);
+    setLoadingStandings(true);
+
+    const fetchLiveStandings = async () => {
+      try {
+        const res = await fetch(`/api/standings/${leagueId}`);
+        if (!res.ok) throw new Error("Could not find standing details on server");
+        const data = await res.json();
+        const rawStandings = data.standings;
+
+        let rawRows: any[] = [];
+        if (Array.isArray(rawStandings)) {
+          // Check for first standing group
+          const firstGroup = rawStandings[0];
+          if (firstGroup && Array.isArray(firstGroup.rows)) {
+            rawRows = firstGroup.rows;
+          } else if (Array.isArray(firstGroup)) {
+            rawRows = firstGroup;
+          } else {
+            rawRows = rawStandings;
+          }
+        } else if (rawStandings && Array.isArray(rawStandings.rows)) {
+          rawRows = rawStandings.rows;
+        } else if (rawStandings && typeof rawStandings === "object") {
+          const keys = Object.keys(rawStandings);
+          for (const k of keys) {
+            if (Array.isArray(rawStandings[k])) {
+              rawRows = rawStandings[k];
+              break;
+            }
+          }
+        }
+
+        if (rawRows.length > 0) {
+          const parsedRows = rawRows.map((row: any, idx: number) => {
+            const teamId = row.team?.id || (50000 + idx);
+            return {
+              pos: row.position || row.pos || (idx + 1),
+              teamId,
+              teamName: row.team?.name || row.team?.shortName || (isPtStr ? "Clube" : "Team"),
+              teamLogo: `https://img.sofascore.com/api/v1/team/${teamId}/image`,
+              played: row.matches ?? row.played ?? ((row.win || 0) + (row.draw || 0) + (row.loss || 0)),
+              win: row.win ?? row.wins ?? 0,
+              draw: row.draw ?? row.draws ?? 0,
+              lose: row.loss ?? row.losses ?? row.lose ?? 0,
+              gf: row.scoresFor ?? row.gf ?? row.goalsFor ?? 0,
+              ga: row.scoresAgainst ?? row.ga ?? row.goalsAgainst ?? 0,
+              gd: row.goalDifference ?? row.gd ?? ((row.scoresFor ?? 0) - (row.scoresAgainst ?? 0)),
+              points: row.points ?? row.pts ?? 0
+            };
+          });
+          setStandings(parsedRows);
+        }
+      } catch (err) {
+        console.warn("[Client Standings] Error requesting live standing table, falling back to static lists:", err);
+      } finally {
+        setLoadingStandings(false);
+      }
+    };
+
+    fetchLiveStandings();
+  }, [leagueId, leagueName]);
+
   const scorers = SCORERS_DATA[leagueId] || [
-    { name: "Jogador de Elite 1", teamLogo: "https://media.api-sports.io/football/teams/127.png", teamName: "Time A", goals: 9, assists: 3, matches: 12 },
-    { name: "Jogador de Elite 2", teamLogo: "https://media.api-sports.io/football/teams/121.png", teamName: "Time B", goals: 7, assists: 4, matches: 11 },
-    { name: "Jogador de Elite 3", teamLogo: "https://media.api-sports.io/football/teams/541.png", teamName: "Time C", goals: 6, assists: 2, matches: 10 }
+    { name: "Jogador de Elite 1", teamLogo: "https://img.sofascore.com/api/v1/team/5981/image", teamName: "Time A", goals: 9, assists: 3, matches: 12 },
+    { name: "Jogador de Elite 2", teamLogo: "https://img.sofascore.com/api/v1/team/1963/image", teamName: "Time B", goals: 7, assists: 4, matches: 11 },
+    { name: "Jogador de Elite 3", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", teamName: "Time C", goals: 6, assists: 2, matches: 10 }
   ];
 
   const leagueMatches = matches.filter(m => m.league.id === leagueId);

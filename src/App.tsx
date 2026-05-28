@@ -321,6 +321,7 @@ export default function App() {
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSimulated, setIsSimulated] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
 
@@ -548,6 +549,7 @@ export default function App() {
           const localData = await localRes.json();
           if (localData && Array.isArray(localData.response)) {
             nextMatches = localData.response;
+            setIsSimulated(!!localData._simulated);
             success = true;
           }
         }
@@ -557,6 +559,7 @@ export default function App() {
 
       // 2. SEGUNDA TENTATIVA: Direct RapidAPI (Vercel static)
       if (!success) {
+        setIsSimulated(false);
         const formattedDate = date.replace(/-/g, "");
         const res = await fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-matches-by-date?date=${formattedDate}`, {
           method: "GET",
@@ -1816,6 +1819,24 @@ export default function App() {
                 />
               </label>
             </div>
+
+            {isSimulated && (
+              <div className="mb-4 bg-emerald-500/10 dark:bg-emerald-950/25 border border-emerald-500/20 text-emerald-800 dark:text-emerald-400 p-3.5 rounded-2xl flex items-center gap-3.5 select-none animate-fade-in shadow-xs">
+                <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-xs ring-4 ring-emerald-500/5">
+                  🧪
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-xs">
+                    {isPt ? "Partidas Simuladas de Demonstração" : "Interactive Demonstration Simulation"}
+                  </p>
+                  <p className="text-[10px] text-emerald-600/95 dark:text-emerald-400/80 mt-0.5 leading-tight">
+                    {isPt 
+                      ? "Os servidores oficiais estão offline ou a quota da API esgotou. Carregando simulações dinâmicas de futebol em tempo real!" 
+                      : "The official live API is offline or quota reached. Loading high-fidelity real-time football simulations!"}
+                  </p>
+                </div>
+              </div>
+            )}
 
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/50 dark:border-slate-800/80 p-6 shadow-2xs select-none">
