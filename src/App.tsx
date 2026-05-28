@@ -538,10 +538,18 @@ export default function App() {
     if (!isSilent) setLoading(true);
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Sao_Paulo";
-      const res = await fetch(`/api/fixtures?date=${date}&today=${realTodayDate}&timezone=${encodeURIComponent(timezone)}`);
+      
+      // NOVA LIGAÇÃO DIRETA À API
+      const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${date}&timezone=${encodeURIComponent(timezone)}`, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+          "x-rapidapi-host": "v3.football.api-sports.io"
+        }
+      });
+      
       if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
       const data = await res.json();
-      const nextMatches = data.response || [];
 
       // Detect Goal Score Updates for toasts
       if (prevMatchesRef.current.length > 0 && nextMatches.length > 0) {
@@ -644,9 +652,18 @@ export default function App() {
       const matchId = selectedMatch.fixture.id;
       const fetchDetails = async () => {
         try {
-          const res = await fetch(`/api/fixture-detail?id=${matchId}`);
+          // NOVA LIGAÇÃO DIRETA PARA OS DETALHES
+          const res = await fetch(`https://v3.football.api-sports.io/fixtures?id=${matchId}`, {
+            method: "GET",
+            headers: {
+              "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+              "x-rapidapi-host": "v3.football.api-sports.io"
+            }
+          });
+          
           if (res.ok) {
             const detailData = await res.json();
+            // ... (o resto do código continua igual)
             
             setSelectedMatch(prev => {
               if (prev && prev.fixture.id === matchId) {
