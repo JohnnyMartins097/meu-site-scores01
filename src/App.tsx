@@ -535,27 +535,145 @@ export default function App() {
   }, [matches, isLargeScreen]);
 
 // Main fetch function
+  // --- TRADUTOR DA NOVA API FOTMOB PARA O NOSSO SITE ---
+  const mapApiToMatch = (item: any): Match => {
+    const isFinished = item.status?.finished || false;
+    const isOngoing = item.status?.ongoing || false;
+    const isCancelled = item.status?.cancelled || false;
+
+    let statusShort = "NS";
+    let elapsed = 0;
+
+    // Tradução do Status do Jogo (Faz o filtro "Ao Vivo" voltar a funcionar)
+    if (isFinished) {
+      statusShort = "FT";
+      elapsed = 90;
+    } else if (isOngoing) {
+      const liveTimeStr = item.status?.liveTime?.short || "";
+      if (liveTimeStr.includes("HT")) {
+        statusShort = "HT";
+        elapsed = 45;
+      } else {
+        statusShort = "2H"; // Aciona a bolinha vermelha a piscar no frontend
+        elapsed = parseInt(liveTimeStr.replace(/\D/g, "")) || 0;
+      }
+    } else if (isCancelled) {
+      statusShort = "CANC";
+    }
+
+    const homeGoals = item.home?.score ?? null;
+    const awayGoals = item.away?.score ?? null;
+
+    // Define os vencedores para a interface
+    let homeWinner = false;
+    let awayWinner = false;
+    if (isFinished && homeGoals !== null && awayGoals !== null) {
+      if (homeGoals > awayGoals) homeWinner = true;
+      if (awayGoals > homeGoals) awayWinner = true;
+    }
+
+    // O Segredo dos Escudos: Como a API é espelho do Fotmob, puxamos os logos em Alta Qualidade diretamente deles!
+    const homeLogo = `https://images.fotmob.com/image_resources/logo/teamlogo/${item.home?.id}_large.png`;
+    const awayLogo = `https://images.fotmob.com/image_resources/logo/teamlogo/${item.away?.id}_large.png`;
+    const leagueLogo = `https://images.fotmob.com/image_resources/logo/leaguelogo/${item.leagueId}.png`;
+
+    return {
+      fixture: {
+        id: item.id,
+        date: item.status?.utcTime || new Date().toISOString(),
+        timestamp: item.timeTS ? item.timeTS / 1000 : Date.now() / 1000,
+        status: { short: statusShort, elapsed: elapsed }
+      },
+      league: {
+        id: item.leagueId,
+        name: `Liga ${item.leagueId}`, // Sem o nome da liga no JSON, mostramos "Liga X" (o logo da liga vai aparecer perfeito)
+        country: "Mundo",
+        logo: leagueLogo
+      },
+      teams: {
+        home: { id: item.home?.id, name: item.home?.name || "Home", logo: homeLogo, winner: homeWinner },
+        away: { id: item.away?.id, name: item.away?.name || "Away", logo: awayLogo, winner: awayWinner }
+      },
+      goals: { home: homeGoals, away: awayGoals },
+      events: [], statistics: [], lineups: [], detailsLoaded: false
+    };
+  };
+
+  // --- FUNÇÃO PRINCIPAL DE LIGAÇÃO À RAPIDAPI ---
   const fetchMatches = async (date: string, isSilent = false) => {
     if (!isSilent) setLoading(true);
     try {
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Sao_Paulo";
-      let nextMatches: Match[] = [];
-      let success = false;
-
-      // 1. PRIMEIRA TENTATIVA: Query standard server /api/fixtures proxy (fast, cached, secure)
-      try {
-        const localRes = await fetch(`/api/fixtures?date=${date}&timezone=${encodeURIComponent(timezone)}&today=${date}`);
-        if (localRes.ok) {
-          const localData = await localRes.json();
-          if (localData && Array.isArray(localData.response)) {
-            nextMatches = localData.response;
-            setIsSimulated(!!localData._simulated);
-            success = true;
-          }
+      // (NOTA: Se na RapidAPI o link era diferente, mude a parte "football-get-matches-by-date" abaixo para o caminho exato que usou no seu teste!)
+      const res = await fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-matches-by-date?date=${date.replace(/-/g, "")}`, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+          "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
         }
-      } catch (localErr) {
-        console.log("[Client] Local /api/fixtures endpoint failed, falling back to direct RapidAPI browser call:", localErr);
+      });
+      
+      if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
+      const data = await res.json();
+      
+      // Passa a lista pelo nosso novo tradutor!
+      const rawMatches = data.response?.matches || [];
+      const nextMatches = rawMatches.map(mapApiToMatch);
+
+      // Código original dos toasts de golo e atualização da tela
+      if (prevMatchesRef.current.length > 0 && nextMatches.length > 0) {
+        nextMatches.forEach((newM: Match) => {
+          const oldM = prevMatchesRef.current.find(o => o.fixture.id === newM.fixture.id);
+          if (oldM) {
+            const homeDiff = (newM.goals.home ?? 0) - (oldM.goals.home ?? 0);
+            const awayDiff = (newM.goals.away ?? 0) - (oldM.goals.away ?? 0);
+            if (homeDiff > 0 || awayDiff > 0) {
+              setGoalToast({
+                match: newM,
+                teamName: homeDiff > 0 ? newM.teams.home.name : newM.teams.away.name,
+                scorer: "Jogador",
+                minute: newM.fixture.status.elapsed,
+                homeScore: newM.goals.home ?? 0,
+                awayScore: newM.goals.away ?? 0
+              });
+              setTimeout(() => { setGoalToast(null); }, 6000);
+            }
+          }
+        });
       }
+
+      setMatches(prevList => {
+        return nextMatches.map((newM: Match) => {
+          const existing = prevList.find(oldM => oldM.fixture.id === newM.fixture.id);
+          if (existing) {
+            return { ...newM, events: existing.events || [], statistics: existing.statistics || [], lineups: existing.lineups || [], detailsLoaded: existing.detailsLoaded || false };
+          }
+          return newM;
+        });
+      });
+      prevMatchesRef.current = nextMatches;
+
+      if (selectedMatch) {
+        const updatedSelected = nextMatches.find(m => m.fixture.id === selectedMatch.fixture.id);
+        if (updatedSelected) {
+          setSelectedMatch(prev => {
+            if (prev && prev.fixture.id === updatedSelected.fixture.id) {
+              return { ...updatedSelected, events: prev.events || [], statistics: prev.statistics || [], lineups: prev.lineups || [], detailsLoaded: prev.detailsLoaded || false };
+            }
+            return updatedSelected;
+          });
+        }
+      }
+
+      setError(null);
+    } catch (err: any) {
+      console.error(err);
+      if (!isSilent) {
+        setError(err.message || "Erro de conexão ao buscar jogos.");
+      }
+    } finally {
+      if (!isSilent) setLoading(false);
+    }
+  };
 
       // 2. SEGUNDA TENTATIVA: Direct RapidAPI (Vercel static)
       if (!success) {
