@@ -16,32 +16,32 @@ const matchStore: Record<string, any[]> = {};
 let lastCleanup = Date.now();
 
 const TEAM_LIST = [
-  { id: 127, name: "Flamengo", logo: "https://media.api-sports.io/football/teams/127.png" },
-  { id: 121, name: "Palmeiras", logo: "https://media.api-sports.io/football/teams/121.png" },
-  { id: 126, name: "São Paulo", logo: "https://media.api-sports.io/football/teams/126.png" },
-  { id: 131, name: "Corinthians", logo: "https://media.api-sports.io/football/teams/131.png" },
-  { id: 120, name: "Botafogo", logo: "https://media.api-sports.io/football/teams/120.png" },
-  { id: 119, name: "Internacional", logo: "https://media.api-sports.io/football/teams/119.png" },
-  { id: 124, name: "Fluminense", logo: "https://media.api-sports.io/football/teams/124.png" },
-  { id: 118, name: "Grêmio", logo: "https://media.api-sports.io/football/teams/118.png" },
-  { id: 130, name: "Vasco da Gama", logo: "https://media.api-sports.io/football/teams/130.png" },
-  { id: 541, name: "Real Madrid", logo: "https://media.api-sports.io/football/teams/541.png" },
-  { id: 529, name: "Barcelona", logo: "https://media.api-sports.io/football/teams/529.png" },
-  { id: 50, name: "Manchester City", logo: "https://media.api-sports.io/football/teams/50.png" },
-  { id: 40, name: "Liverpool", logo: "https://media.api-sports.io/football/teams/40.png" },
-  { id: 42, name: "Arsenal", logo: "https://media.api-sports.io/football/teams/42.png" },
-  { id: 157, name: "Bayern Munich", logo: "https://media.api-sports.io/football/teams/157.png" },
-  { id: 85, name: "PSG", logo: "https://media.api-sports.io/football/teams/85.png" },
-  { id: 435, name: "River Plate", logo: "https://media.api-sports.io/football/teams/435.png" },
-  { id: 451, name: "Boca Juniors", logo: "https://media.api-sports.io/football/teams/451.png" }
+  { id: 5981, name: "Flamengo", logo: "https://img.sofascore.com/api/v1/team/5981/image" },
+  { id: 1963, name: "Palmeiras", logo: "https://img.sofascore.com/api/v1/team/1963/image" },
+  { id: 1981, name: "São Paulo", logo: "https://img.sofascore.com/api/v1/team/1981/image" },
+  { id: 1957, name: "Corinthians", logo: "https://img.sofascore.com/api/v1/team/1957/image" },
+  { id: 1958, name: "Botafogo", logo: "https://img.sofascore.com/api/v1/team/1958/image" },
+  { id: 1966, name: "Internacional", logo: "https://img.sofascore.com/api/v1/team/1966/image" },
+  { id: 1961, name: "Fluminense", logo: "https://img.sofascore.com/api/v1/team/1961/image" },
+  { id: 1954, name: "Grêmio", logo: "https://img.sofascore.com/api/v1/team/1954/image" },
+  { id: 1974, name: "Vasco da Gama", logo: "https://img.sofascore.com/api/v1/team/1974/image" },
+  { id: 2829, name: "Real Madrid", logo: "https://img.sofascore.com/api/v1/team/2829/image" },
+  { id: 2816, name: "Barcelona", logo: "https://img.sofascore.com/api/v1/team/2816/image" },
+  { id: 17, name: "Manchester City", logo: "https://img.sofascore.com/api/v1/team/17/image" },
+  { id: 44, name: "Liverpool", logo: "https://img.sofascore.com/api/v1/team/44/image" },
+  { id: 42, name: "Arsenal", logo: "https://img.sofascore.com/api/v1/team/42/image" },
+  { id: 2674, name: "Bayern Munich", logo: "https://img.sofascore.com/api/v1/team/2674/image" },
+  { id: 1644, name: "PSG", logo: "https://img.sofascore.com/api/v1/team/1644/image" },
+  { id: 3211, name: "River Plate", logo: "https://img.sofascore.com/api/v1/team/3211/image" },
+  { id: 3207, name: "Boca Juniors", logo: "https://img.sofascore.com/api/v1/team/3207/image" }
 ];
 
 const LEAGUE_LIST = [
-  { id: 71, name: "Brasileirão Série A", country: "Brazil", logo: "https://media.api-sports.io/football/leagues/71.png", flag: "https://media.api-sports.io/flags/br.svg" },
-  { id: 13, name: "Copa Libertadores", country: "World", logo: "https://media.api-sports.io/football/leagues/13.png", flag: "https://media.api-sports.io/flags/world.svg" },
-  { id: 2, name: "UEFA Champions League", country: "World", logo: "https://media.api-sports.io/football/leagues/2.png", flag: "https://media.api-sports.io/flags/world.svg" },
-  { id: 39, name: "Premier League", country: "England", logo: "https://media.api-sports.io/football/leagues/39.png", flag: "https://media.api-sports.io/flags/gb.svg" },
-  { id: 140, name: "La Liga", country: "Spain", logo: "https://media.api-sports.io/football/leagues/140.png", flag: "https://media.api-sports.io/flags/es.svg" }
+  { id: 71, name: "Brasileirão Série A", country: "Brasil", logo: "https://www.sofascore.com/api/v1/unique-tournament/325/image", flag: "https://flagcdn.com/w40/br.png" },
+  { id: 13, name: "Copa Libertadores", country: "América do Sul", logo: "https://www.sofascore.com/api/v1/unique-tournament/45/image", flag: "https://flagcdn.com/w40/un.png" },
+  { id: 2, name: "UEFA Champions League", country: "Mundo", logo: "https://www.sofascore.com/api/v1/unique-tournament/7/image", flag: "https://flagcdn.com/w40/un.png" },
+  { id: 39, name: "Premier League", country: "Inglaterra", logo: "https://www.sofascore.com/api/v1/unique-tournament/17/image", flag: "https://flagcdn.com/w40/gb.png" },
+  { id: 140, name: "La Liga", country: "Espanha", logo: "https://www.sofascore.com/api/v1/unique-tournament/8/image", flag: "https://flagcdn.com/w40/es.png" }
 ];
 
 // Helper to update state of live games
@@ -148,31 +148,31 @@ function generateMockFixturesForDate(dateStr: string, realTodayStr: string): any
   let baseId = dateIdNum * 100;
 
   // Real teams definitions to match up securely
-  const T_FLAMENGO = { id: 127, name: "Flamengo", logo: "https://media.api-sports.io/football/teams/127.png" };
-  const T_PALMEIRAS = { id: 121, name: "Palmeiras", logo: "https://media.api-sports.io/football/teams/121.png" };
-  const T_SAOPAULO = { id: 126, name: "São Paulo", logo: "https://media.api-sports.io/football/teams/126.png" };
-  const T_CORINTHIANS = { id: 131, name: "Corinthians", logo: "https://media.api-sports.io/football/teams/131.png" };
-  const T_BOTAFOGO = { id: 120, name: "Botafogo", logo: "https://media.api-sports.io/football/teams/120.png" };
-  const T_INTERNACIONAL = { id: 119, name: "Internacional", logo: "https://media.api-sports.io/football/teams/119.png" };
-  const T_FLUMINENSE = { id: 124, name: "Fluminense", logo: "https://media.api-sports.io/football/teams/124.png" };
-  const T_GREMIO = { id: 118, name: "Grêmio", logo: "https://media.api-sports.io/football/teams/118.png" };
-  const T_VASCO = { id: 130, name: "Vasco da Gama", logo: "https://media.api-sports.io/football/teams/130.png" };
+  const T_FLAMENGO = { id: 5981, name: "Flamengo", logo: "https://img.sofascore.com/api/v1/team/5981/image" };
+  const T_PALMEIRAS = { id: 1963, name: "Palmeiras", logo: "https://img.sofascore.com/api/v1/team/1963/image" };
+  const T_SAOPAULO = { id: 1981, name: "São Paulo", logo: "https://img.sofascore.com/api/v1/team/1981/image" };
+  const T_CORINTHIANS = { id: 1957, name: "Corinthians", logo: "https://img.sofascore.com/api/v1/team/1957/image" };
+  const T_BOTAFOGO = { id: 1958, name: "Botafogo", logo: "https://img.sofascore.com/api/v1/team/1958/image" };
+  const T_INTERNACIONAL = { id: 1966, name: "Internacional", logo: "https://img.sofascore.com/api/v1/team/1966/image" };
+  const T_FLUMINENSE = { id: 1961, name: "Fluminense", logo: "https://img.sofascore.com/api/v1/team/1961/image" };
+  const T_GREMIO = { id: 1954, name: "Grêmio", logo: "https://img.sofascore.com/api/v1/team/1954/image" };
+  const T_VASCO = { id: 1974, name: "Vasco da Gama", logo: "https://img.sofascore.com/api/v1/team/1974/image" };
   
-  const T_REALMADRID = { id: 541, name: "Real Madrid", logo: "https://media.api-sports.io/football/teams/541.png" };
-  const T_BARCELONA = { id: 529, name: "Barcelona", logo: "https://media.api-sports.io/football/teams/529.png" };
-  const T_MANCITY = { id: 50, name: "Manchester City", logo: "https://media.api-sports.io/football/teams/50.png" };
-  const T_LIVERPOOL = { id: 40, name: "Liverpool", logo: "https://media.api-sports.io/football/teams/40.png" };
-  const T_ARSENAL = { id: 42, name: "Arsenal", logo: "https://media.api-sports.io/football/teams/42.png" };
-  const T_BAYERN = { id: 157, name: "Bayern Munich", logo: "https://media.api-sports.io/football/teams/157.png" };
-  const T_PSG = { id: 85, name: "PSG", logo: "https://media.api-sports.io/football/teams/85.png" };
-  const T_RIVER = { id: 435, name: "River Plate", logo: "https://media.api-sports.io/football/teams/435.png" };
-  const T_BOCA = { id: 451, name: "Boca Juniors", logo: "https://media.api-sports.io/football/teams/451.png" };
+  const T_REALMADRID = { id: 2829, name: "Real Madrid", logo: "https://img.sofascore.com/api/v1/team/2829/image" };
+  const T_BARCELONA = { id: 2816, name: "Barcelona", logo: "https://img.sofascore.com/api/v1/team/2816/image" };
+  const T_MANCITY = { id: 17, name: "Manchester City", logo: "https://img.sofascore.com/api/v1/team/17/image" };
+  const T_LIVERPOOL = { id: 44, name: "Liverpool", logo: "https://img.sofascore.com/api/v1/team/44/image" };
+  const T_ARSENAL = { id: 42, name: "Arsenal", logo: "https://img.sofascore.com/api/v1/team/42/image" };
+  const T_BAYERN = { id: 2674, name: "Bayern Munich", logo: "https://img.sofascore.com/api/v1/team/2674/image" };
+  const T_PSG = { id: 1644, name: "PSG", logo: "https://img.sofascore.com/api/v1/team/1644/image" };
+  const T_RIVER = { id: 3211, name: "River Plate", logo: "https://img.sofascore.com/api/v1/team/3211/image" };
+  const T_BOCA = { id: 3207, name: "Boca Juniors", logo: "https://img.sofascore.com/api/v1/team/3207/image" };
 
   // Define potential matches in structures
   const MATCH_DEFINITIONS = [
     // 1. Brasileirão Série A
     {
-      league: { id: 71, name: "Brasileirão Série A", country: "Brazil", logo: "https://media.api-sports.io/football/leagues/71.png", flag: "https://media.api-sports.io/flags/br.svg", season: 2026, round: "Série A - Rodada 8" },
+      league: { id: 71, name: "Brasileirão Série A", country: "Brasil", logo: "https://www.sofascore.com/api/v1/unique-tournament/325/image", flag: "https://flagcdn.com/w40/br.png", season: 2026, round: "Série A - Rodada 8" },
       home: T_FLAMENGO, away: T_PALMEIRAS,
       venue: { id: 2001, name: "Maracanã", city: "Rio de Janeiro" },
       referee: "Wilton Pereira Sampaio",
@@ -180,7 +180,7 @@ function generateMockFixturesForDate(dateStr: string, realTodayStr: string): any
       startHour: 16
     },
     {
-      league: { id: 71, name: "Brasileirão Série A", country: "Brazil", logo: "https://media.api-sports.io/football/leagues/71.png", flag: "https://media.api-sports.io/flags/br.svg", season: 2026, round: "Série A - Rodada 8" },
+      league: { id: 71, name: "Brasileirão Série A", country: "Brasil", logo: "https://www.sofascore.com/api/v1/unique-tournament/325/image", flag: "https://flagcdn.com/w40/br.png", season: 2026, round: "Série A - Rodada 8" },
       home: T_SAOPAULO, away: T_CORINTHIANS,
       venue: { id: 2002, name: "MorumBIS", city: "São Paulo" },
       referee: "Raphael Claus",
@@ -188,7 +188,7 @@ function generateMockFixturesForDate(dateStr: string, realTodayStr: string): any
       startHour: 18
     },
     {
-      league: { id: 71, name: "Brasileirão Série A", country: "Brazil", logo: "https://media.api-sports.io/football/leagues/71.png", flag: "https://media.api-sports.io/flags/br.svg", season: 2026, round: "Série A - Rodada 8" },
+      league: { id: 71, name: "Brasileirão Série A", country: "Brasil", logo: "https://www.sofascore.com/api/v1/unique-tournament/325/image", flag: "https://flagcdn.com/w40/br.png", season: 2026, round: "Série A - Rodada 8" },
       home: T_GREMIO, away: T_INTERNACIONAL,
       venue: { id: 2003, name: "Arena do Grêmio", city: "Porto Alegre" },
       referee: "Anderson Daronco",
@@ -196,7 +196,7 @@ function generateMockFixturesForDate(dateStr: string, realTodayStr: string): any
       startHour: 16
     },
     {
-      league: { id: 71, name: "Brasileirão Série A", country: "Brazil", logo: "https://media.api-sports.io/football/leagues/71.png", flag: "https://media.api-sports.io/flags/br.svg", season: 2026, round: "Série A - Rodada 8" },
+      league: { id: 71, name: "Brasileirão Série A", country: "Brasil", logo: "https://www.sofascore.com/api/v1/unique-tournament/325/image", flag: "https://flagcdn.com/w40/br.png", season: 2026, round: "Série A - Rodada 8" },
       home: T_BOTAFOGO, away: T_FLUMINENSE,
       venue: { id: 2004, name: "Estádio Nilton Santos", city: "Rio de Janeiro" },
       referee: "Ramon Abatti Abel",
@@ -204,7 +204,7 @@ function generateMockFixturesForDate(dateStr: string, realTodayStr: string): any
       startHour: 20
     },
     {
-      league: { id: 71, name: "Brasileirão Série A", country: "Brazil", logo: "https://media.api-sports.io/football/leagues/71.png", flag: "https://media.api-sports.io/flags/br.svg", season: 2026, round: "Série A - Rodada 8" },
+      league: { id: 71, name: "Brasileirão Série A", country: "Brasil", logo: "https://www.sofascore.com/api/v1/unique-tournament/325/image", flag: "https://flagcdn.com/w40/br.png", season: 2026, round: "Série A - Rodada 8" },
       home: T_VASCO, away: T_SAOPAULO, 
       venue: { id: 2005, name: "São Januário", city: "Rio de Janeiro" },
       referee: "Braulio da Silva Machado",
@@ -214,7 +214,7 @@ function generateMockFixturesForDate(dateStr: string, realTodayStr: string): any
 
     // 2. UEFA Champions League
     {
-      league: { id: 2, name: "UEFA Champions League", country: "World", logo: "https://media.api-sports.io/football/leagues/2.png", flag: "https://media.api-sports.io/flags/world.svg", season: 2026, round: "Semifinais - Ida" },
+      league: { id: 2, name: "UEFA Champions League", country: "Mundo", logo: "https://www.sofascore.com/api/v1/unique-tournament/7/image", flag: "https://flagcdn.com/w40/un.png", season: 2026, round: "Semifinais - Ida" },
       home: T_REALMADRID, away: T_MANCITY,
       venue: { id: 3001, name: "Santiago Bernabéu", city: "Madrid" },
       referee: "Szymon Marciniak",
@@ -222,7 +222,7 @@ function generateMockFixturesForDate(dateStr: string, realTodayStr: string): any
       startHour: 19
     },
     {
-      league: { id: 2, name: "UEFA Champions League", country: "World", logo: "https://media.api-sports.io/football/leagues/2.png", flag: "https://media.api-sports.io/flags/world.svg", season: 2026, round: "Semifinais - Ida" },
+      league: { id: 2, name: "UEFA Champions League", country: "Mundo", logo: "https://www.sofascore.com/api/v1/unique-tournament/7/image", flag: "https://flagcdn.com/w40/un.png", season: 2026, round: "Semifinais - Ida" },
       home: T_PSG, away: T_BAYERN,
       venue: { id: 3002, name: "Parc des Princes", city: "Paris" },
       referee: "Michael Oliver",
@@ -232,7 +232,7 @@ function generateMockFixturesForDate(dateStr: string, realTodayStr: string): any
 
     // 3. Premier League
     {
-      league: { id: 39, name: "Premier League", country: "England", logo: "https://media.api-sports.io/football/leagues/39.png", flag: "https://media.api-sports.io/flags/gb.svg", season: 2026, round: "Rodada 35" },
+      league: { id: 39, name: "Premier League", country: "Inglaterra", logo: "https://www.sofascore.com/api/v1/unique-tournament/17/image", flag: "https://flagcdn.com/w40/gb.png", season: 2026, round: "Rodada 35" },
       home: T_LIVERPOOL, away: T_ARSENAL,
       venue: { id: 4001, name: "Anfield", city: "Liverpool" },
       referee: "Anthony Taylor",
@@ -242,7 +242,7 @@ function generateMockFixturesForDate(dateStr: string, realTodayStr: string): any
 
     // 4. La Liga
     {
-      league: { id: 140, name: "La Liga", country: "Spain", logo: "https://media.api-sports.io/football/leagues/140.png", flag: "https://media.api-sports.io/flags/es.svg", season: 2026, round: "Rodada 33" },
+      league: { id: 140, name: "La Liga", country: "Espanha", logo: "https://www.sofascore.com/api/v1/unique-tournament/8/image", flag: "https://flagcdn.com/w40/es.png", season: 2026, round: "Rodada 33" },
       home: T_BARCELONA, away: T_REALMADRID, 
       venue: { id: 5001, name: "Camp Nou", city: "Barcelona" },
       referee: "Gil Manzano",
@@ -252,7 +252,7 @@ function generateMockFixturesForDate(dateStr: string, realTodayStr: string): any
 
     // 5. Copa Libertadores
     {
-      league: { id: 13, name: "Copa Libertadores", country: "World", logo: "https://media.api-sports.io/football/leagues/13.png", flag: "https://media.api-sports.io/flags/world.svg", season: 2026, round: "Fase de Grupos" },
+      league: { id: 13, name: "Copa Libertadores", country: "América do Sul", logo: "https://www.sofascore.com/api/v1/unique-tournament/45/image", flag: "https://flagcdn.com/w40/un.png", season: 2026, round: "Fase de Grupos" },
       home: T_BOCA, away: T_RIVER, 
       venue: { id: 1001, name: "La Bombonera", city: "Buenos Aires" },
       referee: "Wilmar Roldán",
@@ -447,11 +447,11 @@ interface CachedLeague {
 }
 
 const leagueCache: Record<number, CachedLeague> = {
-  71: { id: 71, name: "Brasileirão Série A", country: "Brasil", logo: "https://media.api-sports.io/football/leagues/71.png", flag: "https://media.api-sports.io/flags/br.svg" },
-  13: { id: 13, name: "Copa Libertadores", country: "América do Sul", logo: "https://media.api-sports.io/football/leagues/13.png", flag: "https://media.api-sports.io/flags/world.svg" },
-  2: { id: 2, name: "UEFA Champions League", country: "Mundo", logo: "https://media.api-sports.io/football/leagues/2.png", flag: "https://media.api-sports.io/flags/world.svg" },
-  39: { id: 39, name: "Premier League", country: "Inglaterra", logo: "https://media.api-sports.io/football/leagues/39.png", flag: "https://media.api-sports.io/flags/gb.svg" },
-  140: { id: 140, name: "La Liga", country: "Espanha", logo: "https://media.api-sports.io/football/leagues/140.png", flag: "https://media.api-sports.io/flags/es.svg" }
+  71: { id: 71, name: "Brasileirão Série A", country: "Brasil", logo: "https://www.sofascore.com/api/v1/unique-tournament/325/image", flag: "https://flagcdn.com/w40/br.png" },
+  13: { id: 13, name: "Copa Libertadores", country: "América do Sul", logo: "https://www.sofascore.com/api/v1/unique-tournament/45/image", flag: "https://flagcdn.com/w40/un.png" },
+  2: { id: 2, name: "UEFA Champions League", country: "Mundo", logo: "https://www.sofascore.com/api/v1/unique-tournament/7/image", flag: "https://flagcdn.com/w40/un.png" },
+  39: { id: 39, name: "Premier League", country: "Inglaterra", logo: "https://www.sofascore.com/api/v1/unique-tournament/17/image", flag: "https://flagcdn.com/w40/gb.png" },
+  140: { id: 140, name: "La Liga", country: "Espanha", logo: "https://www.sofascore.com/api/v1/unique-tournament/8/image", flag: "https://flagcdn.com/w40/es.png" }
 };
 
 async function fillLeagueCacheForEvents(events: any[]) {
@@ -478,24 +478,24 @@ async function fillLeagueCacheForEvents(events: any[]) {
         let name = detail.leagueName || "Campeonato";
         let country = "Internacional";
         let logo = `https://www.sofascore.com/api/v1/unique-tournament/${leagueId}/image`;
-        let flag = "https://media.api-sports.io/flags/world.svg";
+        let flag = "https://flagcdn.com/w40/un.png";
 
         const code = (detail.countryCode || "").toLowerCase();
         if (code === "br" || name.toLowerCase().includes("brasileir") || name.toLowerCase().includes("brazil")) {
           country = "Brasil";
-          flag = "https://media.api-sports.io/flags/br.svg";
+          flag = "https://flagcdn.com/w40/br.png";
         } else if (code === "ar") {
           country = "Argentina";
-          flag = "https://media.api-sports.io/flags/ar.svg";
+          flag = "https://flagcdn.com/w40/ar.png";
         } else if (code === "es") {
           country = "Espanha";
-          flag = "https://media.api-sports.io/flags/es.svg";
+          flag = "https://flagcdn.com/w40/es.png";
         } else if (code === "gb" || code === "eng") {
           country = "Inglaterra";
-          flag = "https://media.api-sports.io/flags/gb.svg";
+          flag = "https://flagcdn.com/w40/gb.png";
         } else if (code === "int" || code === "int-2" || code === "south-america" || name.toLowerCase().includes("libertadores") || name.toLowerCase().includes("sudamericana") || name.toLowerCase().includes("sulamericana")) {
           country = "América do Sul";
-          flag = "https://media.api-sports.io/flags/world.svg";
+          flag = "https://flagcdn.com/w40/un.png";
         } else if (detail.countryCode) {
           country = detail.countryCode.toUpperCase();
           flag = `https://flagcdn.com/w40/${code}.png`;
@@ -505,12 +505,12 @@ async function fillLeagueCacheForEvents(events: any[]) {
           name = "CONMEBOL Libertadores";
           country = "América do Sul";
           logo = "https://img.sofascore.com/api/v1/unique-tournament/45/image";
-          flag = "https://media.api-sports.io/flags/world.svg";
+          flag = "https://flagcdn.com/w40/un.png";
         } else if (name.toLowerCase().includes("sudamericana") || name.toLowerCase().includes("sulamericana")) {
           name = "CONMEBOL Sudamericana";
           country = "América do Sul";
           logo = "https://img.sofascore.com/api/v1/unique-tournament/48/image";
-          flag = "https://media.api-sports.io/flags/world.svg";
+          flag = "https://flagcdn.com/w40/un.png";
         } else {
           const parentId = detail.parentLeagueId || detail.uniqueTournamentId;
           if (parentId) {
@@ -537,159 +537,64 @@ async function fillLeagueCacheForEvents(events: any[]) {
 function mapSportEventToFootballMatch(event: any): any {
   if (!event) return null;
 
-  // Differentiate RapidAPI style vs original Sofascore endpoint style
-  const isRapid = event.home !== undefined && event.away !== undefined;
+  // Primary standard: Free API Live Football Data schema
+  const homeObj = event.home || event.homeTeam || {};
+  const awayObj = event.away || event.awayTeam || {};
 
-  if (isRapid) {
-    const isFinished = event.status?.finished === true;
-    const isLive = event.status?.ongoing === true;
+  const scoreObj = event.status || {};
+  const isFinished = scoreObj.finished === true || event.status?.type === "finished";
+  const isLive = scoreObj.ongoing === true || event.status?.type === "inprogress";
 
-    let statusShort = "NS";
-    let statusLong = "Not Started";
-    let elapsed = 0;
-
-    if (isFinished) {
-      statusShort = "FT";
-      statusLong = "Match Finished";
-      elapsed = 90;
-    } else if (isLive) {
-      const shortTime = event.status?.liveTime?.short || "";
-      if (shortTime.includes("HT") || shortTime.includes("intervalo") || shortTime.includes("Intervalo") || shortTime.includes("half") || shortTime.includes("Half")) {
-        statusShort = "HT";
-        statusLong = "Halftime";
-        elapsed = 45;
-      } else {
-        const numericPart = parseInt(shortTime.replace(/[^0-9]/g, ""), 10) || 45;
-        elapsed = numericPart;
-        statusShort = elapsed <= 45 ? "1H" : "2H";
-        statusLong = elapsed <= 45 ? "First Half" : "Second Half";
-      }
-    } else if (event.status?.cancelled) {
-      statusShort = "CANCL";
-      statusLong = "Cancelled";
-    }
-
-    const startTimestamp = event.timeTS ? Math.floor(event.timeTS / 1000) : Math.floor(Date.now() / 1000);
-    const matchDate = event.status?.utcTime || (event.timeTS ? new Date(event.timeTS).toISOString() : new Date().toISOString());
-
-    const homeGoals = event.home?.score !== undefined ? event.home.score : null;
-    const awayGoals = event.away?.score !== undefined ? event.away.score : null;
-
-    const homeWinner = (homeGoals !== null && awayGoals !== null && isFinished) ? (homeGoals > awayGoals) : null;
-    const awayWinner = (homeGoals !== null && awayGoals !== null && isFinished) ? (awayGoals > homeGoals) : null;
-
-    const homeId = event.home?.id || 100001;
-    const awayId = event.away?.id || 100002;
-
-    const leagueId = event.leagueId || 999;
-    const cacheMatched = leagueCache[leagueId];
-    const matchedLeague = LEAGUE_LIST.find(l => l.id === leagueId);
-    
-    const leagueName = cacheMatched ? cacheMatched.name : (matchedLeague ? matchedLeague.name : "Competição");
-    const leagueCountry = cacheMatched ? cacheMatched.country : (matchedLeague ? matchedLeague.country : "Mundo");
-    const leagueLogo = cacheMatched ? cacheMatched.logo : (matchedLeague ? matchedLeague.logo : `https://www.sofascore.com/api/v1/unique-tournament/${leagueId}/image`);
-    const leagueFlag = cacheMatched ? cacheMatched.flag : (matchedLeague ? matchedLeague.flag : "https://media.api-sports.io/flags/world.svg");
-
-    return {
-      fixture: {
-        id: event.id || Math.floor(Math.random() * 100000),
-        referee: "Árbitro",
-        timezone: "UTC",
-        date: matchDate,
-        timestamp: startTimestamp,
-        periods: { first: null, second: null },
-        venue: { 
-          id: 1, 
-          name: "Estádio Esportivo", 
-          city: "Cidade" 
-        },
-        status: { 
-          long: statusLong, 
-          short: statusShort, 
-          elapsed: elapsed
-        }
-      },
-      league: {
-        id: leagueId,
-        name: leagueName,
-        country: leagueCountry,
-        logo: leagueLogo,
-        flag: leagueFlag,
-        season: 2026,
-        round: "Rodada"
-      },
-      teams: {
-        home: { 
-          id: homeId, 
-          name: event.home?.name || event.home?.longName || "Casa", 
-          logo: `https://img.sofascore.com/api/v1/team/${homeId}/image`, 
-          winner: homeWinner 
-        },
-        away: { 
-          id: awayId, 
-          name: event.away?.name || event.away?.longName || "Visitante", 
-          logo: `https://img.sofascore.com/api/v1/team/${awayId}/image`, 
-          winner: awayWinner 
-        }
-      },
-      goals: { home: homeGoals, away: awayGoals },
-      score: {
-        halftime: { 
-          home: (isFinished || isLive) && homeGoals !== null ? Math.max(0, homeGoals - 1) : null, 
-          away: (isFinished || isLive) && awayGoals !== null ? Math.max(0, awayGoals - 1) : null 
-        },
-        fulltime: { home: homeGoals, away: awayGoals },
-        extratime: { home: null, away: null },
-        penalty: { home: null, away: null }
-      },
-      events: [],
-      statistics: [],
-      lineups: []
-    };
-  }
-
-  const isFinished = event.status?.type === "finished";
-  const isLive = event.status?.type === "inprogress";
-  
   let statusShort = "NS";
   let statusLong = "Not Started";
-  const description = (event.status?.description || "").toLowerCase();
-  
+  let elapsed = 0;
+
   if (isFinished) {
     statusShort = "FT";
     statusLong = "Match Finished";
+    elapsed = 90;
   } else if (isLive) {
-    if (description.includes("1st") || description.includes("1h")) {
-      statusShort = "1H";
-      statusLong = "First Half";
-    } else if (description.includes("2nd") || description.includes("2h")) {
-      statusShort = "2H";
-      statusLong = "Second Half";
-    } else if (description.includes("half") || description.includes("ht") || description.includes("intervalo")) {
+    const shortTime = scoreObj.liveTime?.short || scoreObj.description || "";
+    if (shortTime.includes("HT") || shortTime.includes("intervalo") || shortTime.includes("Intervalo") || shortTime.includes("half") || shortTime.includes("Half") || shortTime.includes("HT")) {
       statusShort = "HT";
       statusLong = "Halftime";
+      elapsed = 45;
     } else {
-      statusShort = "1H";
-      statusLong = "Live";
+      const numericPart = parseInt(shortTime.replace(/[^0-9]/g, ""), 10) || 45;
+      elapsed = numericPart;
+      statusShort = elapsed <= 45 ? "1H" : "2H";
+      statusLong = elapsed <= 45 ? "First Half" : "Second Half";
     }
+  } else if (scoreObj.cancelled) {
+    statusShort = "CANCL";
+    statusLong = "Cancelled";
   }
 
-  const startTimestamp = event.startTimestamp;
-  const matchDate = startTimestamp ? new Date(startTimestamp * 1000).toISOString() : new Date().toISOString();
+  const startTimestamp = event.timeTS
+    ? Math.floor(event.timeTS / 1000)
+    : event.startTimestamp
+    ? event.startTimestamp
+    : Math.floor(Date.now() / 1000);
 
-  const homeGoals = event.homeScore?.current !== undefined ? event.homeScore.current : null;
-  const awayGoals = event.awayScore?.current !== undefined ? event.awayScore.current : null;
+  const matchDate = scoreObj.utcTime || (event.timeTS ? new Date(event.timeTS).toISOString() : new Date(startTimestamp * 1000).toISOString());
+
+  const homeGoals = homeObj.score !== undefined ? homeObj.score : (event.homeScore?.current !== undefined ? event.homeScore.current : null);
+  const awayGoals = awayObj.score !== undefined ? awayObj.score : (event.awayScore?.current !== undefined ? event.awayScore.current : null);
 
   const homeWinner = (homeGoals !== null && awayGoals !== null && isFinished) ? (homeGoals > awayGoals) : null;
   const awayWinner = (homeGoals !== null && awayGoals !== null && isFinished) ? (awayGoals > homeGoals) : null;
 
-  const countryAlpha = event.tournament?.category?.alpha2 || "";
-  const flagUrl = countryAlpha 
-    ? `https://flagcdn.com/w40/${countryAlpha.toLowerCase()}.png` 
-    : "https://media.api-sports.io/flags/world.svg";
+  const homeId = homeObj.id || 100001;
+  const awayId = awayObj.id || 100002;
 
-  const homeId = event.homeTeam?.id || 100001;
-  const awayId = event.awayTeam?.id || 100002;
+  const leagueId = event.leagueId || event.tournament?.uniqueTournament?.id || event.tournament?.id || 999;
+  const cacheMatched = leagueCache[leagueId];
+  const matchedLeague = LEAGUE_LIST.find(l => l.id === leagueId);
+  
+  const leagueName = cacheMatched ? cacheMatched.name : (matchedLeague ? matchedLeague.name : (event.tournament?.uniqueTournament?.name || event.tournament?.name || "Competição"));
+  const leagueCountry = cacheMatched ? cacheMatched.country : (matchedLeague ? matchedLeague.country : (event.tournament?.category?.name || "Mundo"));
+  const leagueLogo = cacheMatched ? cacheMatched.logo : (matchedLeague ? matchedLeague.logo : `https://www.sofascore.com/api/v1/unique-tournament/${leagueId}/image`);
+  const leagueFlag = cacheMatched ? cacheMatched.flag : (matchedLeague ? matchedLeague.flag : "https://flagcdn.com/w40/un.png");
 
   return {
     fixture: {
@@ -697,7 +602,7 @@ function mapSportEventToFootballMatch(event: any): any {
       referee: event.referee?.name || "Árbitro",
       timezone: "UTC",
       date: matchDate,
-      timestamp: startTimestamp || Math.floor(Date.now() / 1000),
+      timestamp: startTimestamp,
       periods: { first: null, second: null },
       venue: { 
         id: event.venue?.id || 1, 
@@ -707,28 +612,28 @@ function mapSportEventToFootballMatch(event: any): any {
       status: { 
         long: statusLong, 
         short: statusShort, 
-        elapsed: event.statusTime?.elapsed || (isFinished ? 90 : (isLive ? 45 : 0)) 
+        elapsed: elapsed || event.statusTime?.elapsed || (isFinished ? 90 : 0)
       }
     },
     league: {
-      id: event.tournament?.uniqueTournament?.id || event.tournament?.id || 999,
-      name: event.tournament?.uniqueTournament?.name || event.tournament?.name || "Campeonato",
-      country: event.tournament?.category?.name || "Mundo",
-      logo: `https://www.sofascore.com/api/v1/unique-tournament/${event.tournament?.uniqueTournament?.id || event.tournament?.id || 999}/image`,
-      flag: flagUrl,
-      season: event.season?.id || 2026,
+      id: leagueId,
+      name: leagueName,
+      country: leagueCountry,
+      logo: leagueLogo,
+      flag: leagueFlag,
+      season: event.season?.id || (event.tournament?.uniqueTournament?.startDate ? new Date(event.tournament.uniqueTournament.startDate).getFullYear() : 2026),
       round: "Rodada"
     },
     teams: {
       home: { 
         id: homeId, 
-        name: event.homeTeam?.name || "Casa", 
+        name: homeObj.name || homeObj.longName || "Casa", 
         logo: `https://img.sofascore.com/api/v1/team/${homeId}/image`, 
         winner: homeWinner 
       },
       away: { 
         id: awayId, 
-        name: event.awayTeam?.name || "Visitante", 
+        name: awayObj.name || awayObj.longName || "Visitante", 
         logo: `https://img.sofascore.com/api/v1/team/${awayId}/image`, 
         winner: awayWinner 
       }
@@ -736,8 +641,8 @@ function mapSportEventToFootballMatch(event: any): any {
     goals: { home: homeGoals, away: awayGoals },
     score: {
       halftime: { 
-        home: event.homeScore?.period1 !== undefined ? event.homeScore.period1 : null, 
-        away: event.awayScore?.period1 !== undefined ? event.awayScore.period1 : null 
+        home: event.homeScore?.period1 !== undefined ? event.homeScore.period1 : ((isFinished || isLive) && homeGoals !== null ? Math.max(0, homeGoals - 1) : null), 
+        away: event.awayScore?.period1 !== undefined ? event.awayScore.period1 : ((isFinished || isLive) && awayGoals !== null ? Math.max(0, awayGoals - 1) : null) 
       },
       fulltime: { home: homeGoals, away: awayGoals },
       extratime: { home: null, away: null },
@@ -745,7 +650,8 @@ function mapSportEventToFootballMatch(event: any): any {
     },
     events: [],
     statistics: [],
-    lineups: []
+    lineups: [],
+    detailsLoaded: false
   };
 }
 
@@ -1008,10 +914,20 @@ app.get("/api/fixtures", async (req, res) => {
       return res.json({ response: matchStore[dateStr], _simulated: true });
     }
 
-    // Load league details cache concurrently before mapping
-    await fillLeagueCacheForEvents(allEvents);
+    // Deduplicate allEvents by id
+    const uniqueEvents: any[] = [];
+    const seenEventIds = new Set<string | number>();
+    for (const evt of allEvents) {
+      if (evt && evt.id && !seenEventIds.has(evt.id)) {
+        seenEventIds.add(evt.id);
+        uniqueEvents.push(evt);
+      }
+    }
 
-    const mappedMatches = allEvents
+    // Load league details cache concurrently before mapping
+    await fillLeagueCacheForEvents(uniqueEvents);
+
+    const mappedMatches = uniqueEvents
       .map((evt: any) => mapSportEventToFootballMatch(evt))
       .filter((m: any) => m !== null);
 
@@ -1127,10 +1043,20 @@ app.get("/api/live", async (req, res) => {
       });
     }
 
-    // Load league details cache concurrently before mapping
-    await fillLeagueCacheForEvents(events);
+    // Deduplicate events by id
+    const uniqueEvents: any[] = [];
+    const seenEventIds = new Set<string | number>();
+    for (const evt of events) {
+      if (evt && evt.id && !seenEventIds.has(evt.id)) {
+        seenEventIds.add(evt.id);
+        uniqueEvents.push(evt);
+      }
+    }
 
-    const mappedMatches = events
+    // Load league details cache concurrently before mapping
+    await fillLeagueCacheForEvents(uniqueEvents);
+
+    const mappedMatches = uniqueEvents
       .map((evt: any) => mapSportEventToFootballMatch(evt))
       .filter((m: any) => m !== null);
 

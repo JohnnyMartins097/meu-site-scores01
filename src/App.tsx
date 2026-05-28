@@ -573,45 +573,33 @@ export default function App() {
         const data = await res.json();
         
         let rawEvents: any[] = [];
+        const seenIds = new Set<string | number>();
+        const addEvents = (arr: any[]) => {
+          for (const item of arr) {
+            if (item && item.id && !seenIds.has(item.id)) {
+              seenIds.add(item.id);
+              rawEvents.push(item);
+            }
+          }
+        };
+
         if (data.response) {
           if (Array.isArray(data.response)) {
-            rawEvents = data.response;
-          } else if (typeof data.response === "object") {
+            addEvents(data.response);
+          } else if (typeof data.response === "object" && data.response !== null) {
             const obj = data.response;
-            if (obj.live && Array.isArray(obj.live)) {
-              rawEvents = [...rawEvents, ...obj.live];
-            }
-            if (obj.matches && Array.isArray(obj.matches)) {
-              rawEvents = [...rawEvents, ...obj.matches];
-            }
-            if (obj.fixtures && Array.isArray(obj.fixtures)) {
-              rawEvents = [...rawEvents, ...obj.fixtures];
-            }
-            if (rawEvents.length === 0) {
-              for (const key of Object.keys(obj)) {
-                if (Array.isArray(obj[key])) {
-                  rawEvents = [...rawEvents, ...obj[key]];
-                }
+            for (const key of Object.keys(obj)) {
+              if (Array.isArray(obj[key])) {
+                addEvents(obj[key]);
               }
             }
           }
         } else if (Array.isArray(data)) {
-          rawEvents = data;
+          addEvents(data);
         } else if (data && typeof data === "object") {
-          if (data.live && Array.isArray(data.live)) {
-            rawEvents = [...rawEvents, ...data.live];
-          }
-          if (data.matches && Array.isArray(data.matches)) {
-            rawEvents = [...rawEvents, ...data.matches];
-          }
-          if (data.fixtures && Array.isArray(data.fixtures)) {
-            rawEvents = [...rawEvents, ...data.fixtures];
-          }
-          if (rawEvents.length === 0) {
-            for (const key of Object.keys(data)) {
-              if (Array.isArray(data[key])) {
-                rawEvents = [...rawEvents, ...data[key]];
-              }
+          for (const key of Object.keys(data)) {
+            if (Array.isArray(data[key])) {
+              addEvents(data[key]);
             }
           }
         }
@@ -660,18 +648,18 @@ export default function App() {
 
             const leagueId = evt.leagueId || 999;
             const LEAGUE_LIST = [
-              { id: 71, name: "Brasileirão Série A", country: "Brazil", logo: "https://media.api-sports.io/football/leagues/71.png", flag: "https://media.api-sports.io/flags/br.svg" },
-              { id: 13, name: "Copa Libertadores", country: "World", logo: "https://media.api-sports.io/football/leagues/13.png", flag: "https://media.api-sports.io/flags/world.svg" },
-              { id: 2, name: "UEFA Champions League", country: "World", logo: "https://media.api-sports.io/football/leagues/2.png", flag: "https://media.api-sports.io/flags/world.svg" },
-              { id: 39, name: "Premier League", country: "England", logo: "https://media.api-sports.io/football/leagues/39.png", flag: "https://media.api-sports.io/flags/gb.svg" },
-              { id: 140, name: "La Liga", country: "Spain", logo: "https://media.api-sports.io/football/leagues/140.png", flag: "https://media.api-sports.io/flags/es.svg" }
+              { id: 71, name: "Brasileirão Série A", country: "Brasil", logo: "https://www.sofascore.com/api/v1/unique-tournament/325/image", flag: "https://flagcdn.com/w40/br.png" },
+              { id: 13, name: "Copa Libertadores", country: "América do Sul", logo: "https://www.sofascore.com/api/v1/unique-tournament/45/image", flag: "https://flagcdn.com/w40/un.png" },
+              { id: 2, name: "UEFA Champions League", country: "Mundo", logo: "https://www.sofascore.com/api/v1/unique-tournament/7/image", flag: "https://flagcdn.com/w40/un.png" },
+              { id: 39, name: "Premier League", country: "Inglaterra", logo: "https://www.sofascore.com/api/v1/unique-tournament/17/image", flag: "https://flagcdn.com/w40/gb.png" },
+              { id: 140, name: "La Liga", country: "Espanha", logo: "https://www.sofascore.com/api/v1/unique-tournament/8/image", flag: "https://flagcdn.com/w40/es.png" }
             ];
             const matchedLeague = LEAGUE_LIST.find(l => l.id === leagueId);
             
             const leagueName = evt.league?.name || (matchedLeague ? matchedLeague.name : "Competição");
             const leagueCountry = evt.league?.country || (matchedLeague ? matchedLeague.country : "Mundo");
             const leagueLogo = matchedLeague ? matchedLeague.logo : `https://www.sofascore.com/api/v1/unique-tournament/${leagueId}/image`;
-            const leagueFlag = matchedLeague ? matchedLeague.flag : "https://media.api-sports.io/flags/world.svg";
+            const leagueFlag = matchedLeague ? matchedLeague.flag : "https://flagcdn.com/w40/un.png";
 
             return {
               fixture: {
