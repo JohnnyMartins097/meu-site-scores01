@@ -542,23 +542,28 @@ export default function App() {
     const isCancelled = item.status?.cancelled || false;
 
     let statusShort = "NS";
+    let statusLong = "Not Started";
     let elapsed = 0;
 
     // Tradução do Status do Jogo (Faz o filtro "Ao Vivo" voltar a funcionar)
     if (isFinished) {
       statusShort = "FT";
+      statusLong = "Match Finished";
       elapsed = 90;
     } else if (isOngoing) {
       const liveTimeStr = item.status?.liveTime?.short || "";
       if (liveTimeStr.includes("HT")) {
         statusShort = "HT";
+        statusLong = "Halftime";
         elapsed = 45;
       } else {
         statusShort = "2H"; // Aciona a bolinha vermelha a piscar no frontend
+        statusLong = "Second Half";
         elapsed = parseInt(liveTimeStr.replace(/\D/g, "")) || 0;
       }
     } else if (isCancelled) {
       statusShort = "CANC";
+      statusLong = "Cancelled";
     }
 
     const homeGoals = item.home?.score ?? null;
@@ -580,21 +585,32 @@ export default function App() {
     return {
       fixture: {
         id: item.id,
+        referee: null,
+        timezone: "UTC",
         date: item.status?.utcTime || new Date().toISOString(),
         timestamp: item.timeTS ? item.timeTS / 1000 : Date.now() / 1000,
-        status: { short: statusShort, elapsed: elapsed }
+        periods: { first: null, second: null },
+        venue: { id: null, name: null, city: null },
+        status: { short: statusShort, long: statusLong, elapsed: elapsed }
       },
       league: {
         id: item.leagueId,
         name: `Liga ${item.leagueId}`, // Sem o nome da liga no JSON, mostramos "Liga X" (o logo da liga vai aparecer perfeito)
         country: "Mundo",
-        logo: leagueLogo
+        logo: leagueLogo,
+        flag: "https://media.api-sports.io/flags/world.svg"
       },
       teams: {
         home: { id: item.home?.id, name: item.home?.name || "Home", logo: homeLogo, winner: homeWinner },
         away: { id: item.away?.id, name: item.away?.name || "Away", logo: awayLogo, winner: awayWinner }
       },
       goals: { home: homeGoals, away: awayGoals },
+      score: {
+        halftime: { home: null, away: null },
+        fulltime: { home: homeGoals, away: awayGoals },
+        extratime: { home: null, away: null },
+        penalty: { home: null, away: null }
+      },
       events: [], statistics: [], lineups: [], detailsLoaded: false
     };
   };
@@ -675,273 +691,7 @@ export default function App() {
     }
   };
 
-      // 2. SEGUNDA TENTATIVA: Direct RapidAPI (Vercel static)
-      if (!success) {
-        setIsSimulated(false);
-        const formattedDate = date.replace(/-/g, "");
-        const res = await fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-matches-by-date?date=${formattedDate}`, {
-          method: "GET",
-          headers: {
-            "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com",
-            "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be"
-          }
-        });
 
-        if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
-        const data = await res.json();
-        
-        let rawEvents: any[] = [];
-        if (data.response) {
-          if (Array.isArray(data.response)) {
-            rawEvents = data.response;
-          } else if (typeof data.response === "object") {
-            const obj = data.response;
-            if (obj.live && Array.isArray(obj.live)) {
-              rawEvents = [...rawEvents, ...obj.live];
-            }
-            if (obj.matches && Array.isArray(obj.matches)) {
-              rawEvents = [...rawEvents, ...obj.matches];
-            }
-            if (obj.fixtures && Array.isArray(obj.fixtures)) {
-              rawEvents = [...rawEvents, ...obj.fixtures];
-            }
-            if (rawEvents.length === 0) {
-              for (const key of Object.keys(obj)) {
-                if (Array.isArray(obj[key])) {
-                  rawEvents = [...rawEvents, ...obj[key]];
-                }
-              }
-            }
-          }
-        } else if (Array.isArray(data)) {
-          rawEvents = data;
-        } else if (data && typeof data === "object") {
-          if (data.live && Array.isArray(data.live)) {
-            rawEvents = [...rawEvents, ...data.live];
-          }
-          if (data.matches && Array.isArray(data.matches)) {
-            rawEvents = [...rawEvents, ...data.matches];
-          }
-          if (data.fixtures && Array.isArray(data.fixtures)) {
-            rawEvents = [...rawEvents, ...data.fixtures];
-          }
-          if (rawEvents.length === 0) {
-            for (const key of Object.keys(data)) {
-              if (Array.isArray(data[key])) {
-                rawEvents = [...rawEvents, ...data[key]];
-              }
-            }
-          }
-        }
-
-        const mappedList = rawEvents.map((evt: any) => {
-          try {
-            const isFinished = evt.status?.finished === true;
-            const isLive = evt.status?.ongoing === true;
-
-            let statusShort = "NS";
-            let statusLong = "Not Started";
-            let elapsed = 0;
-
-            if (isFinished) {
-              statusShort = "FT";
-              statusLong = "Match Finished";
-              elapsed = 90;
-            } else if (isLive) {
-              const shortTime = evt.status?.liveTime?.short || "";
-              if (shortTime.includes("HT") || shortTime.includes("intervalo") || shortTime.includes("Intervalo") || shortTime.includes("half") || shortTime.includes("Half")) {
-                statusShort = "HT";
-                statusLong = "Halftime";
-                elapsed = 45;
-              } else {
-                const numericPart = parseInt(shortTime.replace(/[^0-9]/g, ""), 10) || 45;
-                elapsed = numericPart;
-                statusShort = elapsed <= 45 ? "1H" : "2H";
-                statusLong = elapsed <= 45 ? "First Half" : "Second Half";
-              }
-            } else if (evt.status?.cancelled) {
-              statusShort = "CANCL";
-              statusLong = "Cancelled";
-            }
-
-            const startTimestamp = evt.timeTS ? Math.floor(evt.timeTS / 1000) : Math.floor(Date.now() / 1000);
-            const matchDate = evt.status?.utcTime || (evt.timeTS ? new Date(evt.timeTS).toISOString() : new Date().toISOString());
-
-            const homeGoals = evt.home?.score !== undefined ? evt.home.score : null;
-            const awayGoals = evt.away?.score !== undefined ? evt.away.score : null;
-
-            const homeWinner = (homeGoals !== null && awayGoals !== null && isFinished) ? (homeGoals > awayGoals) : null;
-            const awayWinner = (homeGoals !== null && awayGoals !== null && isFinished) ? (awayGoals > homeGoals) : null;
-
-            const homeId = evt.home?.id || 100001;
-            const awayId = evt.away?.id || 100002;
-
-            const leagueId = evt.leagueId || 999;
-            const LEAGUE_LIST = [
-              { id: 71, name: "Brasileirão Série A", country: "Brazil", logo: "https://media.api-sports.io/football/leagues/71.png", flag: "https://media.api-sports.io/flags/br.svg" },
-              { id: 13, name: "Copa Libertadores", country: "World", logo: "https://media.api-sports.io/football/leagues/13.png", flag: "https://media.api-sports.io/flags/world.svg" },
-              { id: 2, name: "UEFA Champions League", country: "World", logo: "https://media.api-sports.io/football/leagues/2.png", flag: "https://media.api-sports.io/flags/world.svg" },
-              { id: 39, name: "Premier League", country: "England", logo: "https://media.api-sports.io/football/leagues/39.png", flag: "https://media.api-sports.io/flags/gb.svg" },
-              { id: 140, name: "La Liga", country: "Spain", logo: "https://media.api-sports.io/football/leagues/140.png", flag: "https://media.api-sports.io/flags/es.svg" }
-            ];
-            const matchedLeague = LEAGUE_LIST.find(l => l.id === leagueId);
-            
-            const leagueName = evt.league?.name || (matchedLeague ? matchedLeague.name : "Competição");
-            const leagueCountry = evt.league?.country || (matchedLeague ? matchedLeague.country : "Mundo");
-            const leagueLogo = matchedLeague ? matchedLeague.logo : `https://www.sofascore.com/api/v1/unique-tournament/${leagueId}/image`;
-            const leagueFlag = matchedLeague ? matchedLeague.flag : "https://media.api-sports.io/flags/world.svg";
-
-            return {
-              fixture: {
-                id: evt.id || Math.floor(Math.random() * 100000),
-                referee: "Árbitro",
-                timezone: "UTC",
-                date: matchDate,
-                timestamp: startTimestamp,
-                periods: { first: null, second: null },
-                venue: { 
-                  id: 1, 
-                  name: "Estádio Esportivo", 
-                  city: "Cidade" 
-                },
-                status: { 
-                  long: statusLong, 
-                  short: statusShort, 
-                  elapsed: elapsed
-                }
-              },
-              league: {
-                id: leagueId,
-                name: leagueName,
-                country: leagueCountry,
-                logo: leagueLogo,
-                flag: leagueFlag,
-                season: 2026,
-                round: "Rodada"
-              },
-              teams: {
-                home: { 
-                  id: homeId, 
-                  name: evt.home?.name || evt.home?.longName || "Casa", 
-                  logo: `https://img.sofascore.com/api/v1/team/${homeId}/image`, 
-                  winner: homeWinner 
-                },
-                away: { 
-                  id: awayId, 
-                  name: evt.away?.name || evt.away?.longName || "Visitante", 
-                  logo: `https://img.sofascore.com/api/v1/team/${awayId}/image`, 
-                  winner: awayWinner 
-                }
-              },
-              goals: { home: homeGoals, away: awayGoals },
-              score: {
-                halftime: { 
-                  home: (isFinished || isLive) && homeGoals !== null ? Math.max(0, homeGoals - 1) : null, 
-                  away: (isFinished || isLive) && awayGoals !== null ? Math.max(0, awayGoals - 1) : null 
-                },
-                fulltime: { home: homeGoals, away: awayGoals },
-                extratime: { home: null, away: null },
-                penalty: { home: null, away: null }
-              },
-              events: [],
-              statistics: [],
-              lineups: [],
-              detailsLoaded: false
-            } as Match;
-          } catch (mErr) {
-            console.error("Erro ao mapear jogo individual no client:", mErr);
-            return null;
-          }
-        }).filter((m): m is Match => m !== null);
-
-        nextMatches = mappedList.filter((m: Match) => {
-          try {
-            const timestampMs = m.fixture.timestamp * 1000;
-            const targetDate = new Date(timestampMs);
-            const userLocaleDateStr = targetDate.toLocaleDateString("en-CA", { timeZone: timezone });
-            return userLocaleDateStr === date;
-          } catch (tzErr) {
-            return true;
-          }
-        });
-      }
-
-      // Detect Goal Score Updates for toasts
-      if (prevMatchesRef.current.length > 0 && nextMatches.length > 0) {
-        nextMatches.forEach((newM: Match) => {
-          const oldM = prevMatchesRef.current.find(o => o.fixture.id === newM.fixture.id);
-          if (oldM) {
-            const homeDiff = (newM.goals.home ?? 0) - (oldM.goals.home ?? 0);
-            const awayDiff = (newM.goals.away ?? 0) - (oldM.goals.away ?? 0);
-
-            if (homeDiff > 0 || awayDiff > 0) {
-              let scorerName = "Jogador";
-              const matchEvents = newM.events || [];
-              const latestGoal = [...matchEvents]
-                .sort((a, b) => b.time.elapsed - a.time.elapsed)
-                .find(e => e.type === "Goal");
-              
-              if (latestGoal) {
-                scorerName = latestGoal.player.name;
-              }
-
-              setGoalToast({
-                match: newM,
-                teamName: homeDiff > 0 ? newM.teams.home.name : newM.teams.away.name,
-                scorer: scorerName,
-                minute: newM.fixture.status.elapsed,
-                homeScore: newM.goals.home ?? 0,
-                awayScore: newM.goals.away ?? 0
-              });
-
-              setTimeout(() => {
-                setGoalToast(null);
-              }, 6000);
-            }
-          }
-        });
-      }
-
-      // Merge details
-      setMatches(prevList => {
-        return nextMatches.map((newM: Match) => {
-          const existing = prevList.find(oldM => oldM.fixture.id === newM.fixture.id);
-          if (existing) {
-            return {
-              ...newM,
-              events: existing.events || [],
-              statistics: existing.statistics || [],
-              lineups: existing.lineups || [],
-              detailsLoaded: existing.detailsLoaded || false
-            };
-          }
-          return newM;
-        });
-      });
-      prevMatchesRef.current = nextMatches;
-
-      if (selectedMatch) {
-        const updatedSelected = nextMatches.find(m => m.fixture.id === selectedMatch.fixture.id);
-        if (updatedSelected) {
-          setSelectedMatch(prev => {
-            if (prev && prev.fixture.id === updatedSelected.fixture.id) {
-              return { ...updatedSelected, events: prev.events || [], statistics: prev.statistics || [], lineups: prev.lineups || [], detailsLoaded: prev.detailsLoaded || false };
-            }
-            return updatedSelected;
-          });
-        }
-      }
-
-      setError(null);
-    } catch (err: any) {
-      console.error(err);
-      if (!isSilent) {
-        setError(err.message || "Erro de conexão ao buscar jogos.");
-      }
-    } finally {
-      if (!isSilent) setLoading(false);
-    }
-  };
 
   // Fetch on date changes
   useEffect(() => {
