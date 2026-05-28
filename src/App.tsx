@@ -615,27 +615,73 @@ export default function App() {
     };
   };
 
-  // --- FUNÇÃO PRINCIPAL DE LIGAÇÃO À RAPIDAPI ---
+// --- FUNÇÃO PRINCIPAL DE LIGAÇÃO À RAPIDAPI (COM PENEIRA DE FUSO HORÁRIO) ---
   const fetchMatches = async (date: string, isSilent = false) => {
     if (!isSilent) setLoading(true);
     try {
-      // (NOTA: Se na RapidAPI o link era diferente, mude a parte "football-get-matches-by-date" abaixo para o caminho exato que usou no seu teste!)
-      const res = await fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-matches-by-date?date=${date.replace(/-/g, "")}`, {
-        method: "GET",
-        headers: {
-          "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
-          "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
-        }
-      });
+      // 1. Calcular o início e fim do dia selecionado no fuso horário local do utilizador
+      const localStart = new Date(`${date}T00:00:00`);
+      const localEnd = new Date(`${date}T23:59:59`);
       
-      if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
-      const data = await res.json();
-      
-      // Passa a lista pelo nosso novo tradutor!
-      const rawMatches = data.response?.matches || [];
-      const nextMatches = rawMatches.map(mapApiToMatch);
+      // 2. Descobrir quais os dias UTC (Londres) que este dia local abrange
+      const utcDay1 = localStart.toISOString().slice(0, 10).replace(/-/g, "");
+      const utcDay2 = localEnd.toISOString().slice(0, 10).replace(/-/g, "");
 
-      // Código original dos toasts de golo e atualização da tela
+      // 3. Preparar as chamadas à API (1 ou 2 chamadas dependendo do fuso horário)
+      const urlsToFetch = [utcDay1];
+      if (utcDay1 !== utcDay2) {
+        urlsToFetch.push(utcDay2);
+      }
+
+      // 4. Fazer o fetch aos 2 dias simultaneamente para não perdermos os jogos noturnos
+      const fetchPromises = urlsToFetch.map(utcDate => 
+        fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-matches-by-date?date=${utcDate}`, {
+          method: "GET",
+          headers: {
+            "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+            "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
+          }
+        }).then(res => {
+          if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
+          return res.json();
+        })
+      );
+
+      const results = await Promise.all(fetchPromises);
+      
+      // 5. Juntar todos os jogos num caldeirão e remover duplicados
+      const allRawMatches: any[] = [];
+      const matchIds = new Set();
+      
+      results.forEach(data => {
+        const matches = data.response?.matches || [];
+        matches.forEach((m: any) => {
+          if (!matchIds.has(m.id)) {
+            matchIds.add(m.id);
+            allRawMatches.push(m);
+          }
+        });
+      });
+
+      // 6. A GRANDE PENEIRA: Filtrar APENAS os jogos que caem no NOSSO dia local!
+      const filteredRawMatches = allRawMatches.filter(m => {
+        if (!m.status?.utcTime) return false;
+        
+        // Transforma a data UTC da API no horário do telemóvel/pc do utilizador
+        const matchLocalObj = new Date(m.status.utcTime);
+        const yyyy = matchLocalObj.getFullYear();
+        const mm = String(matchLocalObj.getMonth() + 1).padStart(2, '0');
+        const dd = String(matchLocalObj.getDate()).padStart(2, '0');
+        const matchLocalStr = `${yyyy}-${mm}-${dd}`;
+        
+        // Só passa na peneira se o dia bater certo com o que clicámos no calendário
+        return matchLocalStr === date;
+      });
+
+      // 7. Passar os jogos filtrados pela nossa máquina de tradução
+      const nextMatches = filteredRawMatches.map(mapApiToMatch);
+
+      // --- Daqui para baixo é o código original dos Toasts de Golos e Updates ---
       if (prevMatchesRef.current.length > 0 && nextMatches.length > 0) {
         nextMatches.forEach((newM: Match) => {
           const oldM = prevMatchesRef.current.find(o => o.fixture.id === newM.fixture.id);
@@ -646,7 +692,7 @@ export default function App() {
               setGoalToast({
                 match: newM,
                 teamName: homeDiff > 0 ? newM.teams.home.name : newM.teams.away.name,
-                scorer: "Jogador",
+                scorer: "Jogador", // (A API do FotMob envia os marcadores noutro endpoint, usamos genérico por enquanto)
                 minute: newM.fixture.status.elapsed,
                 homeScore: newM.goals.home ?? 0,
                 awayScore: newM.goals.away ?? 0
@@ -690,7 +736,6 @@ export default function App() {
       if (!isSilent) setLoading(false);
     }
   };
-
 
 
   // Fetch on date changes
