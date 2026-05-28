@@ -1,0 +1,6 @@
+{
+  "name": "WorldScore",
+  "description": "Resultados de futebol em tempo real, tabelas e estatísticas detalhadas com cobertura global e destaque para competições brasileiras.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
