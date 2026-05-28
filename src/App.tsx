@@ -538,19 +538,179 @@ export default function App() {
     if (!isSilent) setLoading(true);
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Sao_Paulo";
-      
-      // LIGAÇÃO DIRETA E SEGURA À RAPIDAPI
-      const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${date}&timezone=${encodeURIComponent(timezone)}`, {
-        method: "GET",
-        headers: {
-          "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
-          "x-rapidapi-host": "v3.football.api-sports.io"
+      let nextMatches: Match[] = [];
+      let success = false;
+
+      // 1. PRIMEIRA TENTATIVA: Query standard server /api/fixtures proxy (fast, cached, secure)
+      try {
+        const localRes = await fetch(`/api/fixtures?date=${date}&timezone=${encodeURIComponent(timezone)}&today=${date}`);
+        if (localRes.ok) {
+          const localData = await localRes.json();
+          if (localData && Array.isArray(localData.response)) {
+            nextMatches = localData.response;
+            success = true;
+          }
         }
-      });
-      
-      if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
-      const data = await res.json();
-      const nextMatches = data.response || [];
+      } catch (localErr) {
+        console.warn("[Client] Local /api/fixtures endpoint failed, falling back to direct RapidAPI browser call:", localErr);
+      }
+
+      // 2. SEGUNDA TENTATIVA: Direct RapidAPI (Vercel static)
+      if (!success) {
+        const formattedDate = date.replace(/-/g, "");
+        const res = await fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-matches-by-date?date=${formattedDate}`, {
+          method: "GET",
+          headers: {
+            "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com",
+            "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be"
+          }
+        });
+
+        if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
+        const data = await res.json();
+        
+        let rawEvents: any[] = [];
+        if (data.response && Array.isArray(data.response)) {
+          rawEvents = data.response;
+        } else if (data.response && data.response.matches && Array.isArray(data.response.matches)) {
+          rawEvents = data.response.matches;
+        } else if (Array.isArray(data)) {
+          rawEvents = data;
+        } else if (data.matches && Array.isArray(data.matches)) {
+          rawEvents = data.matches;
+        }
+
+        const mappedList = rawEvents.map((evt: any) => {
+          try {
+            const isFinished = evt.status?.finished === true;
+            const isLive = evt.status?.ongoing === true;
+
+            let statusShort = "NS";
+            let statusLong = "Not Started";
+            let elapsed = 0;
+
+            if (isFinished) {
+              statusShort = "FT";
+              statusLong = "Match Finished";
+              elapsed = 90;
+            } else if (isLive) {
+              const shortTime = evt.status?.liveTime?.short || "";
+              if (shortTime.includes("HT") || shortTime.includes("intervalo") || shortTime.includes("Intervalo") || shortTime.includes("half") || shortTime.includes("Half")) {
+                statusShort = "HT";
+                statusLong = "Halftime";
+                elapsed = 45;
+              } else {
+                const numericPart = parseInt(shortTime.replace(/[^0-9]/g, ""), 10) || 45;
+                elapsed = numericPart;
+                statusShort = elapsed <= 45 ? "1H" : "2H";
+                statusLong = elapsed <= 45 ? "First Half" : "Second Half";
+              }
+            } else if (evt.status?.cancelled) {
+              statusShort = "CANCL";
+              statusLong = "Cancelled";
+            }
+
+            const startTimestamp = evt.timeTS ? Math.floor(evt.timeTS / 1000) : Math.floor(Date.now() / 1000);
+            const matchDate = evt.status?.utcTime || (evt.timeTS ? new Date(evt.timeTS).toISOString() : new Date().toISOString());
+
+            const homeGoals = evt.home?.score !== undefined ? evt.home.score : null;
+            const awayGoals = evt.away?.score !== undefined ? evt.away.score : null;
+
+            const homeWinner = (homeGoals !== null && awayGoals !== null && isFinished) ? (homeGoals > awayGoals) : null;
+            const awayWinner = (homeGoals !== null && awayGoals !== null && isFinished) ? (awayGoals > homeGoals) : null;
+
+            const homeId = evt.home?.id || 100001;
+            const awayId = evt.away?.id || 100002;
+
+            const leagueId = evt.leagueId || 999;
+            const LEAGUE_LIST = [
+              { id: 71, name: "Brasileirão Série A", country: "Brazil", logo: "https://media.api-sports.io/football/leagues/71.png", flag: "https://media.api-sports.io/flags/br.svg" },
+              { id: 13, name: "Copa Libertadores", country: "World", logo: "https://media.api-sports.io/football/leagues/13.png", flag: "https://media.api-sports.io/flags/world.svg" },
+              { id: 2, name: "UEFA Champions League", country: "World", logo: "https://media.api-sports.io/football/leagues/2.png", flag: "https://media.api-sports.io/flags/world.svg" },
+              { id: 39, name: "Premier League", country: "England", logo: "https://media.api-sports.io/football/leagues/39.png", flag: "https://media.api-sports.io/flags/gb.svg" },
+              { id: 140, name: "La Liga", country: "Spain", logo: "https://media.api-sports.io/football/leagues/140.png", flag: "https://media.api-sports.io/flags/es.svg" }
+            ];
+            const matchedLeague = LEAGUE_LIST.find(l => l.id === leagueId);
+            
+            const leagueName = evt.league?.name || (matchedLeague ? matchedLeague.name : "Competição");
+            const leagueCountry = evt.league?.country || (matchedLeague ? matchedLeague.country : "Mundo");
+            const leagueLogo = matchedLeague ? matchedLeague.logo : `https://www.sofascore.com/api/v1/unique-tournament/${leagueId}/image`;
+            const leagueFlag = matchedLeague ? matchedLeague.flag : "https://media.api-sports.io/flags/world.svg";
+
+            return {
+              fixture: {
+                id: evt.id || Math.floor(Math.random() * 100000),
+                referee: "Árbitro",
+                timezone: "UTC",
+                date: matchDate,
+                timestamp: startTimestamp,
+                periods: { first: null, second: null },
+                venue: { 
+                  id: 1, 
+                  name: "Estádio Esportivo", 
+                  city: "Cidade" 
+                },
+                status: { 
+                  long: statusLong, 
+                  short: statusShort, 
+                  elapsed: elapsed
+                }
+              },
+              league: {
+                id: leagueId,
+                name: leagueName,
+                country: leagueCountry,
+                logo: leagueLogo,
+                flag: leagueFlag,
+                season: 2026,
+                round: "Rodada"
+              },
+              teams: {
+                home: { 
+                  id: homeId, 
+                  name: evt.home?.name || evt.home?.longName || "Casa", 
+                  logo: `https://img.sofascore.com/api/v1/team/${homeId}/image`, 
+                  winner: homeWinner 
+                },
+                away: { 
+                  id: awayId, 
+                  name: evt.away?.name || evt.away?.longName || "Visitante", 
+                  logo: `https://img.sofascore.com/api/v1/team/${awayId}/image`, 
+                  winner: awayWinner 
+                }
+              },
+              goals: { home: homeGoals, away: awayGoals },
+              score: {
+                halftime: { 
+                  home: (isFinished || isLive) && homeGoals !== null ? Math.max(0, homeGoals - 1) : null, 
+                  away: (isFinished || isLive) && awayGoals !== null ? Math.max(0, awayGoals - 1) : null 
+                },
+                fulltime: { home: homeGoals, away: awayGoals },
+                extratime: { home: null, away: null },
+                penalty: { home: null, away: null }
+              },
+              events: [],
+              statistics: [],
+              lineups: [],
+              detailsLoaded: false
+            } as Match;
+          } catch (mErr) {
+            console.error("Erro ao mapear jogo individual no client:", mErr);
+            return null;
+          }
+        }).filter((m): m is Match => m !== null);
+
+        nextMatches = mappedList.filter((m: Match) => {
+          try {
+            const timestampMs = m.fixture.timestamp * 1000;
+            const targetDate = new Date(timestampMs);
+            const userLocaleDateStr = targetDate.toLocaleDateString("en-CA", { timeZone: timezone });
+            return userLocaleDateStr === date;
+          } catch (tzErr) {
+            return true;
+          }
+        });
+      }
 
       // Detect Goal Score Updates for toasts
       if (prevMatchesRef.current.length > 0 && nextMatches.length > 0) {
@@ -647,56 +807,216 @@ export default function App() {
       const matchId = selectedMatch.fixture.id;
       const fetchDetails = async () => {
         try {
-          // NOVA LIGAÇÃO DIRETA PARA OS DETALHES
-          const res = await fetch(`https://v3.football.api-sports.io/fixtures?id=${matchId}`, {
-            method: "GET",
-            headers: {
-              "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
-              "x-rapidapi-host": "v3.football.api-sports.io"
-            }
-          });
-          
-          if (res.ok) {
-            const detailData = await res.json();
-            // ... (o resto do código continua igual)
-            
-            setSelectedMatch(prev => {
-              if (prev && prev.fixture.id === matchId) {
-                return {
-                  ...prev,
-                  events: detailData.events || [],
-                  statistics: detailData.statistics || [],
-                  lineups: detailData.lineups || [],
-                  detailsLoaded: true
-                };
-              }
-              return prev;
-            });
+          let detailData: any = null;
+          let success = false;
 
-            setMatches(prevList => prevList.map(m => {
-              if (m.fixture.id === matchId) {
-                return {
-                  ...m,
-                  events: detailData.events || [],
-                  statistics: detailData.statistics || [],
-                  lineups: detailData.lineups || [],
-                  detailsLoaded: true
-                };
+          // 1. PRIMEIRA TENTATIVA: Query server-side api fixture-detail (cached, secure)
+          try {
+            const localRes = await fetch(`/api/fixture-detail?id=${matchId}`);
+            if (localRes.ok) {
+              detailData = await localRes.json();
+              if (detailData && (detailData.events || detailData.statistics || detailData.lineups)) {
+                success = true;
               }
-              return m;
-            }));
-          } else {
-            // Even on non-ok (like 404 or 500), mark as loaded so we don't fetch infinitely
-            setSelectedMatch(prev => {
-              if (prev && prev.fixture.id === matchId) {
-                return { ...prev, detailsLoaded: true };
-              }
-              return prev;
-            });
+            }
+          } catch (localErr) {
+            console.warn("[Client] Local proxy /api/fixture-detail failed, falling back to direct RapidAPI:", localErr);
           }
+
+          // 2. SEGUNDA TENTATIVA: Direct RapidAPI (Vercel)
+          if (!success) {
+            const rapidHeaders = {
+              "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com",
+              "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be"
+            };
+
+            // Fetch incidents, stats, hometeam lineup, awayteam lineup in parallel
+            const [detailRes, statsRes, homeLineupRes, awayLineupRes] = await Promise.all([
+              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-match-detail?eventid=${matchId}`, { headers: rapidHeaders }).catch(() => null),
+              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-match-all-stats?eventid=${matchId}`, { headers: rapidHeaders }).catch(() => null),
+              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-hometeam-lineup?eventid=${matchId}`, { headers: rapidHeaders }).catch(() => null),
+              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-awayteam-lineup?eventid=${matchId}`, { headers: rapidHeaders }).catch(() => null)
+            ].map(p => p?.then(r => r && r.ok ? r.json() : null).catch(() => null)));
+
+            const infoData = detailRes || {};
+            const homeTeamId = selectedMatch.teams.home.id;
+            const homeTeamName = selectedMatch.teams.home.name;
+            const awayTeamId = selectedMatch.teams.away.id;
+            const awayTeamName = selectedMatch.teams.away.name;
+
+            const homeTeamRef = { id: homeTeamId, name: homeTeamName };
+            const awayTeamRef = { id: awayTeamId, name: awayTeamName };
+
+            // Parse Incidents (Events/Incidents)
+            let parsedEvents: any[] = [];
+            const incidentsList = infoData.response?.incidents || infoData.incidents || [];
+            if (Array.isArray(incidentsList)) {
+              parsedEvents = incidentsList.map((inc: any) => {
+                const isHome = inc.isHome ?? (inc.home === true);
+                const team = isHome ? homeTeamRef : awayTeamRef;
+                
+                let type = "Subst";
+                let detail = inc.incidentClass || "";
+                if (inc.incidentType === "goal") {
+                  type = "Goal";
+                  detail = inc.incidentClass === "regular" ? "Normal Goal" : (inc.incidentClass === "penalty" ? "Penalty" : "Own Goal");
+                } else if (inc.incidentType === "card") {
+                  type = "Card";
+                  detail = inc.incidentClass === "yellow" ? "Yellow Card" : "Red Card";
+                } else if (inc.incidentType === "substitution") {
+                  type = "Subst";
+                  detail = `Sai: ${inc.playerOut?.name || "Jogador"} / Entra: ${inc.playerIn?.name || "Jogador"}`;
+                }
+
+                return {
+                  time: { elapsed: inc.time },
+                  team: { id: team.id, name: team.name },
+                  player: { name: inc.player?.name || inc.playerIn?.name || "Jogador" },
+                  assist: inc.assist ? { name: inc.assist.name } : null,
+                  type,
+                  detail
+                };
+              });
+            }
+
+            // Parse Lineups
+            let parsedLineups: any[] = [];
+            const homeLineupBlock = homeLineupRes?.response?.lineup || homeLineupRes?.lineup;
+            const awayLineupBlock = awayLineupRes?.response?.lineup || awayLineupRes?.lineup;
+
+            const mapLineupClient = (teamBlock: any, teamRef: any) => {
+              if (!teamBlock || !teamBlock.starters) return null;
+              const starList = teamBlock.starters || [];
+              const subList = teamBlock.subs || [];
+
+              const startXI = starList.map((p: any) => {
+                let pos = "M";
+                if (p.usualPlayingPositionId === 0) pos = "G";
+                else if (p.usualPlayingPositionId === 1) pos = "D";
+                else if (p.usualPlayingPositionId === 2) pos = "M";
+                else if (p.usualPlayingPositionId === 3) pos = "F";
+                return {
+                  player: {
+                    id: p.id,
+                    name: p.name,
+                    number: parseInt(p.shirtNumber) || 0,
+                    pos,
+                    rating: p.performance?.rating || null,
+                    gridX: p.verticalLayout?.x ?? p.horizontalLayout?.x ?? 0.5,
+                    gridY: p.verticalLayout?.y ?? p.horizontalLayout?.y ?? 0.5
+                  }
+                };
+              });
+
+              const substitutes = subList.map((p: any) => {
+                let pos = "M";
+                if (p.usualPlayingPositionId === 0) pos = "G";
+                else if (p.usualPlayingPositionId === 1) pos = "D";
+                else if (p.usualPlayingPositionId === 2) pos = "M";
+                else if (p.usualPlayingPositionId === 3) pos = "F";
+                return {
+                  player: {
+                    id: p.id,
+                    name: p.name,
+                    number: parseInt(p.shirtNumber) || 0,
+                    pos,
+                    rating: p.performance?.rating || null
+                  }
+                };
+              });
+
+              return {
+                team: { ...teamRef, logo: `https://img.sofascore.com/api/v1/team/${teamRef.id}/image` },
+                formation: teamBlock.formation || "4-3-3",
+                startXI,
+                substitutes,
+                coach: { name: teamBlock.coach?.name || "Técnico" }
+              };
+            };
+
+            const mappedH = mapLineupClient(homeLineupBlock, homeTeamRef);
+            const mappedA = mapLineupClient(awayLineupBlock, awayTeamRef);
+            if (mappedH) parsedLineups.push(mappedH);
+            if (mappedA) parsedLineups.push(mappedA);
+
+            // Parse Stats
+            let parsedStats: any[] = [];
+            const rawStatsList = statsRes?.response?.stats || statsRes?.stats;
+            if (rawStatsList) {
+              const statTypeMapping: Record<string, string> = {
+                "Ball possession": "Ball Possession",
+                "Total shots": "Total Shots",
+                "Shots on target": "Shots on Goal",
+                "Shots off target": "Shots off Goal",
+                "Corner kicks": "Corner Kicks",
+                "Fouls": "Fouls",
+                "Yellow cards": "Yellow Cards",
+                "Red cards": "Red Cards",
+                "Goalkeeper saves": "Goalkeeper Saves",
+                "Passes": "Total passes",
+                "Accurate passes": "Passes accurate"
+              };
+
+              const homeStatsList: any[] = [];
+              const awayStatsList: any[] = [];
+
+              if (Array.isArray(rawStatsList)) {
+                rawStatsList.forEach((group: any) => {
+                  if (group && Array.isArray(group.stats)) {
+                    group.stats.forEach((item: any) => {
+                      if (item && item.stats && item.stats.length === 2) {
+                        const parentType = item.title;
+                        const mappedType = statTypeMapping[parentType] || parentType;
+                        homeStatsList.push({ type: mappedType, value: item.stats[0] });
+                        awayStatsList.push({ type: mappedType, value: item.stats[1] });
+                      }
+                    });
+                  }
+                });
+              }
+
+              if (homeStatsList.length > 0) {
+                parsedStats = [
+                  { team: { ...homeTeamRef, logo: `https://img.sofascore.com/api/v1/team/${homeTeamId}/image` }, statistics: homeStatsList },
+                  { team: { ...awayTeamRef, logo: `https://img.sofascore.com/api/v1/team/${awayTeamId}/image` }, statistics: awayStatsList }
+                ];
+              }
+            }
+
+            detailData = {
+              events: parsedEvents,
+              statistics: parsedStats,
+              lineups: parsedLineups
+            };
+          }
+
+          setSelectedMatch(prev => {
+            if (prev && prev.fixture.id === matchId) {
+              return {
+                ...prev,
+                events: detailData.events || [],
+                statistics: detailData.statistics || [],
+                lineups: detailData.lineups || [],
+                detailsLoaded: true
+              };
+            }
+            return prev;
+          });
+
+          setMatches(prevList => prevList.map(m => {
+            if (m.fixture.id === matchId) {
+              return {
+                ...m,
+                events: detailData.events || [],
+                statistics: detailData.statistics || [],
+                lineups: detailData.lineups || [],
+                detailsLoaded: true
+              };
+            }
+            return m;
+          }));
         } catch (err) {
           console.error("Erro ao buscar detalhes estendidos:", err);
-          // Mark as loaded on catch block too to protect against infinite fetch loops
           setSelectedMatch(prev => {
             if (prev && prev.fixture.id === matchId) {
               return { ...prev, detailsLoaded: true };
