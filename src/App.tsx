@@ -533,13 +533,13 @@ export default function App() {
     }
   }, [matches, isLargeScreen]);
 
-  // Main fetch function
+// Main fetch function
   const fetchMatches = async (date: string, isSilent = false) => {
     if (!isSilent) setLoading(true);
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Sao_Paulo";
       
-      // NOVA LIGAÇÃO DIRETA À API
+      // LIGAÇÃO DIRETA E SEGURA À RAPIDAPI
       const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${date}&timezone=${encodeURIComponent(timezone)}`, {
         method: "GET",
         headers: {
@@ -588,7 +588,7 @@ export default function App() {
         });
       }
 
-      // Merge details from existing matches to prevent wiping details during polling
+      // Merge details
       setMatches(prevList => {
         return nextMatches.map((newM: Match) => {
           const existing = prevList.find(oldM => oldM.fixture.id === newM.fixture.id);
@@ -611,13 +611,7 @@ export default function App() {
         if (updatedSelected) {
           setSelectedMatch(prev => {
             if (prev && prev.fixture.id === updatedSelected.fixture.id) {
-              return {
-                ...updatedSelected,
-                events: prev.events || [],
-                statistics: prev.statistics || [],
-                lineups: prev.lineups || [],
-                detailsLoaded: prev.detailsLoaded || false
-              };
+              return { ...updatedSelected, events: prev.events || [], statistics: prev.statistics || [], lineups: prev.lineups || [], detailsLoaded: prev.detailsLoaded || false };
             }
             return updatedSelected;
           });
