@@ -185,7 +185,7 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
           setStandings(parsedRows);
         }
       } catch (err) {
-        console.warn("[Client Standings] Error requesting live standing table, falling back to static lists:", err);
+        console.log("[Client Standings] Error requesting live standing table, falling back to static lists:", err);
       } finally {
         setLoadingStandings(false);
       }
