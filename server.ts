@@ -603,7 +603,7 @@ function mapSportEventToFootballMatch(event: any): any {
     const matchedLeague = LEAGUE_LIST.find(l => l.id === leagueId);
     
     const leagueName = cacheMatched ? cacheMatched.name : (matchedLeague ? matchedLeague.name : "Competição");
-    const leagueCountry = cacheMatched ? cacheMatched.country : (matchedLeague ? matchedLeague.country : "Mundo");
+    const leagueCountry = cacheMatched ? cacheMatched.country : (matchedLeague ? matchedLeague.country : "Outros");
     const leagueLogo = cacheMatched ? cacheMatched.logo : (matchedLeague ? matchedLeague.logo : `https://www.sofascore.com/api/v1/unique-tournament/${leagueId}/image`);
     const leagueFlag = cacheMatched ? cacheMatched.flag : (matchedLeague ? matchedLeague.flag : "https://media.api-sports.io/flags/world.svg");
 

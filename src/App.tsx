@@ -637,26 +637,96 @@ export default function App() {
   }, [matches, isLargeScreen]);
 
 // Main fetch function
-// --- DICIONÁRIO INTELIGENTE DE LIGAS ---
+  // --- DICIONÁRIO INTELIGENTE DE LIGAS ---
   // Ensina o site a traduzir os IDs da API para nomes reais e países
   const LEAGUE_DICTIONARY: Record<number, { name: string; country: string }> = {
-    // Competições Continentais
+    // === Competições Continentais ===
     924597: { name: "CONMEBOL Libertadores", country: "América do Sul" },
     924595: { name: "CONMEBOL Libertadores", country: "América do Sul" },
     924591: { name: "CONMEBOL Libertadores", country: "América do Sul" },
+    223: { name: "CONMEBOL Libertadores", country: "América do Sul" },
+    224: { name: "CONMEBOL Libertadores", country: "América do Sul" },
+    225: { name: "CONMEBOL Sudamericana", country: "América do Sul" },
+    924598: { name: "CONMEBOL Sudamericana", country: "América do Sul" },
+    924594: { name: "CONMEBOL Sudamericana", country: "América do Sul" },
+    924592: { name: "CONMEBOL Sudamericana", country: "América do Sul" },
+    314: { name: "CONMEBOL Recopa", country: "América do Sul" },
+    179: { name: "Copa América", country: "América do Sul" },
+    
     42: { name: "UEFA Champions League", country: "Europa" },
     73: { name: "UEFA Europa League", country: "Europa" },
-    // Amistosos
-    914609: { name: "Amistosos Internacionais", country: "Mundo" },
-    915708: { name: "Amistosos de Clubes", country: "Mundo" },
-    // Ligas Principais
+    10216: { name: "UEFA Conference League", country: "Europa" },
+    923146: { name: "UEFA Conference League", country: "Europa" },
+    934141: { name: "UEFA Conference League", country: "Europa" },
+    50: { name: "UEFA Eurocopa", country: "Europa" },
+    915467: { name: "UEFA Eurocopa", country: "Europa" },
+    10078: { name: "UEFA Super Cup", country: "Europa" },
+
+    // === Brasil (Ligas, Copas e Estaduais) ===
+    130: { name: "Brasileirão Série A", country: "Brasil" },
+    131: { name: "Brasileirão Série B", country: "Brasil" },
+    132: { name: "Brasileirão Série C", country: "Brasil" },
+    133: { name: "Brasileirão Série D", country: "Brasil" },
+    10165: { name: "Brasileirão Série C", country: "Brasil" },
+    10166: { name: "Brasileirão Série D", country: "Brasil" },
+    10044: { name: "Copa do Brasil", country: "Brasil" },
+    10058: { name: "Campeonato Paulista Série A1", country: "Brasil" },
+    10057: { name: "Campeonato Carioca", country: "Brasil" },
+    10059: { name: "Campeonato Mineiro", country: "Brasil" },
+    10060: { name: "Campeonato Gaúcho", country: "Brasil" },
+    10080: { name: "Copa do Nordeste", country: "Brasil" },
+    
+    // === Argentina ===
+    112: { name: "Primera División", country: "Argentina" },
+    10160: { name: "Copa de la Liga Profesional", country: "Argentina" },
+    10076: { name: "Copa Argentina", country: "Argentina" },
+    10081: { name: "Supercopa Argentina", country: "Argentina" },
+
+    // === Bolívia ===
+    114: { name: "Primera División", country: "Bolívia" },
+
+    // === Chile ===
+    115: { name: "Primera División", country: "Chile" },
+    10083: { name: "Copa Chile", country: "Chile" },
+
+    // === Colômbia ===
+    122: { name: "Primera A", country: "Colômbia" },
+    10156: { name: "Primera B", country: "Colômbia" },
+    10082: { name: "Copa Colômbia", country: "Colômbia" },
+
+    // === Equador ===
+    121: { name: "Liga Pro Primera A", country: "Equador" },
+
+    // === Paraguai ===
+    117: { name: "Primera División", country: "Paraguai" },
+
+    // === Peru ===
+    118: { name: "Liga 1", country: "Peru" },
+
+    // === Uruguai ===
+    119: { name: "Primera División", country: "Uruguai" },
+
+    // === Venezuela ===
+    120: { name: "Liga FUTVE", country: "Venezuela" },
+
+    // === Ligas Europeias Principais & Outras ===
     47: { name: "Premier League", country: "Inglaterra" },
     87: { name: "La Liga", country: "Espanha" },
     54: { name: "Bundesliga", country: "Alemanha" },
     53: { name: "Serie A", country: "Itália" },
     9666: { name: "Ligue 1", country: "França" },
-    130: { name: "Brasileirão Série A", country: "Brasil" },
-    // Ligas que vieram no seu teste da API
+    57: { name: "Ligue 1", country: "França" },
+    61: { name: "Primeira Liga", country: "Portugal" },
+    55: { name: "Eredivisie", country: "Holanda" },
+    56: { name: "Pro League", country: "Bélgica" },
+    58: { name: "Premiership", country: "Escócia" },
+    71: { name: "Süper Lig", country: "Turquia" },
+    69: { name: "Super League", country: "Grécia" },
+    60: { name: "Bundesliga", country: "Áustria" },
+    68: { name: "Super League", country: "Suíça" },
+    930062: { name: "Serie B", country: "Itália" },
+
+    // === Ligas que vieram no seu teste da API / Montenegro, Noruega, etc. ===
     9178: { name: "1. CFL", country: "Montenegro" },
     925948: { name: "2nd Division", country: "Dinamarca" },
     925949: { name: "2nd Division", country: "Dinamarca" },
@@ -681,7 +751,6 @@ export default function App() {
     902649: { name: "Premier League", country: "Kuwait" },
     923880: { name: "Premier League", country: "Egito" },
     931417: { name: "Oberliga", country: "Alemanha" },
-    930062: { name: "Serie B", country: "Itália" },
     920266: { name: "Super League", country: "China" },
     931759: { name: "Liga 1", country: "Romênia" },
     916229: { name: "1. Division (F)", country: "Noruega" },
@@ -689,14 +758,18 @@ export default function App() {
     920261: { name: "Ykkösliiga", country: "Finlândia" },
     248: { name: "Meistriliiga", country: "Estônia" },
     226: { name: "Virsliga", country: "Letônia" },
+
+    // === Resto do mundo / Amistosos ===
+    914609: { name: "Amistosos Internacionais", country: "Mundo" },
+    915708: { name: "Amistosos de Clubes", country: "Mundo" },
   };
 
   // --- TRADUTOR DA NOVA API FOTMOB PARA O NOSSO SITE ---
   const mapApiToMatch = (item: any): Match => {
     const leagueId = item.leagueId;
     
-    // Consulta o dicionário. Se a liga não existir na nossa lista, coloca na gaveta Mundo com o ID.
-    const leagueInfo = LEAGUE_DICTIONARY[leagueId] || { name: `Liga ${leagueId}`, country: "Mundo" };
+    // Consulta o dicionário. Se a liga não existir na nossa lista, coloca na gaveta Outros com o ID.
+    const leagueInfo = LEAGUE_DICTIONARY[leagueId] || { name: `Liga ${leagueId}`, country: "Outros" };
 
     const isFinished = item.status?.finished || false;
     const isOngoing = item.status?.ongoing || false;
@@ -2567,12 +2640,16 @@ export default function App() {
                                                             className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
                                                             fallbackType="team"
                                                           />
-                                                          <span className="font-bold text-slate-800 dark:text-slate-105 text-xs truncate">
+                                                          <span className={`text-xs truncate ${
+                                                            isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-800 dark:text-slate-105"
+                                                          }`}>
                                                             {match.teams.home.name}
                                                           </span>
                                                         </div>
-                                                        <span className="font-mono text-xs font-black text-slate-400 dark:text-slate-500 pr-1">
-                                                          -
+                                                        <span className={`font-mono text-xs font-black pr-1 ${
+                                                          isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
+                                                        }`}>
+                                                          {match.goals.home ?? "-"}
                                                         </span>
                                                       </div>
 
@@ -2585,12 +2662,16 @@ export default function App() {
                                                             className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
                                                             fallbackType="team"
                                                           />
-                                                          <span className="font-bold text-slate-800 dark:text-slate-105 text-xs truncate">
+                                                          <span className={`text-xs truncate ${
+                                                            isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-800 dark:text-slate-105"
+                                                          }`}>
                                                             {match.teams.away.name}
                                                           </span>
                                                         </div>
-                                                        <span className="font-mono text-xs font-black text-slate-400 dark:text-slate-500 pr-1">
-                                                          -
+                                                        <span className={`font-mono text-xs font-black pr-1 ${
+                                                          isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
+                                                        }`}>
+                                                          {match.goals.away ?? "-"}
                                                         </span>
                                                       </div>
                                                     </div>

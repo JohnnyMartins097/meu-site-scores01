@@ -394,11 +394,22 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
                       <span className="font-bold text-slate-800 dark:text-slate-100 text-xs sm:text-sm truncate">{match.teams.home.name}</span>
                       <SafeImage src={match.teams.home.logo} alt={match.teams.home.name} className="w-7 h-7 object-contain" fallbackType="team" />
                     </div>
-                    {match.fixture.status.short === "FT" ? (
-                      <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg leading-none font-mono font-extrabold text-sm border border-slate-200/50">
-                        <span className="text-[#009c3b]">{match.goals.home}</span>
-                        <span className="text-slate-300 font-bold">-</span>
-                        <span className="text-[#009c3b]">{match.goals.away}</span>
+                    {match.goals.home !== null && match.goals.away !== null ? (
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg leading-none font-mono font-extrabold text-sm border border-slate-200/50">
+                          <span className={match.fixture.status.short === "FT" && match.teams.home.winner === false ? "text-slate-400" : "text-[#009c3b]"}>
+                            {match.goals.home ?? 0}
+                          </span>
+                          <span className="text-slate-300 font-bold">-</span>
+                          <span className={match.fixture.status.short === "FT" && match.teams.away.winner === false ? "text-slate-400" : "text-[#009c3b]"}>
+                            {match.goals.away ?? 0}
+                          </span>
+                        </div>
+                        {match.fixture.status.short !== "FT" && (
+                          <span className="text-[10px] text-red-500 font-extrabold font-mono animate-pulse">
+                            {match.fixture.status.short === "HT" ? "INT" : `${match.fixture.status.elapsed}'`}
+                          </span>
+                        )}
                       </div>
                     ) : (
                       <div className="bg-slate-100 dark:bg-slate-800 font-mono font-bold text-xs px-2.5 py-1.5 rounded-lg">

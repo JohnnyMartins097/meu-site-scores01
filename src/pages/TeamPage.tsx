@@ -418,9 +418,9 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                         <SafeImage src={match.teams.home.logo} alt={match.teams.home.name} className="w-8 h-8 object-contain" fallbackType="team" />
                       </div>
                       <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-xl leading-none font-mono font-extrabold text-base border border-slate-150/50">
-                        <span className="text-[#009c3b]">{match.goals.home}</span>
+                        <span className="text-[#009c3b]">{match.goals.home ?? 0}</span>
                         <span className="text-slate-300 text-xs font-bold">-</span>
-                        <span className="text-[#009c3b]">{match.goals.away}</span>
+                        <span className="text-[#009c3b]">{match.goals.away ?? 0}</span>
                       </div>
                       <div className="flex items-center gap-3 flex-1 text-left">
                         <SafeImage src={match.teams.away.logo} alt={match.teams.away.name} className="w-8 h-8 object-contain" fallbackType="team" />

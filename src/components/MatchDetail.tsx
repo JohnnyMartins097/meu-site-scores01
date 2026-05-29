@@ -226,11 +226,11 @@ export default function MatchDetail({
           {/* Score in between */}
           <div className="col-span-1 flex flex-col items-center justify-center text-center">
             <span className="text-3xl font-mono font-extrabold tracking-tight select-none">
-              {match.goals.home !== null ? match.goals.home : "-"}
+              {match.goals.home ?? "-"}
             </span>
             <span className="text-white/40 font-bold px-1 text-xs">-</span>
             <span className="text-3xl font-mono font-extrabold tracking-tight select-none">
-              {match.goals.away !== null ? match.goals.away : "-"}
+              {match.goals.away ?? "-"}
             </span>
           </div>
 
