@@ -936,6 +936,11 @@ app.get("/api/real-today", async (req, res) => {
   return res.json({ date: dateStr });
 });
 
+// Endpoint to fetch dynamic leagueCache dictionary of league names and logos
+app.get("/api/leagues", (req, res) => {
+  return res.json(leagueCache || {});
+});
+
 // API router to get fixtures/matches by date
 app.get("/api/fixtures", async (req, res) => {
   const dateStr = (req.query.date as string) || new Date().toISOString().slice(0, 10);

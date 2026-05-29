@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Award, Calendar, ChevronLeft, Shield, Star, Table, Trophy, Users } from "lucide-react";
 import { SafeImage } from "../components/SafeImage";
 import { Match } from "../types";
+import { LEAGUE_DICTIONARY } from "../App";
 
 interface LeaguePageProps {
   matches: Match[];
@@ -117,10 +118,11 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
   const leagueId = id ? parseInt(id, 10) : 71;
   const isPtStr = language.startsWith("pt");
 
-  // Lookup in active fixtures to identify details of league
+  // Lookup in active fixtures / dictionary to identify details of league
   const fixtureMatch = matches.find(m => m.league.id === leagueId);
-  const leagueName = fixtureMatch?.league.name || (leagueId === 71 ? "Brasileirão Série A" : (leagueId === 140 ? "La Liga" : (leagueId === 39 ? "Premier League" : "Competição de Futebol")));
-  const leagueLogo = fixtureMatch?.league.logo || `https://www.sofascore.com/api/v1/unique-tournament/${leagueId}/image`;
+  const dictLeague = LEAGUE_DICTIONARY[leagueId];
+  const leagueName = fixtureMatch?.league.name || dictLeague?.name || (leagueId === 71 ? "Brasileirão Série A" : (leagueId === 140 ? "La Liga" : (leagueId === 39 ? "Premier League" : `Liga ${leagueId}`)) || "Competição de Futebol");
+  const leagueLogo = fixtureMatch?.league.logo || `https://images.fotmob.com/image_resources/logo/leaguelogo/${leagueId}.png`;
   const isFav = favorites.leagues.includes(leagueId);
 
   // Live standings state

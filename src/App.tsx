@@ -312,6 +312,78 @@ const getLocalDateString = (d: Date = new Date()) => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
+export interface LeagueInfo {
+  name: string;
+  country: string;
+  isMajor: boolean;
+  flag?: string;
+}
+
+export const LEAGUE_DICTIONARY: Record<number, LeagueInfo> = {
+  // Top Tier / International Cups
+  42: { name: "UEFA Champions League", country: "Europa", isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  73: { name: "UEFA Europa League", country: "Europa", isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  77: { name: "UEFA Conference League", country: "Europa", isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  44: { name: "CONMEBOL Libertadores", country: "América do Sul", isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  112: { name: "CONMEBOL Sudamericana", country: "América do Sul", isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  248: { name: "Copa América", country: "América do Sul", isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  51: { name: "Eurocopa", country: "Europa", isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  114: { name: "Copa do Mundo", country: "Mundo", isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  10118: { name: "Mundial de Clubes", country: "Mundo", isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+
+  // Brasil
+  268: { name: "Brasileirão Série A", country: "Brasil", isMajor: true, flag: "https://media.api-sports.io/flags/br.svg" },
+  269: { name: "Brasileirão Série B", country: "Brasil", isMajor: true, flag: "https://media.api-sports.io/flags/br.svg" },
+  267: { name: "Copa do Brasil", country: "Brasil", isMajor: true, flag: "https://media.api-sports.io/flags/br.svg" },
+  322: { name: "Supercopa do Brasil", country: "Brasil", isMajor: true, flag: "https://media.api-sports.io/flags/br.svg" },
+  344: { name: "Campeonato Paulista", country: "Brasil", isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
+  345: { name: "Campeonato Carioca", country: "Brasil", isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
+  346: { name: "Campeonato Mineiro", country: "Brasil", isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
+  348: { name: "Campeonato Gaúcho", country: "Brasil", isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
+
+  // Inglaterra (England)
+  47: { name: "Premier League", country: "Inglaterra", isMajor: true, flag: "https://media.api-sports.io/flags/gb.svg" },
+  50: { name: "Championship", country: "Inglaterra", isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
+  132: { name: "FA Cup", country: "Inglaterra", isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
+  133: { name: "EFL Cup", country: "Inglaterra", isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
+
+  // Espanha (Spain)
+  87: { name: "La Liga", country: "Espanha", isMajor: true, flag: "https://media.api-sports.io/flags/es.svg" },
+  141: { name: "La Liga 2", country: "Espanha", isMajor: false, flag: "https://media.api-sports.io/flags/es.svg" },
+  138: { name: "Copa del Rey", country: "Espanha", isMajor: false, flag: "https://media.api-sports.io/flags/es.svg" },
+
+  // Itália (Italy)
+  55: { name: "Serie A TIM", country: "Itália", isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
+  143: { name: "Serie B", country: "Itália", isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
+  142: { name: "Coppa Itália", country: "Itália", isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
+
+  // Alemanha (Germany)
+  54: { name: "Bundesliga", country: "Alemanha", isMajor: true, flag: "https://media.api-sports.io/flags/de.svg" },
+  146: { name: "2. Bundesliga", country: "Alemanha", isMajor: false, flag: "https://media.api-sports.io/flags/de.svg" },
+  140: { name: "DFB Pokal", country: "Alemanha", isMajor: false, flag: "https://media.api-sports.io/flags/de.svg" },
+
+  // França (France)
+  53: { name: "Ligue 1 McDonald's", country: "França", isMajor: true, flag: "https://media.api-sports.io/flags/fr.svg" },
+  148: { name: "Ligue 2", country: "França", isMajor: false, flag: "https://media.api-sports.io/flags/fr.svg" },
+  135: { name: "Coupe de France", country: "França", isMajor: false, flag: "https://media.api-sports.io/flags/fr.svg" },
+
+  // Portugal
+  108: { name: "Liga Portugal Betclic", country: "Portugal", isMajor: true, flag: "https://media.api-sports.io/flags/pt.svg" },
+  109: { name: "Liga Portugal 2 Sabseg", country: "Portugal", isMajor: false, flag: "https://media.api-sports.io/flags/pt.svg" },
+  315: { name: "Taça de Portugal", country: "Portugal", isMajor: false, flag: "https://media.api-sports.io/flags/pt.svg" },
+
+  // Outros Importantes
+  84: { name: "Eredivisie", country: "Países Baixos", isMajor: false, flag: "https://media.api-sports.io/flags/nl.svg" },
+  130: { name: "MLS", country: "Estados Unidos", isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
+  152: { name: "Saudi Professional League", country: "Arábia Saudita", isMajor: false, flag: "https://media.api-sports.io/flags/sa.svg" },
+  117: { name: "Süper Lig", country: "Turquia", isMajor: false, flag: "https://media.api-sports.io/flags/tr.svg" },
+  116: { name: "Liga MX", country: "México", isMajor: false, flag: "https://media.api-sports.io/flags/mx.svg" },
+  113: { name: "Primera División", country: "Argentina", isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
+  111: { name: "Copa Diego Maradona", country: "Argentina", isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
+  280: { name: "Amistosos Internacionais", country: "Mundo", isMajor: false, flag: "https://media.api-sports.io/flags/world.svg" },
+  10280: { name: "Amistosos de Clubes", country: "Mundo", isMajor: false, flag: "https://media.api-sports.io/flags/world.svg" }
+};
+
 export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [realTodayDate, setRealTodayDate] = useState(() => getLocalDateString());
@@ -324,6 +396,7 @@ export default function App() {
   const [isSimulated, setIsSimulated] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
+  const [dynamicLeagues, setDynamicLeagues] = useState<Record<number, { name: string; country: string; logo?: string; flag?: string }>>({});
 
   // Layout View mode Toggle ("games" list vs social fan "feed")
   const [viewMode, setViewMode] = useState<"games" | "feed">("games");
@@ -353,6 +426,35 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("worldscore_favorites", JSON.stringify(favorites));
   }, [favorites]);
+
+  // Dynamic fetch of resolved leagues dictionary from the backend on load
+  useEffect(() => {
+    fetch("/api/leagues")
+      .then(res => {
+        if (res.ok) return res.json();
+        throw new Error("Failed to load backend leagues database");
+      })
+      .then(data => {
+        if (data && typeof data === "object") {
+          const norm: Record<number, { name: string; country: string; logo?: string; flag?: string }> = {};
+          Object.entries(data).forEach(([key, val]: [string, any]) => {
+            const leagueId = parseInt(key, 10);
+            if (!isNaN(leagueId) && val) {
+              norm[leagueId] = {
+                name: val.name,
+                country: val.country,
+                logo: val.logo,
+                flag: val.flag
+              };
+            }
+          });
+          setDynamicLeagues(norm);
+        }
+      })
+      .catch(err => {
+        console.log("[Dynamic leagues fetch error]", err);
+      });
+  }, []);
 
   const toggleFavoriteLeague = (leagueId: number) => {
     setFavorites(prev => {
@@ -535,8 +637,67 @@ export default function App() {
   }, [matches, isLargeScreen]);
 
 // Main fetch function
+// --- DICIONÁRIO INTELIGENTE DE LIGAS ---
+  // Ensina o site a traduzir os IDs da API para nomes reais e países
+  const LEAGUE_DICTIONARY: Record<number, { name: string; country: string }> = {
+    // Competições Continentais
+    924597: { name: "CONMEBOL Libertadores", country: "América do Sul" },
+    924595: { name: "CONMEBOL Libertadores", country: "América do Sul" },
+    924591: { name: "CONMEBOL Libertadores", country: "América do Sul" },
+    42: { name: "UEFA Champions League", country: "Europa" },
+    73: { name: "UEFA Europa League", country: "Europa" },
+    // Amistosos
+    914609: { name: "Amistosos Internacionais", country: "Mundo" },
+    915708: { name: "Amistosos de Clubes", country: "Mundo" },
+    // Ligas Principais
+    47: { name: "Premier League", country: "Inglaterra" },
+    87: { name: "La Liga", country: "Espanha" },
+    54: { name: "Bundesliga", country: "Alemanha" },
+    53: { name: "Serie A", country: "Itália" },
+    9666: { name: "Ligue 1", country: "França" },
+    130: { name: "Brasileirão Série A", country: "Brasil" },
+    // Ligas que vieram no seu teste da API
+    9178: { name: "1. CFL", country: "Montenegro" },
+    925948: { name: "2nd Division", country: "Dinamarca" },
+    925949: { name: "2nd Division", country: "Dinamarca" },
+    925951: { name: "3rd Division", country: "Dinamarca" },
+    919794: { name: "3. Division", country: "Noruega" },
+    919795: { name: "3. Division", country: "Noruega" },
+    228: { name: "A Lyga", country: "Lituânia" },
+    67: { name: "Superettan", country: "Suécia" },
+    920267: { name: "League One", country: "China" },
+    9527: { name: "National Division", country: "Luxemburgo" },
+    330: { name: "1. Division", country: "Chipre" },
+    59: { name: "Eliteserien", country: "Noruega" },
+    10308: { name: "Elitettan (F)", country: "Suécia" },
+    439: { name: "Erovnuli Liga", country: "Geórgia" },
+    926172: { name: "Euro U17", country: "Europa" },
+    916016: { name: "First Division", country: "Irlanda" },
+    933740: { name: "First League", country: "Bulgária" },
+    923619: { name: "Kansallinen Liiga (F)", country: "Finlândia" },
+    126: { name: "Premier Division", country: "Irlanda" },
+    923169: { name: "Vysshaya Liga", country: "Bielorrússia" },
+    250: { name: "Premier League", country: "Ilhas Faroe" },
+    902649: { name: "Premier League", country: "Kuwait" },
+    923880: { name: "Premier League", country: "Egito" },
+    931417: { name: "Oberliga", country: "Alemanha" },
+    930062: { name: "Serie B", country: "Itália" },
+    920266: { name: "Super League", country: "China" },
+    931759: { name: "Liga 1", country: "Romênia" },
+    916229: { name: "1. Division (F)", country: "Noruega" },
+    920263: { name: "Kakkonen", country: "Finlândia" },
+    920261: { name: "Ykkösliiga", country: "Finlândia" },
+    248: { name: "Meistriliiga", country: "Estônia" },
+    226: { name: "Virsliga", country: "Letônia" },
+  };
+
   // --- TRADUTOR DA NOVA API FOTMOB PARA O NOSSO SITE ---
   const mapApiToMatch = (item: any): Match => {
+    const leagueId = item.leagueId;
+    
+    // Consulta o dicionário. Se a liga não existir na nossa lista, coloca na gaveta Mundo com o ID.
+    const leagueInfo = LEAGUE_DICTIONARY[leagueId] || { name: `Liga ${leagueId}`, country: "Mundo" };
+
     const isFinished = item.status?.finished || false;
     const isOngoing = item.status?.ongoing || false;
     const isCancelled = item.status?.cancelled || false;
@@ -557,7 +718,7 @@ export default function App() {
         statusLong = "Halftime";
         elapsed = 45;
       } else {
-        statusShort = "2H"; // Aciona a bolinha vermelha a piscar no frontend
+        statusShort = "2H"; 
         statusLong = "Second Half";
         elapsed = parseInt(liveTimeStr.replace(/\D/g, "")) || 0;
       }
@@ -569,7 +730,6 @@ export default function App() {
     const homeGoals = item.home?.score ?? null;
     const awayGoals = item.away?.score ?? null;
 
-    // Define os vencedores para a interface
     let homeWinner = false;
     let awayWinner = false;
     if (isFinished && homeGoals !== null && awayGoals !== null) {
@@ -577,10 +737,12 @@ export default function App() {
       if (awayGoals > homeGoals) awayWinner = true;
     }
 
-    // O Segredo dos Escudos: Como a API é espelho do Fotmob, puxamos os logos em Alta Qualidade diretamente deles!
     const homeLogo = `https://images.fotmob.com/image_resources/logo/teamlogo/${item.home?.id}_large.png`;
     const awayLogo = `https://images.fotmob.com/image_resources/logo/teamlogo/${item.away?.id}_large.png`;
-    const leagueLogo = `https://images.fotmob.com/image_resources/logo/leaguelogo/${item.leagueId}.png`;
+    const leagueLogo = `https://images.fotmob.com/image_resources/logo/leaguelogo/${leagueId}.png`;
+
+    const resolvedCountryDetails = getLocalizedCountryDetails(leagueInfo.country);
+    const leagueFlag = resolvedCountryDetails?.flag || "https://media.api-sports.io/flags/world.svg";
 
     return {
       fixture: {
@@ -594,11 +756,11 @@ export default function App() {
         status: { short: statusShort, long: statusLong, elapsed: elapsed }
       },
       league: {
-        id: item.leagueId,
-        name: `Liga ${item.leagueId}`, // Sem o nome da liga no JSON, mostramos "Liga X" (o logo da liga vai aparecer perfeito)
-        country: "Mundo",
+        id: leagueId,
+        name: leagueInfo.name, // Aplica o nome real da liga!
+        country: leagueInfo.country, // Aplica o país correto para separar as gavetas!
         logo: leagueLogo,
-        flag: "https://media.api-sports.io/flags/world.svg"
+        flag: leagueFlag
       },
       teams: {
         home: { id: item.home?.id, name: item.home?.name || "Home", logo: homeLogo, winner: homeWinner },
@@ -1102,7 +1264,13 @@ export default function App() {
   });
 
   // Identify prestigiadas competições (Major International tournaments) to separate them on top
-  const isMajorLeague = (leagueName: string, leagueCountry: string): boolean => {
+  const isMajorLeague = (leagueName: string, leagueCountry: string, leagueId?: number): boolean => {
+    if (leagueId !== undefined) {
+      const info = LEAGUE_DICTIONARY[leagueId] || dynamicLeagues[leagueId];
+      if (info !== undefined) {
+        return info.isMajor;
+      }
+    }
     const ln = leagueName.toLowerCase();
     const lc = leagueCountry.toLowerCase();
     return (
@@ -1114,7 +1282,10 @@ export default function App() {
       ln.includes("conference league") ||
       ln.includes("recopa") ||
       lc.includes("south-america") ||
-      lc.includes("américa do sul")
+      lc.includes("américa do sul") ||
+      ln.includes("brasileirão") ||
+      ln.includes("premier league") ||
+      ln.includes("la liga")
     );
   };
 
@@ -1376,7 +1547,7 @@ export default function App() {
   const drawersMap: Record<string, GroupedDrawer> = {};
 
   filteredMatches.forEach((match) => {
-    const isMajor = isMajorLeague(match.league.name, match.league.country || "");
+    const isMajor = isMajorLeague(match.league.name, match.league.country || "", match.league.id);
     
     if (isMajor) {
       const standardTitle = getStandardTitle(match.league.name);
@@ -1425,18 +1596,90 @@ export default function App() {
     }
   });
 
-  // Sort Drawers: Majors priority (always open), follow by sorted countries
+  // Sort Drawers: strict hierarchy
+  const getDrawerRankAndCategory = (drawer: GroupedDrawer): { rank: number; subSortValue: string } => {
+    const firstLeagueKey = Object.keys(drawer.leagues)[0];
+    const firstLeagueEntry = firstLeagueKey ? drawer.leagues[firstLeagueKey] : null;
+    const firstMatch = firstLeagueEntry && firstLeagueEntry.matches.length > 0 ? firstLeagueEntry.matches[0] : null;
+    
+    const country = (firstMatch?.league?.country || drawer.title || "").toLowerCase();
+    const title = (drawer.title || "").toLowerCase();
+    
+    // Check Order 1: Competições Continentais (América do Sul, Europa)
+    const order1ContinentalTerms = [
+      "libertadores", "sudamericana", "sulamericana", "champions", 
+      "europa league", "conference league", "recopa", "eurocopa", "copa américa"
+    ];
+    const isContinentalTitle = order1ContinentalTerms.some(term => title.includes(term));
+    const isContinentalCountry = country.includes("américa do sul") || country.includes("europa") || country.includes("south america") || country.includes("europe");
+    
+    if (isContinentalTitle || isContinentalCountry) {
+      return { rank: 1, subSortValue: drawer.title };
+    }
+
+    // Check Order 2: Países Principais (Brasil, Inglaterra, Espanha, Itália, Alemanha, França)
+    const majorCountries = ["brasil", "brazil", "inglaterra", "england", "espanha", "spain", "itália", "italy", "alemanha", "germany", "frança", "france"];
+    const isMajorCountryName = majorCountries.includes(country) || majorCountries.includes(title);
+    
+    const order2Leagues = [
+      "brasileirão", "premier league", "la liga", "serie a", "bundesliga", "ligue 1"
+    ];
+    const isMajorCountryLeague = order2Leagues.some(term => title.includes(term));
+    
+    if (isMajorCountryName || isMajorCountryLeague) {
+      return { rank: 2, subSortValue: drawer.title };
+    }
+
+    // Check Order 4: 'Mundo'
+    const isMundo = title.includes("mundo") || title.includes("world") || title.includes("international") || title.includes("internacional");
+    if (isMundo) {
+      return { rank: 4, subSortValue: drawer.title };
+    }
+
+    // Order 3: Remaining countries sorted alphabetically
+    return { rank: 3, subSortValue: drawer.title };
+  };
+
+  const rank1Order = ["uefa champions", "conmebol libertadores", "uefa europa", "conmebol sudamericana", "uefa conference"];
+
   const sortedDrawers = Object.values(drawersMap).sort((a, b) => {
-    if (a.type === "major_league" && b.type !== "major_league") return -1;
-    if (a.type !== "major_league" && b.type === "major_league") return 1;
+    const infoA = getDrawerRankAndCategory(a);
+    const infoB = getDrawerRankAndCategory(b);
     
-    // Sort Brasil/Brazil first under country list as requested / standard priority
-    const isABrasil = a.title === "Brasil";
-    const isBBrasil = b.title === "Brasil";
-    if (isABrasil && !isBBrasil) return -1;
-    if (!isABrasil && isBBrasil) return 1;
+    if (infoA.rank !== infoB.rank) {
+      return infoA.rank - infoB.rank;
+    }
     
-    return a.title.localeCompare(b.title);
+    // Sort within same rank
+    if (infoA.rank === 1) {
+      const orderA = rank1Order.findIndex(term => infoA.subSortValue.toLowerCase().includes(term));
+      const orderB = rank1Order.findIndex(term => infoB.subSortValue.toLowerCase().includes(term));
+      const valA = orderA !== -1 ? orderA : 999;
+      const valB = orderB !== -1 ? orderB : 999;
+      if (valA !== valB) return valA - valB;
+      return infoA.subSortValue.localeCompare(infoB.subSortValue);
+    }
+    
+    if (infoA.rank === 2) {
+      const getRank2CountryIndex = (name: string): number => {
+        const ln = name.toLowerCase();
+        if (ln.includes("brasil") || ln.includes("brazil")) return 0;
+        if (ln.includes("inglaterra") || ln.includes("england") || ln.includes("premier")) return 1;
+        if (ln.includes("espanha") || ln.includes("spain") || ln.includes("la liga")) return 2;
+        if (ln.includes("itália") || ln.includes("italy") || ln.includes("serie a")) return 3;
+        if (ln.includes("alemanha") || ln.includes("germany") || ln.includes("bundesliga")) return 4;
+        if (ln.includes("frança") || ln.includes("france") || ln.includes("ligue")) return 5;
+        return 999;
+      };
+      
+      const indexA = getRank2CountryIndex(infoA.subSortValue);
+      const indexB = getRank2CountryIndex(infoB.subSortValue);
+      if (indexA !== indexB) return indexA - indexB;
+      return infoA.subSortValue.localeCompare(infoB.subSortValue);
+    }
+    
+    // For Rank 3, alphabetical order
+    return infoA.subSortValue.localeCompare(infoB.subSortValue);
   });
 
   const toggleCountryDrawer = (drawerKey: string) => {
@@ -1817,10 +2060,12 @@ export default function App() {
               </div>
             ) : (
               sortedDrawers.map((drawer) => {
-                const isMajor = drawer.type === "major_league";
+                const info = getDrawerRankAndCategory(drawer);
+                const isAlwaysOpenDefault = info.rank === 1 || info.rank === 2;
                 const isOpen = expandedCountries[drawer.key] !== undefined 
                   ? expandedCountries[drawer.key] 
-                  : (isMajor ? true : false);
+                  : isAlwaysOpenDefault;
+                const isMajor = drawer.type === "major_league";
                 
                 // Count active/live matches in this drawer for nice badge display
                 const liveCount = Object.values(drawer.leagues).reduce((sum, current) => {
