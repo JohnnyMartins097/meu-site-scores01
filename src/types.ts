@@ -13,6 +13,7 @@ export interface League {
   flag: string | null;
   season?: number;
   round?: string;
+  tier?: number;
 }
 
 export interface MatchPeriod {

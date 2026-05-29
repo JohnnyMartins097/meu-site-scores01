@@ -344,9 +344,23 @@ export const LEAGUE_DICTIONARY: Record<number, LeagueInfo> = {
   140: { name: "Serie A", country: "Equador", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ec.svg" },
   139: { name: "Liga FUTVE", country: "Venezuela", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ve.svg" },
   230: { name: "Liga MX", country: "México", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/mx.svg" },
-  130: { name: "MLS", country: "EUA", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
+  130: { name: "MLS", country: "EUA", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/us.svg" },
 
-  // EUROPA
+  // NOVOS IDs DAS AMÉRICAS
+  144: { name: "Primera División", country: "Bolívia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/bo.svg" },
+  246: { name: "Liga Pro", country: "Equador", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ec.svg" },
+  9986: { name: "Canadian Premier League", country: "Canadá", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/ca.svg" },
+  8972: { name: "USL Championship", country: "EUA", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
+  916345: { name: "USL League One", country: "EUA", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
+  10282: { name: "MLS Next Pro", country: "EUA", tier: 4, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
+  931420: { name: "USL Super League (F)", country: "EUA", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
+  929416: { name: "Copa Colombia", country: "Colômbia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/co.svg" },
+  929417: { name: "Copa Colombia", country: "Colômbia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/co.svg" },
+  919426: { name: "Primera División", country: "Chile", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/cl.svg" },
+  919710: { name: "Liga 1", country: "Peru", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/pe.svg" },
+  920228: { name: "NWSL (Feminino)", country: "EUA", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/us.svg" },
+
+  // EUROPA (CORREÇÃO CRÍTICA ITÁLIA & ALEMANHA)
   53: { name: "Serie A", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
   65: { name: "Serie B", country: "Itália", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
   141: { name: "Coppa Italia", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
@@ -360,6 +374,26 @@ export const LEAGUE_DICTIONARY: Record<number, LeagueInfo> = {
   67: { name: "Allsvenskan", country: "Suécia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/se.svg" },
   924725: { name: "Pro League", country: "Bélgica", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/be.svg" },
 
+  // MAIS EUROPA (Ligas Principais e Secundárias)
+  929420: { name: "Division 1 Féminine", country: "França", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/fr.svg" },
+  930062: { name: "Serie B / Playoffs", country: "Itália", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
+  933862: { name: "Primera Federación", country: "Espanha", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/es.svg" },
+  931417: { name: "Regionalliga", country: "Alemanha", tier: 4, isMajor: false, flag: "https://media.api-sports.io/flags/de.svg" },
+  931759: { name: "Liga 1", country: "Romênia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/ro.svg" },
+  933740: { name: "First League", country: "Bulgária", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/bg.svg" },
+  925948: { name: "2. Division", country: "Dinamarca", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/dk.svg" },
+  925949: { name: "3. Division", country: "Dinamarca", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/dk.svg" },
+  923422: { name: "Besta deild karla", country: "Islândia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/is.svg" },
+  923169: { name: "Vysshaya Liga", country: "Bielorrússia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/by.svg" },
+  916016: { name: "First Division", country: "Irlanda", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ie.svg" },
+  9178: { name: "1. CFL", country: "Montenegro", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/me.svg" },
+  919794: { name: "3. Division", country: "Noruega", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/no.svg" },
+  919795: { name: "3. Division", country: "Noruega", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/no.svg" },
+  916229: { name: "1. Divisjon (Feminino)", country: "Noruega", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/no.svg" },
+  923619: { name: "Kansallinen Liiga (F)", country: "Finlândia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/fi.svg" },
+  920261: { name: "Ykkösliiga", country: "Finlândia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/fi.svg" },
+  920263: { name: "Kakkonen", country: "Finlândia", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/fi.svg" },
+
   // COMPLEMENTOS E LIGAS ADICIONAIS DESCOBERTAS
   232: { name: "1. CFL", country: "Montenegro", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/me.svg" },
   927414: { name: "1. Liga", country: "República Tcheca", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/cz.svg" },
@@ -371,8 +405,14 @@ export const LEAGUE_DICTIONARY: Record<number, LeagueInfo> = {
   923718: { name: "Torneo Federal A", country: "Argentina", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
   917951: { name: "Copa do Imperador", country: "Japão", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/jp.svg" },
 
-  // GRANDES TORNEIOS CONTINENTAIS / INTERNACIONAIS (TIER 1 - DESTAQUES)
+  // RESTO DO MUNDO
+  923880: { name: "Premier League", country: "Egito", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/eg.svg" },
+  920266: { name: "Super League", country: "China", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/cn.svg" },
+  915708: { name: "Amistosos de Clubes", country: "Mundo", tier: 4, isMajor: false, flag: "https://media.api-sports.io/flags/world.svg" },
+
+  // CHAMPIONS LEAGUE (Masculina e Feminina) e Liga Europa
   42: { name: "UEFA Champions League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  904995: { name: "Women's Champions League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
   73: { name: "UEFA Europa League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" }
 };
 
@@ -656,10 +696,28 @@ export default function App() {
 // Main fetch function
   // --- TRADUTOR DA NOVA API FOTMOB PARA O NOSSO SITE ---
   const mapApiToMatch = (item: any): Match => {
-    const leagueId = item.leagueId;
+    let leagueId = item.leagueId;
     
+    const rawLeagueNameCheck = (item.league?.name || item.leagueName || "").toLowerCase();
+    const isChampionsLeague = rawLeagueNameCheck.includes("champions league") && 
+      !rawLeagueNameCheck.includes("women") && 
+      !rawLeagueNameCheck.includes("femin") && 
+      leagueId !== 904995;
+
     // Fallback logic using the smart resolver function
-    let dictEntry = getLeagueDictEntry(leagueId, item.leagueName || item.league?.name);
+    let dictEntry = getLeagueDictEntry(leagueId, item.league?.name || item.leagueName);
+    
+    if (isChampionsLeague) {
+      leagueId = 42;
+      dictEntry = { 
+        name: "UEFA Champions League", 
+        country: "Europa", 
+        tier: 1, 
+        isMajor: true, 
+        flag: "https://media.api-sports.io/flags/world.svg" 
+      };
+    }
+
     let resolvedName: string;
     let resolvedCountry: string;
     let resolvedTier: number;
@@ -670,8 +728,8 @@ export default function App() {
       resolvedTier = dictEntry.tier || 3;
     } else {
       const dynEntry = dynamicLeagues[leagueId];
-      const rawLeagueName = item.leagueName || item.league?.name || dynEntry?.name || `Liga ${leagueId}`;
-      const rawLeagueCountry = item.leagueCountry || item.league?.country || dynEntry?.country || "";
+      const rawLeagueName = item.league?.name || item.leagueName || dynEntry?.name || `LIGA ${leagueId}`;
+      const rawLeagueCountry = item.league?.country || item.leagueCountry || dynEntry?.country || "";
       
       resolvedName = rawLeagueName;
       
@@ -683,7 +741,23 @@ export default function App() {
       } else {
         resolvedCountry = "Outros Países";
       }
+      
       resolvedTier = 3;
+
+      // Smart promotion of continental tournaments (Rule 3)
+      const normCheck = rawLeagueName.toLowerCase();
+      if (normCheck.includes("libertadores") || 
+          normCheck.includes("sudamericana") || 
+          normCheck.includes("sulamericana") || 
+          normCheck.includes("champions league") || 
+          normCheck.includes("europa league")) {
+        resolvedTier = 1;
+        if (normCheck.includes("libertadores") || normCheck.includes("sudamericana") || normCheck.includes("sulamericana")) {
+          resolvedCountry = "América do Sul";
+        } else {
+          resolvedCountry = "Europa";
+        }
+      }
     }
 
     const isFinished = item.status?.finished || false;
@@ -748,7 +822,8 @@ export default function App() {
         name: resolvedName,
         country: resolvedCountry,
         logo: leagueLogo,
-        flag: leagueFlag
+        flag: leagueFlag,
+        tier: resolvedTier
       },
       teams: {
         home: { id: item.home?.id, name: item.home?.name || "Home", logo: homeLogo, winner: homeWinner },
@@ -1352,8 +1427,9 @@ export default function App() {
       "bol": { pt: "Bolívia", code: "bo" },
       "mx": { pt: "México", code: "mx" },
       "mex": { pt: "México", code: "mx" },
-      "us": { pt: "Estados Unidos", code: "us" },
-      "usa": { pt: "Estados Unidos", code: "us" },
+      "us": { pt: "EUA", code: "us" },
+      "usa": { pt: "EUA", code: "us" },
+      "eua": { pt: "EUA", code: "us" },
       "ca": { pt: "Canadá", code: "ca" },
       "es": { pt: "Espanha", code: "es" },
       "esp": { pt: "Espanha", code: "es" },
@@ -1403,9 +1479,10 @@ export default function App() {
       "bolívia": { pt: "Bolívia", code: "bo" },
       "mexico": { pt: "México", code: "mx" },
       "méxico": { pt: "México", code: "mx" },
-      "usa": { pt: "Estados Unidos", code: "us" },
-      "united states": { pt: "Estados Unidos", code: "us" },
-      "estados unidos": { pt: "Estados Unidos", code: "us" },
+      "eua": { pt: "EUA", code: "us" },
+      "usa": { pt: "EUA", code: "us" },
+      "united states": { pt: "EUA", code: "us" },
+      "estados unidos": { pt: "EUA", code: "us" },
       "canada": { pt: "Canadá", code: "ca" },
       "canadá": { pt: "Canadá", code: "ca" },
       "england": { pt: "Inglaterra", code: "gb-eng" },
@@ -1425,6 +1502,9 @@ export default function App() {
       "república checa": { pt: "República Tcheca", code: "cz" },
       "europa": { pt: "Europa", code: "un" },
       "europe": { pt: "Europa", code: "un" },
+      "américa do sul": { pt: "América do Sul", code: "un" },
+      "america do sul": { pt: "América do Sul", code: "un" },
+      "south america": { pt: "América do Sul", code: "un" },
       "france": { pt: "França", code: "fr" },
       "frança": { pt: "França", code: "fr" },
       "germany": { pt: "Alemanha", code: "de" },
@@ -1954,29 +2034,38 @@ export default function App() {
         {/* Collapsible Content */}
         {isOpen && (
           <div className="flex flex-col gap-3.5 pt-3 mt-2 border-t border-slate-100 dark:border-slate-850/60 transition-all duration-300">
-            {Object.entries(drawer.leagues).map(([leagueKey, { league, matches: leagueMatches }]) => {
-              const isLeagueFav = favorites.leagues.includes(league.id);
-              const subLeagueKey = `${drawerKey}-${leagueKey}`;
-              const isSubOpen = !!expandedSubLeagues[subLeagueKey]; // Closed (false) by default unless expanded (true)
+            {Object.values(drawer.leagues)
+              .sort((a, b) => {
+                const tierA = a.league.tier ?? 3;
+                const tierB = b.league.tier ?? 3;
+                if (tierA !== tierB) {
+                  return tierA - tierB;
+                }
+                return a.league.name.localeCompare(b.league.name);
+              })
+              .map(({ league, matches: leagueMatches }) => {
+                const isLeagueFav = favorites.leagues.includes(league.id);
+                const subLeagueKey = `${drawerKey}-${league.name}-${league.id}`;
+                const isSubOpen = !!expandedSubLeagues[subLeagueKey]; // Closed (false) by default unless expanded (true)
 
-              return (
-                <div 
-                  key={`${drawerKey}-${leagueKey}`} 
-                  className="flex flex-col gap-3 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/15 dark:bg-slate-950/20 shadow-3xs"
-                >
-                  {/* League Header / Sub-gaveta Header */}
+                return (
                   <div 
-                    onClick={() => toggleSubLeague(subLeagueKey)}
-                    className="flex items-center justify-between select-none cursor-pointer group/sub"
+                    key={`${drawerKey}-${league.name}-${league.id}`} 
+                    className="flex flex-col gap-3 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/15 dark:bg-slate-950/20 shadow-3xs"
                   >
-                    <div className="flex items-center gap-2 text-[10px] font-extrabold text-slate-550 dark:text-slate-350 uppercase tracking-widest leading-none">
-                      <SafeImage 
-                        src={league.logo} 
-                        alt={league.name} 
-                        className="w-4.5 h-4.5 object-contain rounded bg-white dark:bg-slate-900 p-0.5 shrink-0 shadow-3xs"
-                        fallbackType="league"
-                      />
-                      <span>{league.name}</span>
+                    {/* League Header / Sub-gaveta Header */}
+                    <div 
+                      onClick={() => toggleSubLeague(subLeagueKey)}
+                      className="flex items-center justify-between select-none cursor-pointer group/sub"
+                    >
+                      <div className="flex items-center gap-2 text-[10px] font-extrabold text-slate-550 dark:text-slate-350 uppercase tracking-widest leading-none">
+                        <SafeImage 
+                          src={league.logo} 
+                          alt={league.name} 
+                          className="w-4.5 h-4.5 object-contain rounded bg-white dark:bg-slate-900 p-0.5 shrink-0 shadow-3xs"
+                          fallbackType="league"
+                        />
+                        <span>{league.name}</span>
                       
                       <div className="flex items-center gap-1 opacity-65 group-hover/sub:opacity-100 ml-1">
                         <span className="text-[9px] font-mono">({leagueMatches.length})</span>
@@ -2918,10 +3007,19 @@ export default function App() {
                           })()
                         ) : (
                           // For standard countries
-                          Object.entries(drawer.leagues).map(([leagueKey, { league, matches: leagueMatches }]) => {
-                            const isLeagueFav = favorites.leagues.includes(league.id);
-                            return (
-                              <div key={leagueKey} className="flex flex-col gap-2">
+                          Object.values(drawer.leagues)
+                            .sort((a, b) => {
+                              const tierA = a.league.tier ?? 3;
+                              const tierB = b.league.tier ?? 3;
+                              if (tierA !== tierB) {
+                                return tierA - tierB;
+                              }
+                              return a.league.name.localeCompare(b.league.name);
+                            })
+                            .map(({ league, matches: leagueMatches }) => {
+                              const isLeagueFav = favorites.leagues.includes(league.id);
+                              return (
+                                <div key={`${league.name}-${league.id}`} className="flex flex-col gap-2">
                                 <div className="flex items-center justify-between pl-1 select-none">
                                   <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">
                                     <SafeImage 
