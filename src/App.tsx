@@ -321,31 +321,97 @@ export interface LeagueInfo {
 }
 
 export const LEAGUE_DICTIONARY: Record<number, LeagueInfo> = {
+  // Brasil
   268: { name: "Brasileirão Série A", country: "Brasil", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/br.svg" },
   390: { name: "Brasileirão Série B", country: "Brasil", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
   325: { name: "Brasileirão Série C", country: "Brasil", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
   225: { name: "Copa do Brasil", country: "Brasil", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/br.svg" },
-  53: { name: "Serie A", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
-  122: { name: "Eredivisie", country: "Holanda", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/nl.svg" },
+  
+  // Inglaterra
   47: { name: "Premier League", country: "Inglaterra", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/gb.svg" },
+  48: { name: "Championship", country: "Inglaterra", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
+  49: { name: "League One", country: "Inglaterra", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
+  50: { name: "League Two", country: "Inglaterra", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
+  13271: { name: "FA Cup", country: "Inglaterra", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
+  13272: { name: "EFL Cup", country: "Inglaterra", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
+
+  // Espanha
   87: { name: "La Liga", country: "Espanha", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/es.svg" },
+  88: { name: "Segunda División", country: "Espanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/es.svg" },
+  13273: { name: "Copa del Rey", country: "Espanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/es.svg" },
+
+  // Itália
+  53: { name: "Serie A", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
+  65: { name: "Serie B", country: "Itália", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
+  930062: { name: "Serie A Playoff / Coppa", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
+  13276: { name: "Coppa Italia", country: "Itália", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
+
+  // Alemanha
   54: { name: "Bundesliga", country: "Alemanha", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/de.svg" },
+  55: { name: "2. Bundesliga", country: "Alemanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/de.svg" },
+  141: { name: "DFB Pokal", country: "Alemanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/de.svg" },
+
+  // França
   9666: { name: "Ligue 1", country: "França", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/fr.svg" },
+  62: { name: "Ligue 2", country: "França", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/fr.svg" },
+  13275: { name: "Coupe de France", country: "França", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/fr.svg" },
+
+  // Portugal
+  61: { name: "Primeira Liga", country: "Portugal", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/pt.svg" },
+  118: { name: "Liga Portugal 2", country: "Portugal", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pt.svg" },
+  13274: { name: "Taça de Portugal", country: "Portugal", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pt.svg" },
+
+  // Holanda
+  122: { name: "Eredivisie", country: "Holanda", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/nl.svg" },
+  123: { name: "Eerste Divisie", country: "Holanda", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/nl.svg" },
+  13278: { name: "KNVB Beker", country: "Holanda", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/nl.svg" },
+
+  // Europa (Competições de Clubes)
   42: { name: "Champions League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
   73: { name: "Europa League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
-  924597: { name: "Copa Libertadores", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
-  924595: { name: "Copa Sudamericana", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
-  924591: { name: "Copa Sudamericana", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
-  61: { name: "Primeira Liga", country: "Portugal", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/pt.svg" },
+
+  // América do Sul / CONMEBOL
+  924597: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  924595: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  924591: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+
+  // Argentina
   112: { name: "Liga Profesional", country: "Argentina", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
+  13280: { name: "Copa Argentina", country: "Argentina", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
+  394: { name: "Primera Nacional", country: "Argentina", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
+
+  // Colômbia
   133: { name: "Primera A", country: "Colômbia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/co.svg" },
-  134: { name: "Primera División", country: "Chile", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/cl.svg" },
-  136: { name: "Primera División", country: "Uruguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/uy.svg" },
-  131: { name: "Liga 1", country: "Peru", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pe.svg" },
-  135: { name: "Primera División", country: "Paraguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/py.svg" },
+  137: { name: "Primera B", country: "Colômbia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/co.svg" },
+  13281: { name: "Copa Colombia", country: "Colômbia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/co.svg" },
+
+  // Bolívia
   132: { name: "Primera División", country: "Bolívia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/bo.svg" },
+  13282: { name: "Copa Bolivia", country: "Bolívia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/bo.svg" },
+
+  // Paraguai
+  135: { name: "Primera División", country: "Paraguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/py.svg" },
+  13283: { name: "Copa Paraguay", country: "Paraguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/py.svg" },
+
+  // Peru
+  131: { name: "Liga 1", country: "Peru", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pe.svg" },
+  13284: { name: "Copa Bicentenario", country: "Peru", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pe.svg" },
+
+  // Uruguai
+  136: { name: "Primera División", country: "Uruguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/uy.svg" },
+  13285: { name: "Copa Uruguay", country: "Uruguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/uy.svg" },
+
+  // Equador
   140: { name: "Serie A", country: "Equador", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ec.svg" },
-  139: { name: "Liga FUTVE", country: "Venezuela", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ve.svg" }
+  13286: { name: "Copa Ecuador", country: "Equador", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ec.svg" },
+
+  // Venezuela
+  139: { name: "Liga FUTVE", country: "Venezuela", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ve.svg" },
+  13287: { name: "Copa Venezuela", country: "Venezuela", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ve.svg" },
+
+  // Chile
+  134: { name: "Primera División", country: "Chile", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/cl.svg" },
+  13288: { name: "Copa Chile", country: "Chile", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/cl.svg" }
 };
 
 export default function App() {
@@ -604,31 +670,97 @@ export default function App() {
   // --- DICIONÁRIO INTELIGENTE DE LIGAS ---
   // Ensina o site a traduzir os IDs da API para nomes reais e países
   const LEAGUE_DICTIONARY: Record<number, { name: string; country: string; tier?: number }> = {
+    // Brasil
     268: { name: "Brasileirão Série A", country: "Brasil", tier: 1 },
     390: { name: "Brasileirão Série B", country: "Brasil", tier: 2 },
     325: { name: "Brasileirão Série C", country: "Brasil", tier: 3 },
     225: { name: "Copa do Brasil", country: "Brasil", tier: 1 },
-    53: { name: "Serie A", country: "Itália", tier: 1 },
-    122: { name: "Eredivisie", country: "Holanda", tier: 1 },
+    
+    // Inglaterra
     47: { name: "Premier League", country: "Inglaterra", tier: 1 },
+    48: { name: "Championship", country: "Inglaterra", tier: 2 },
+    49: { name: "League One", country: "Inglaterra", tier: 3 },
+    50: { name: "League Two", country: "Inglaterra", tier: 3 },
+    13271: { name: "FA Cup", country: "Inglaterra", tier: 2 },
+    13272: { name: "EFL Cup", country: "Inglaterra", tier: 2 },
+
+    // Espanha
     87: { name: "La Liga", country: "Espanha", tier: 1 },
+    88: { name: "Segunda División", country: "Espanha", tier: 2 },
+    13273: { name: "Copa del Rey", country: "Espanha", tier: 2 },
+
+    // Itália
+    53: { name: "Serie A", country: "Itália", tier: 1 },
+    65: { name: "Serie B", country: "Itália", tier: 2 },
+    930062: { name: "Serie A Playoff / Coppa", country: "Itália", tier: 1 },
+    13276: { name: "Coppa Italia", country: "Itália", tier: 2 },
+
+    // Alemanha
     54: { name: "Bundesliga", country: "Alemanha", tier: 1 },
+    55: { name: "2. Bundesliga", country: "Alemanha", tier: 2 },
+    141: { name: "DFB Pokal", country: "Alemanha", tier: 2 },
+
+    // França
     9666: { name: "Ligue 1", country: "França", tier: 1 },
+    62: { name: "Ligue 2", country: "França", tier: 2 },
+    13275: { name: "Coupe de France", country: "França", tier: 2 },
+
+    // Portugal
+    61: { name: "Primeira Liga", country: "Portugal", tier: 1 },
+    118: { name: "Liga Portugal 2", country: "Portugal", tier: 2 },
+    13274: { name: "Taça de Portugal", country: "Portugal", tier: 2 },
+
+    // Holanda
+    122: { name: "Eredivisie", country: "Holanda", tier: 1 },
+    123: { name: "Eerste Divisie", country: "Holanda", tier: 2 },
+    13278: { name: "KNVB Beker", country: "Holanda", tier: 2 },
+
+    // Europa (Competições de Clubes)
     42: { name: "Champions League", country: "Europa", tier: 1 },
     73: { name: "Europa League", country: "Europa", tier: 1 },
-    924597: { name: "Copa Libertadores", country: "América do Sul", tier: 1 },
-    924595: { name: "Copa Sudamericana", country: "América do Sul", tier: 1 },
-    924591: { name: "Copa Sudamericana", country: "América do Sul", tier: 1 },
-    61: { name: "Primeira Liga", country: "Portugal", tier: 1 },
+
+    // América do Sul / CONMEBOL
+    924597: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1 },
+    924595: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1 },
+    924591: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1 },
+
+    // Argentina
     112: { name: "Liga Profesional", country: "Argentina", tier: 2 },
+    13280: { name: "Copa Argentina", country: "Argentina", tier: 2 },
+    394: { name: "Primera Nacional", country: "Argentina", tier: 2 },
+
+    // Colômbia
     133: { name: "Primera A", country: "Colômbia", tier: 2 },
-    134: { name: "Primera División", country: "Chile", tier: 2 },
-    136: { name: "Primera División", country: "Uruguai", tier: 2 },
-    131: { name: "Liga 1", country: "Peru", tier: 2 },
-    135: { name: "Primera División", country: "Paraguai", tier: 2 },
+    137: { name: "Primera B", country: "Colômbia", tier: 2 },
+    13281: { name: "Copa Colombia", country: "Colômbia", tier: 2 },
+
+    // Bolívia
     132: { name: "Primera División", country: "Bolívia", tier: 2 },
+    13282: { name: "Copa Bolivia", country: "Bolívia", tier: 2 },
+
+    // Paraguai
+    135: { name: "Primera División", country: "Paraguai", tier: 2 },
+    13283: { name: "Copa Paraguay", country: "Paraguai", tier: 2 },
+
+    // Peru
+    131: { name: "Liga 1", country: "Peru", tier: 2 },
+    13284: { name: "Copa Bicentenario", country: "Peru", tier: 2 },
+
+    // Uruguai
+    136: { name: "Primera División", country: "Uruguai", tier: 2 },
+    13285: { name: "Copa Uruguay", country: "Uruguai", tier: 2 },
+
+    // Equador
     140: { name: "Serie A", country: "Equador", tier: 2 },
-    139: { name: "Liga FUTVE", country: "Venezuela", tier: 2 }
+    13286: { name: "Copa Ecuador", country: "Equador", tier: 2 },
+
+    // Venezuela
+    139: { name: "Liga FUTVE", country: "Venezuela", tier: 2 },
+    13287: { name: "Copa Venezuela", country: "Venezuela", tier: 2 },
+
+    // Chile
+    134: { name: "Primera División", country: "Chile", tier: 2 },
+    13288: { name: "Copa Chile", country: "Chile", tier: 2 }
   };
 
   // --- TRADUTOR DA NOVA API FOTMOB PARA O NOSSO SITE ---
@@ -1860,7 +1992,7 @@ export default function App() {
   // Sync general HTML tag element dark class for daisy chaining tailwind styles
   const renderDrawer = (drawer: GroupedDrawer, isDestaque = false) => {
     const info = getDrawerRankAndCategory(drawer);
-    const isAlwaysOpenDefault = isDestaque || info.rank === 0 || info.rank === 1 || info.rank === 2;
+    const isAlwaysOpenDefault = false; // Closed by default to keep the interface absolutely clean!
     const drawerKey = isDestaque ? "destaques" : drawer.key;
     const isOpen = expandedCountries[drawerKey] !== undefined 
       ? expandedCountries[drawerKey] 
@@ -1924,14 +2056,17 @@ export default function App() {
             {Object.entries(drawer.leagues).map(([leagueKey, { league, matches: leagueMatches }]) => {
               const isLeagueFav = favorites.leagues.includes(league.id);
               return (
-                <div key={`${drawerKey}-${leagueKey}`} className="flex flex-col gap-2">
-                  {/* League Header */}
-                  <div className="flex items-center justify-between pl-1 select-none">
-                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 dark:text-slate-505 uppercase tracking-widest leading-none">
+                <div 
+                  key={`${drawerKey}-${leagueKey}`} 
+                  className="flex flex-col gap-3 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/15 dark:bg-slate-950/20 shadow-3xs"
+                >
+                  {/* League Header / Sub-gaveta Header */}
+                  <div className="flex items-center justify-between select-none">
+                    <div className="flex items-center gap-2 text-[10px] font-extrabold text-slate-550 dark:text-slate-350 uppercase tracking-widest leading-none">
                       <SafeImage 
                         src={league.logo} 
                         alt={league.name} 
-                        className="w-4 h-4 object-contain rounded bg-slate-50 dark:bg-slate-800 p-0.5 shrink-0"
+                        className="w-4.5 h-4.5 object-contain rounded bg-white dark:bg-slate-900 p-0.5 shrink-0 shadow-3xs"
                         fallbackType="league"
                       />
                       <span>{league.name}</span>
@@ -1942,7 +2077,7 @@ export default function App() {
                         e.stopPropagation();
                         toggleFavoriteLeague(league.id);
                       }}
-                      className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full cursor-pointer transition-all focus:outline-none"
+                      className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full cursor-pointer transition-all focus:outline-none shrink-0"
                       title="Favoritar Liga"
                     >
                       <Star 
@@ -1961,8 +2096,9 @@ export default function App() {
                       );
                       const isFinished = match.fixture.status.short === "FT";
                       const isSelected = selectedMatch?.fixture.id === match.fixture.id;
-                      // Unique React Key format precisely matching instructions
-                      const reactKey = `${match.fixture.id}-${isDestaque ? "destaque" : "pais"}`;
+                      
+                      // Explicit distinct format 'country-' to prevent any duplication crash (Rule 2)
+                      const reactKey = `country-${match.fixture.id}`;
                       
                       return (
                         <div
