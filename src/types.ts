@@ -133,4 +133,5 @@ export interface Match {
   lineups?: TeamLineup[];
   broadcast?: string;
   detailsLoaded?: boolean;
+  tier?: number;
 }
