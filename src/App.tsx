@@ -321,97 +321,89 @@ export interface LeagueInfo {
 }
 
 export const LEAGUE_DICTIONARY: Record<number, LeagueInfo> = {
-  // Brasil
+  // BRASIL
   268: { name: "Brasileirão Série A", country: "Brasil", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/br.svg" },
   390: { name: "Brasileirão Série B", country: "Brasil", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
+  8814: { name: "Brasileirão Série B", country: "Brasil", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
   325: { name: "Brasileirão Série C", country: "Brasil", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
+  8971: { name: "Brasileirão Série C", country: "Brasil", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
+  326: { name: "Brasileirão Série D", country: "Brasil", tier: 4, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
+  9464: { name: "Brasileirão Série D", country: "Brasil", tier: 4, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
   225: { name: "Copa do Brasil", country: "Brasil", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/br.svg" },
-  
-  // Inglaterra
-  47: { name: "Premier League", country: "Inglaterra", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/gb.svg" },
-  48: { name: "Championship", country: "Inglaterra", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
-  49: { name: "League One", country: "Inglaterra", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
-  50: { name: "League Two", country: "Inglaterra", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
-  13271: { name: "FA Cup", country: "Inglaterra", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
-  13272: { name: "EFL Cup", country: "Inglaterra", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/gb.svg" },
 
-  // Espanha
-  87: { name: "La Liga", country: "Espanha", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/es.svg" },
-  88: { name: "Segunda División", country: "Espanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/es.svg" },
-  13273: { name: "Copa del Rey", country: "Espanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/es.svg" },
+  // AMÉRICA DO SUL E CONCACAF
+  112: { name: "Liga Profesional", country: "Argentina", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
+  163: { name: "Primera Nacional", country: "Argentina", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
+  916553: { name: "Primera Nacional", country: "Argentina", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
+  135: { name: "Primera División", country: "Paraguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/py.svg" },
+  133: { name: "Primera A", country: "Colômbia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/co.svg" },
+  134: { name: "Primera División", country: "Chile", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/cl.svg" },
+  136: { name: "Primera División", country: "Uruguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/uy.svg" },
+  131: { name: "Liga 1", country: "Peru", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pe.svg" },
+  132: { name: "Primera División", country: "Bolívia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/bo.svg" },
+  140: { name: "Serie A", country: "Equador", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ec.svg" },
+  139: { name: "Liga FUTVE", country: "Venezuela", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ve.svg" },
+  230: { name: "Liga MX", country: "México", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/mx.svg" },
+  130: { name: "MLS", country: "EUA", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
 
-  // Itália
+  // EUROPA
   53: { name: "Serie A", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
   65: { name: "Serie B", country: "Itália", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
-  930062: { name: "Serie A Playoff / Coppa", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
-  13276: { name: "Coppa Italia", country: "Itália", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
-
-  // Alemanha
+  141: { name: "Coppa Italia", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
   54: { name: "Bundesliga", country: "Alemanha", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/de.svg" },
   55: { name: "2. Bundesliga", country: "Alemanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/de.svg" },
-  141: { name: "DFB Pokal", country: "Alemanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/de.svg" },
-
-  // França
+  47: { name: "Premier League", country: "Inglaterra", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/gb.svg" },
+  87: { name: "La Liga", country: "Espanha", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/es.svg" },
   9666: { name: "Ligue 1", country: "França", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/fr.svg" },
-  62: { name: "Ligue 2", country: "França", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/fr.svg" },
-  13275: { name: "Coupe de France", country: "França", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/fr.svg" },
-
-  // Portugal
-  61: { name: "Primeira Liga", country: "Portugal", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/pt.svg" },
-  118: { name: "Liga Portugal 2", country: "Portugal", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pt.svg" },
-  13274: { name: "Taça de Portugal", country: "Portugal", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pt.svg" },
-
-  // Holanda
   122: { name: "Eredivisie", country: "Holanda", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/nl.svg" },
-  123: { name: "Eerste Divisie", country: "Holanda", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/nl.svg" },
-  13278: { name: "KNVB Beker", country: "Holanda", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/nl.svg" },
+  61: { name: "Liga Portugal", country: "Portugal", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/pt.svg" },
+  67: { name: "Allsvenskan", country: "Suécia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/se.svg" },
+  924725: { name: "Pro League", country: "Bélgica", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/be.svg" },
 
-  // Europa (Competições de Clubes)
-  42: { name: "Champions League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
-  73: { name: "Europa League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  // COMPLEMENTOS E LIGAS ADICIONAIS DESCOBERTAS
+  232: { name: "1. CFL", country: "Montenegro", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/me.svg" },
+  927414: { name: "1. Liga", country: "República Tcheca", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/cz.svg" },
+  228: { name: "A Lyga", country: "Lituânia", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/lt.svg" },
+  920267: { name: "Copa da China / League One", country: "China", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/cn.svg" },
+  906616: { name: "Premier League", country: "Rússia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ru.svg" },
+  59: { name: "Eliteserien", country: "Noruega", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/no.svg" },
+  931556: { name: "Eredivisie (Playoffs)", country: "Holanda", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/nl.svg" },
+  923718: { name: "Torneo Federal A", country: "Argentina", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
+  917951: { name: "Copa do Imperador", country: "Japão", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/jp.svg" },
 
-  // América do Sul / CONMEBOL
-  924597: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
-  924595: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
-  924591: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  // GRANDES TORNEIOS CONTINENTAIS / INTERNACIONAIS (TIER 1 - DESTAQUES)
+  42: { name: "UEFA Champions League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  73: { name: "UEFA Europa League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" }
+};
 
-  // Argentina
-  112: { name: "Liga Profesional", country: "Argentina", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
-  13280: { name: "Copa Argentina", country: "Argentina", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
-  394: { name: "Primera Nacional", country: "Argentina", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
+export const getLeagueDictEntry = (leagueId: number, rawName?: string): LeagueInfo | undefined => {
+  const nameLower = (rawName || "").toLowerCase();
 
-  // Colômbia
-  133: { name: "Primera A", country: "Colômbia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/co.svg" },
-  137: { name: "Primera B", country: "Colômbia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/co.svg" },
-  13281: { name: "Copa Colombia", country: "Colômbia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/co.svg" },
+  // ID 132 Conflict: England FA Cup vs Bolivia Primera División
+  if (leagueId === 132) {
+    if (nameLower.includes("fa cup") || nameLower.includes("england") || nameLower.includes("inglaterra") || nameLower.includes("cup") || nameLower.includes("taça")) {
+      return { name: "FA Cup", country: "Inglaterra", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/gb.svg" };
+    }
+    return { name: "Primera División", country: "Bolívia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/bo.svg" };
+  }
 
-  // Bolívia
-  132: { name: "Primera División", country: "Bolívia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/bo.svg" },
-  13282: { name: "Copa Bolivia", country: "Bolívia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/bo.svg" },
+  // ID 140 Conflict: España La Liga 2 vs Equador Serie A
+  if (leagueId === 140) {
+    if (nameLower.includes("liga 2") || nameLower.includes("segunda") || nameLower.includes("espanha") || nameLower.includes("spain") || nameLower.includes("laliga")) {
+      return { name: "La Liga 2", country: "Espanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/es.svg" };
+    }
+    return { name: "Serie A", country: "Equador", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ec.svg" };
+  }
 
-  // Paraguai
-  135: { name: "Primera División", country: "Paraguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/py.svg" },
-  13283: { name: "Copa Paraguay", country: "Paraguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/py.svg" },
+  // ID 141 Conflict: Itália Coppa Italia vs Alemanha DFB Pokal
+  if (leagueId === 141) {
+    if (nameLower.includes("pokal") || nameLower.includes("dfb") || nameLower.includes("alemanha") || nameLower.includes("germany")) {
+      return { name: "DFB Pokal", country: "Alemanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/de.svg" };
+    }
+    return { name: "Coppa Italia", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" };
+  }
 
-  // Peru
-  131: { name: "Liga 1", country: "Peru", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pe.svg" },
-  13284: { name: "Copa Bicentenario", country: "Peru", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pe.svg" },
-
-  // Uruguai
-  136: { name: "Primera División", country: "Uruguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/uy.svg" },
-  13285: { name: "Copa Uruguay", country: "Uruguai", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/uy.svg" },
-
-  // Equador
-  140: { name: "Serie A", country: "Equador", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ec.svg" },
-  13286: { name: "Copa Ecuador", country: "Equador", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ec.svg" },
-
-  // Venezuela
-  139: { name: "Liga FUTVE", country: "Venezuela", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ve.svg" },
-  13287: { name: "Copa Venezuela", country: "Venezuela", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ve.svg" },
-
-  // Chile
-  134: { name: "Primera División", country: "Chile", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/cl.svg" },
-  13288: { name: "Copa Chile", country: "Chile", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/cl.svg" }
+  return LEAGUE_DICTIONARY[leagueId];
 };
 
 export default function App() {
@@ -546,6 +538,16 @@ export default function App() {
   // Collapsible drawers/accordions state corresponding to each country
   const [expandedCountries, setExpandedCountries] = useState<Record<string, boolean>>({});
 
+  // Collapsible sub-drawers for leagues inside country drawers (closed/collapsed by default)
+  const [expandedSubLeagues, setExpandedSubLeagues] = useState<Record<string, boolean>>({});
+
+  const toggleSubLeague = (key: string) => {
+    setExpandedSubLeagues(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
   // Keep track of score changes to trigger goals toasts
   const [goalToast, setGoalToast] = useState<{
     match: Match;
@@ -632,21 +634,6 @@ export default function App() {
     localStorage.setItem("worldscore_settings", JSON.stringify(newCfg));
   };
 
-  // Initialize and auto-expand country drawers when matches are loaded
-  useEffect(() => {
-    if (matches.length > 0) {
-      setExpandedCountries((prev) => {
-        const next = { ...prev };
-        matches.forEach((m) => {
-          const country = m.league.country || "Internacional";
-          // Auto-expand loaded drawers by default on new loads so matches are immediately visible
-          next[country] = true;
-        });
-        return next;
-      });
-    }
-  }, [matches]);
-
   // Monitor Window size to switch master-detail layout mode dynamically
   useEffect(() => {
     const handleResize = () => {
@@ -667,108 +654,12 @@ export default function App() {
   }, [matches, isLargeScreen]);
 
 // Main fetch function
-  // --- DICIONÁRIO INTELIGENTE DE LIGAS ---
-  // Ensina o site a traduzir os IDs da API para nomes reais e países
-  const LEAGUE_DICTIONARY: Record<number, { name: string; country: string; tier?: number }> = {
-    // Brasil
-    268: { name: "Brasileirão Série A", country: "Brasil", tier: 1 },
-    390: { name: "Brasileirão Série B", country: "Brasil", tier: 2 },
-    325: { name: "Brasileirão Série C", country: "Brasil", tier: 3 },
-    225: { name: "Copa do Brasil", country: "Brasil", tier: 1 },
-    
-    // Inglaterra
-    47: { name: "Premier League", country: "Inglaterra", tier: 1 },
-    48: { name: "Championship", country: "Inglaterra", tier: 2 },
-    49: { name: "League One", country: "Inglaterra", tier: 3 },
-    50: { name: "League Two", country: "Inglaterra", tier: 3 },
-    13271: { name: "FA Cup", country: "Inglaterra", tier: 2 },
-    13272: { name: "EFL Cup", country: "Inglaterra", tier: 2 },
-
-    // Espanha
-    87: { name: "La Liga", country: "Espanha", tier: 1 },
-    88: { name: "Segunda División", country: "Espanha", tier: 2 },
-    13273: { name: "Copa del Rey", country: "Espanha", tier: 2 },
-
-    // Itália
-    53: { name: "Serie A", country: "Itália", tier: 1 },
-    65: { name: "Serie B", country: "Itália", tier: 2 },
-    930062: { name: "Serie A Playoff / Coppa", country: "Itália", tier: 1 },
-    13276: { name: "Coppa Italia", country: "Itália", tier: 2 },
-
-    // Alemanha
-    54: { name: "Bundesliga", country: "Alemanha", tier: 1 },
-    55: { name: "2. Bundesliga", country: "Alemanha", tier: 2 },
-    141: { name: "DFB Pokal", country: "Alemanha", tier: 2 },
-
-    // França
-    9666: { name: "Ligue 1", country: "França", tier: 1 },
-    62: { name: "Ligue 2", country: "França", tier: 2 },
-    13275: { name: "Coupe de France", country: "França", tier: 2 },
-
-    // Portugal
-    61: { name: "Primeira Liga", country: "Portugal", tier: 1 },
-    118: { name: "Liga Portugal 2", country: "Portugal", tier: 2 },
-    13274: { name: "Taça de Portugal", country: "Portugal", tier: 2 },
-
-    // Holanda
-    122: { name: "Eredivisie", country: "Holanda", tier: 1 },
-    123: { name: "Eerste Divisie", country: "Holanda", tier: 2 },
-    13278: { name: "KNVB Beker", country: "Holanda", tier: 2 },
-
-    // Europa (Competições de Clubes)
-    42: { name: "Champions League", country: "Europa", tier: 1 },
-    73: { name: "Europa League", country: "Europa", tier: 1 },
-
-    // América do Sul / CONMEBOL
-    924597: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1 },
-    924595: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1 },
-    924591: { name: "CONMEBOL Libertadores", country: "América do Sul", tier: 1 },
-
-    // Argentina
-    112: { name: "Liga Profesional", country: "Argentina", tier: 2 },
-    13280: { name: "Copa Argentina", country: "Argentina", tier: 2 },
-    394: { name: "Primera Nacional", country: "Argentina", tier: 2 },
-
-    // Colômbia
-    133: { name: "Primera A", country: "Colômbia", tier: 2 },
-    137: { name: "Primera B", country: "Colômbia", tier: 2 },
-    13281: { name: "Copa Colombia", country: "Colômbia", tier: 2 },
-
-    // Bolívia
-    132: { name: "Primera División", country: "Bolívia", tier: 2 },
-    13282: { name: "Copa Bolivia", country: "Bolívia", tier: 2 },
-
-    // Paraguai
-    135: { name: "Primera División", country: "Paraguai", tier: 2 },
-    13283: { name: "Copa Paraguay", country: "Paraguai", tier: 2 },
-
-    // Peru
-    131: { name: "Liga 1", country: "Peru", tier: 2 },
-    13284: { name: "Copa Bicentenario", country: "Peru", tier: 2 },
-
-    // Uruguai
-    136: { name: "Primera División", country: "Uruguai", tier: 2 },
-    13285: { name: "Copa Uruguay", country: "Uruguai", tier: 2 },
-
-    // Equador
-    140: { name: "Serie A", country: "Equador", tier: 2 },
-    13286: { name: "Copa Ecuador", country: "Equador", tier: 2 },
-
-    // Venezuela
-    139: { name: "Liga FUTVE", country: "Venezuela", tier: 2 },
-    13287: { name: "Copa Venezuela", country: "Venezuela", tier: 2 },
-
-    // Chile
-    134: { name: "Primera División", country: "Chile", tier: 2 },
-    13288: { name: "Copa Chile", country: "Chile", tier: 2 }
-  };
-
   // --- TRADUTOR DA NOVA API FOTMOB PARA O NOSSO SITE ---
   const mapApiToMatch = (item: any): Match => {
     const leagueId = item.leagueId;
     
-    // Fallback logic of Rule 1
-    let dictEntry = LEAGUE_DICTIONARY[leagueId];
+    // Fallback logic using the smart resolver function
+    let dictEntry = getLeagueDictEntry(leagueId, item.leagueName || item.league?.name);
     let resolvedName: string;
     let resolvedCountry: string;
     let resolvedTier: number;
@@ -1364,9 +1255,9 @@ export default function App() {
   // Identify prestigiadas competições (Major International tournaments) to separate them on top
   const isMajorLeague = (leagueName: string, leagueCountry: string, leagueId?: number): boolean => {
     if (leagueId !== undefined) {
-      const info = LEAGUE_DICTIONARY[leagueId] || dynamicLeagues[leagueId];
+      const info = getLeagueDictEntry(leagueId, leagueName) || dynamicLeagues[leagueId];
       if (info !== undefined) {
-        return info.isMajor;
+        return info.isMajor || false;
       }
     }
     const ln = leagueName.toLowerCase();
@@ -1523,7 +1414,17 @@ export default function App() {
       "espanha": { pt: "Espanha", code: "es" },
       "portugal": { pt: "Portugal", code: "pt" },
       "italy": { pt: "Itália", code: "it" },
+      "italia": { pt: "Itália", code: "it" },
       "itália": { pt: "Itália", code: "it" },
+      "montenegro": { pt: "Montenegro", code: "me" },
+      "lithuania": { pt: "Lituânia", code: "lt" },
+      "lituânia": { pt: "Lituânia", code: "lt" },
+      "czechia": { pt: "República Tcheca", code: "cz" },
+      "czech republic": { pt: "República Tcheca", code: "cz" },
+      "república tcheca": { pt: "República Tcheca", code: "cz" },
+      "república checa": { pt: "República Tcheca", code: "cz" },
+      "europa": { pt: "Europa", code: "un" },
+      "europe": { pt: "Europa", code: "un" },
       "france": { pt: "França", code: "fr" },
       "frança": { pt: "França", code: "fr" },
       "germany": { pt: "Alemanha", code: "de" },
@@ -1675,7 +1576,7 @@ export default function App() {
     if (norm === "brasil") return 0;
     if (norm === "inglaterra") return 1;
     if (norm === "espanha") return 2;
-    if (norm === "itália") return 3;
+    if (norm === "itália" || norm === "italia") return 3;
     if (norm === "alemanha") return 4;
     if (norm === "frança") return 5;
     if (norm === "portugal") return 6;
@@ -1731,7 +1632,7 @@ export default function App() {
     if (country === "brasil") return 10;
     if (country === "inglaterra" || name.includes("premier league")) return 11;
     if (country === "espanha" || name.includes("la liga")) return 12;
-    if (country === "itália" || name.includes("serie a")) return 13;
+    if (country === "itália" || country === "italia" || name.includes("serie a")) return 13;
     if (country === "alemanha" || name.includes("bundesliga")) return 14;
     if (country === "frança" || name.includes("ligue 1")) return 15;
     if (country === "portugal" || name.includes("primeira liga")) return 16;
@@ -2055,13 +1956,19 @@ export default function App() {
           <div className="flex flex-col gap-3.5 pt-3 mt-2 border-t border-slate-100 dark:border-slate-850/60 transition-all duration-300">
             {Object.entries(drawer.leagues).map(([leagueKey, { league, matches: leagueMatches }]) => {
               const isLeagueFav = favorites.leagues.includes(league.id);
+              const subLeagueKey = `${drawerKey}-${leagueKey}`;
+              const isSubOpen = !!expandedSubLeagues[subLeagueKey]; // Closed (false) by default unless expanded (true)
+
               return (
                 <div 
                   key={`${drawerKey}-${leagueKey}`} 
                   className="flex flex-col gap-3 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/15 dark:bg-slate-950/20 shadow-3xs"
                 >
                   {/* League Header / Sub-gaveta Header */}
-                  <div className="flex items-center justify-between select-none">
+                  <div 
+                    onClick={() => toggleSubLeague(subLeagueKey)}
+                    className="flex items-center justify-between select-none cursor-pointer group/sub"
+                  >
                     <div className="flex items-center gap-2 text-[10px] font-extrabold text-slate-550 dark:text-slate-350 uppercase tracking-widest leading-none">
                       <SafeImage 
                         src={league.logo} 
@@ -2070,6 +1977,15 @@ export default function App() {
                         fallbackType="league"
                       />
                       <span>{league.name}</span>
+                      
+                      <div className="flex items-center gap-1 opacity-65 group-hover/sub:opacity-100 ml-1">
+                        <span className="text-[9px] font-mono">({leagueMatches.length})</span>
+                        {isSubOpen ? (
+                          <ChevronUp className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+                        ) : (
+                          <ChevronDown className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+                        )}
+                      </div>
                     </div>
                     <button
                       type="button"
@@ -2088,114 +2004,116 @@ export default function App() {
                     </button>
                   </div>
 
-                  {/* Actual Game Cards */}
-                  <div className="flex flex-col gap-2">
-                    {leagueMatches.map((match) => {
-                      const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
-                        match.fixture.status.short
-                      );
-                      const isFinished = match.fixture.status.short === "FT";
-                      const isSelected = selectedMatch?.fixture.id === match.fixture.id;
-                      
-                      // Explicit distinct format 'country-' to prevent any duplication crash (Rule 2)
-                      const reactKey = `country-${match.fixture.id}`;
-                      
-                      return (
-                        <div
-                          key={reactKey}
-                          onClick={() => setSelectedMatch(match)}
-                          className={`rounded-xl shadow-2xs p-3.5 flex items-center justify-between cursor-pointer border transition-all ${
-                            isSelected 
-                              ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
-                              : isLive
-                              ? "bg-white dark:bg-slate-900 border-l-4 border-l-[#ffdf00] border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
-                              : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
-                          }`}
-                        >
-                          <div className="mr-3 shrink-0 select-none bg-slate-100/50 dark:bg-slate-800 p-1 rounded-lg flex items-center justify-center">
-                            <SafeImage 
-                              src={match.league.logo} 
-                              alt={match.league.name} 
-                              className="w-5 h-5 object-contain"
-                              fallbackType="league"
-                            />
-                          </div>
+                  {/* Actual Game Cards (collapsed/expanded conditionally) */}
+                  {isSubOpen && (
+                    <div className="flex flex-col gap-2">
+                      {leagueMatches.map((match) => {
+                        const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
+                          match.fixture.status.short
+                        );
+                        const isFinished = match.fixture.status.short === "FT";
+                        const isSelected = selectedMatch?.fixture.id === match.fixture.id;
+                        
+                        // Explicit distinct format 'country-' to prevent any duplication crash (Rule 2)
+                        const reactKey = `country-${match.fixture.id}`;
+                        
+                        return (
+                          <div
+                            key={reactKey}
+                            onClick={() => setSelectedMatch(match)}
+                            className={`rounded-xl shadow-2xs p-3.5 flex items-center justify-between cursor-pointer border transition-all ${
+                              isSelected 
+                                ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
+                                : isLive
+                                ? "bg-white dark:bg-slate-900 border-l-4 border-l-[#ffdf00] border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
+                                : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
+                            }`}
+                          >
+                            <div className="mr-3 shrink-0 select-none bg-slate-100/50 dark:bg-slate-800 p-1 rounded-lg flex items-center justify-center">
+                              <SafeImage 
+                                src={match.league.logo} 
+                                alt={match.league.name} 
+                                className="w-5 h-5 object-contain"
+                                fallbackType="league"
+                              />
+                            </div>
 
-                          <div className="flex-1 overflow-hidden pr-3 font-sans">
-                            <div className="flex flex-col gap-1.5 py-0.5">
-                              {/* Home Team Row */}
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-1.5 min-w-0">
-                                  <SafeImage 
-                                    src={match.teams.home.logo} 
-                                    alt={match.teams.home.name} 
-                                    className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                                    fallbackType="team"
-                                  />
-                                  <span className={`text-xs truncate ${
-                                    isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-850 dark:text-slate-105"
+                            <div className="flex-1 overflow-hidden pr-3 font-sans">
+                              <div className="flex flex-col gap-1.5 py-0.5">
+                                {/* Home Team Row */}
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-1.5 min-w-0">
+                                    <SafeImage 
+                                      src={match.teams.home.logo} 
+                                      alt={match.teams.home.name} 
+                                      className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
+                                      fallbackType="team"
+                                    />
+                                    <span className={`text-xs truncate ${
+                                      isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-850 dark:text-slate-105"
+                                    }`}>
+                                      {match.teams.home.name}
+                                    </span>
+                                  </div>
+                                  <span className={`font-mono text-xs font-black pr-1 ${
+                                    isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
                                   }`}>
-                                    {match.teams.home.name}
+                                    {match.goals.home ?? "-"}
                                   </span>
                                 </div>
-                                <span className={`font-mono text-xs font-black pr-1 ${
-                                  isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
-                                }`}>
-                                  {match.goals.home ?? "-"}
-                                </span>
-                              </div>
 
-                              {/* Away Team Row */}
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-1.5 min-w-0">
-                                  <SafeImage 
-                                    src={match.teams.away.logo} 
-                                    alt={match.teams.away.name} 
-                                    className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                                    fallbackType="team"
-                                  />
-                                  <span className={`text-xs truncate ${
-                                    isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-855 dark:text-slate-105"
+                                {/* Away Team Row */}
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-1.5 min-w-0">
+                                    <SafeImage 
+                                      src={match.teams.away.logo} 
+                                      alt={match.teams.away.name} 
+                                      className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
+                                      fallbackType="team"
+                                    />
+                                    <span className={`text-xs truncate ${
+                                      isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-85B dark:text-slate-105"
+                                    }`}>
+                                      {match.teams.away.name}
+                                    </span>
+                                  </div>
+                                  <span className={`font-mono text-xs font-black pr-1 ${
+                                    isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
                                   }`}>
-                                    {match.teams.away.name}
+                                    {match.goals.away ?? "-"}
                                   </span>
                                 </div>
-                                <span className={`font-mono text-xs font-black pr-1 ${
-                                  isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
-                                }`}>
-                                  {match.goals.away ?? "-"}
-                                </span>
                               </div>
                             </div>
-                          </div>
 
-                          <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
-                            {isLive ? (
-                              <>
-                                <span className="text-red-650 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
-                                  {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
+                            <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
+                              {isLive ? (
+                                <>
+                                  <span className="text-red-650 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
+                                    {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
+                                  </span>
+                                  <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
+                                    {isPt ? "VIVO" : language === "en" ? "LIVE" : language === "es" ? "VIVO" : language === "fr" ? "DIRECT" : language === "it" ? "LIVE" : "LIVE"}
+                                  </span>
+                                </>
+                              ) : isFinished ? (
+                                <span className="text-slate-404 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
+                                  FT
                                 </span>
-                                <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
-                                  {isPt ? "VIVO" : language === "en" ? "LIVE" : language === "es" ? "VIVO" : language === "fr" ? "DIRECT" : language === "it" ? "LIVE" : "LIVE"}
+                              ) : (
+                                <span className="text-slate-500 dark:text-slate-400 font-mono text-[10.5px] font-bold bg-slate-100/50 dark:bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-200/10 shadow-3xs">
+                                  {new Date(match.fixture.date).toLocaleTimeString(localeStr, {
+                                    hour: "2-digit",
+                                    minute: "2-digit"
+                                  })}
                                 </span>
-                              </>
-                            ) : isFinished ? (
-                              <span className="text-slate-404 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
-                                FT
-                              </span>
-                            ) : (
-                              <span className="text-slate-500 dark:text-slate-400 font-mono text-[10.5px] font-bold bg-slate-100/50 dark:bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-200/10 shadow-3xs">
-                                {new Date(match.fixture.date).toLocaleTimeString(localeStr, {
-                                  hour: "2-digit",
-                                  minute: "2-digit"
-                                })}
-                              </span>
-                            )}
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
