@@ -1028,11 +1028,8 @@ app.get("/api/fixtures", async (req, res) => {
     }
 
     if (allEvents.length === 0) {
-      console.log(`[API /api/fixtures] Nenhum jogo retornado da API real para as datas estimadas de ${dateStr}. Usando fallback simulado.`);
-      if (!matchStore[dateStr]) {
-        matchStore[dateStr] = generateMockFixturesForDate(dateStr, clientToday);
-      }
-      return res.json({ response: matchStore[dateStr], _simulated: true });
+      console.log(`[API /api/fixtures] Nenhum jogo retornado da API real para as datas estimadas de ${dateStr}. Retornando lista vazia.`);
+      return res.json({ response: [], _simulated: false });
     }
 
     // Load league details cache concurrently before mapping
@@ -1054,15 +1051,11 @@ app.get("/api/fixtures", async (req, res) => {
     return res.json({ response: filteredMatches, _source: activeSource });
 
   } catch (error: any) {
-    console.log("=== ERRO DETECTADO NA CHAMADA DA API REAL (ZONA DE FALLBACK ATIVADA) ===");
+    console.log("=== ERRO DETECTADO NA CHAMADA DA API REAL ===");
     console.log(error);
     console.log("=======================================================================");
     
-    // In case of API failure, fall back to high-grade local simulation model
-    if (!matchStore[dateStr]) {
-      matchStore[dateStr] = generateMockFixturesForDate(dateStr, clientToday);
-    }
-    return res.json({ response: matchStore[dateStr], _simulated: true, _error: error.message });
+    return res.status(500).json({ response: [], _simulated: false, error: "Erro ao buscar partidas", _error: error.message });
   }
 });
 
@@ -1074,13 +1067,7 @@ app.get("/api/live", async (req, res) => {
   advanceLiveMatches();
 
   if (bypassAPI) {
-    if (!matchStore[realToday]) {
-      matchStore[realToday] = generateMockFixturesForDate(realToday, realToday);
-    }
-    const liveMatches = matchStore[realToday].filter((m: any) =>
-      ["1H", "2H", "HT", "ET", "BT", "INT"].includes(m.fixture.status.short)
-    );
-    return res.json({ response: liveMatches, _simulated: true });
+    return res.json({ response: [], _simulated: false });
   }
 
   try {
@@ -1140,16 +1127,10 @@ app.get("/api/live", async (req, res) => {
     }
 
     if (!events || events.length === 0) {
-      console.log("No live events returned from RapidAPI. Using simulation...");
-      if (!matchStore[realToday]) {
-        matchStore[realToday] = generateMockFixturesForDate(realToday, realToday);
-      }
-      const liveMatches = matchStore[realToday].filter((m: any) =>
-        ["1H", "2H", "HT", "ET", "BT", "INT"].includes(m.fixture.status.short)
-      );
+      console.log("No live events returned from RapidAPI.");
       return res.json({
-        response: liveMatches,
-        _simulated: true,
+        response: [],
+        _simulated: false,
         _notice: "No live games found on API"
       });
     }
@@ -1163,14 +1144,8 @@ app.get("/api/live", async (req, res) => {
 
     return res.json({ response: mappedMatches, _source: resultPack.source });
   } catch (error: any) {
-    console.log("Live API failed, falling back to local simulation:", error.message);
-    if (!matchStore[realToday]) {
-      matchStore[realToday] = generateMockFixturesForDate(realToday, realToday);
-    }
-    const liveMatches = matchStore[realToday].filter((m: any) =>
-      ["1H", "2H", "HT", "ET", "BT", "INT"].includes(m.fixture.status.short)
-    );
-    return res.json({ response: liveMatches, _simulated: true, _error: error.message });
+    console.log("Live API failed:", error.message);
+    return res.status(500).json({ response: [], _simulated: false, error: "Erro ao buscar jogos ao vivo", _error: error.message });
   }
 });
 

@@ -794,7 +794,7 @@ export default function App() {
     }
 
     const isFinished = item.status?.finished || false;
-    const isOngoing = item.status?.ongoing || false;
+    const isOngoing = item.status?.ongoing || item.status?.live === true || item.status?.started === true || !!item.status?.liveTime || false;
     const isCancelled = item.status?.cancelled || false;
 
     let statusShort = "NS";
@@ -807,15 +807,16 @@ export default function App() {
       statusLong = "Match Finished";
       elapsed = 90;
     } else if (isOngoing) {
-      const liveTimeStr = item.status?.liveTime?.short || "";
-      if (liveTimeStr.includes("HT")) {
+      const liveTimeStr = item.status?.liveTime?.short || (typeof item.status?.liveTime === "string" ? item.status.liveTime : "") || "";
+      if (liveTimeStr.includes("HT") || liveTimeStr.toLowerCase().includes("int") || liveTimeStr.toLowerCase().includes("half") || liveTimeStr.toLowerCase().includes("intervalo")) {
         statusShort = "HT";
         statusLong = "Halftime";
         elapsed = 45;
       } else {
-        statusShort = "2H"; 
-        statusLong = "Second Half";
-        elapsed = parseInt(liveTimeStr.replace(/\D/g, "")) || 0;
+        const parsedElapsed = parseInt(liveTimeStr.replace(/\D/g, ""), 10) || 0;
+        elapsed = parsedElapsed > 0 ? parsedElapsed : (item.status?.elapsed || 0);
+        statusShort = elapsed <= 45 ? "1H" : "2H"; 
+        statusLong = elapsed <= 45 ? "First Half" : "Second Half";
       }
     } else if (isCancelled) {
       statusShort = "CANC";
@@ -896,69 +897,55 @@ export default function App() {
       }
 
       // 4. Fazer o fetch aos 2 dias simultaneamente para não perdermos os jogos noturnos
-      let rawResultsSuccessful = false;
-      let allRawMatches: any[] = [];
-      try {
-        const fetchPromises = urlsToFetch.map(utcDate => 
-          fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-matches-by-date?date=${utcDate}`, {
-            method: "GET",
-            headers: {
-              "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
-              "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
-            }
-          }).then(res => {
-            if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
-            return res.json();
-          })
-        );
+      const fetchPromises = urlsToFetch.map(utcDate => 
+        fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-matches-by-date?date=${utcDate}`, {
+          method: "GET",
+          headers: {
+            "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+            "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
+          }
+        }).then(res => {
+          if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
+          return res.json();
+        })
+      );
 
-        const results = await Promise.all(fetchPromises);
+      const results = await Promise.all(fetchPromises);
+      
+      // 5. Juntar todos os jogos num caldeirão e remover duplicados
+      const allRawMatches: any[] = [];
+      const matchIds = new Set();
+      results.forEach(data => {
+        const matches = data.response?.matches || [];
+        matches.forEach((m: any) => {
+          if (!matchIds.has(m.id)) {
+            matchIds.add(m.id);
+            allRawMatches.push(m);
+          }
+        });
+      });
+
+      if (allRawMatches.length === 0) {
+        throw new Error("Nenhuma partida real retornada pela API.");
+      }
+
+      // 6. A GRANDE PENEIRA: Filtrar APENAS os jogos que caem no NOSSO dia local!
+      const filteredRawMatches = allRawMatches.filter(m => {
+        if (!m.status?.utcTime) return false;
         
-        // 5. Juntar todos os jogos num caldeirão e remover duplicados
-        const matchIds = new Set();
-        results.forEach(data => {
-          const matches = data.response?.matches || [];
-          matches.forEach((m: any) => {
-            if (!matchIds.has(m.id)) {
-              matchIds.add(m.id);
-              allRawMatches.push(m);
-            }
-          });
-        });
-        rawResultsSuccessful = allRawMatches.length > 0;
-      } catch (directErr) {
-        console.error("Erro na chamada directa à API (tentando fallback local):", directErr);
-      }
+        // Transforma a data UTC da API no horário do telemóvel/pc do utilizador
+        const matchLocalObj = new Date(m.status.utcTime);
+        const yyyy = matchLocalObj.getFullYear();
+        const mm = String(matchLocalObj.getMonth() + 1).padStart(2, '0');
+        const dd = String(matchLocalObj.getDate()).padStart(2, '0');
+        const matchLocalStr = `${yyyy}-${mm}-${dd}`;
+        
+        // Só passa na peneira se o dia bater certo com o que clicámos no calendário
+        return matchLocalStr === date;
+      });
 
-      if (rawResultsSuccessful) {
-        // 6. A GRANDE PENEIRA: Filtrar APENAS os jogos que caem no NOSSO dia local!
-        const filteredRawMatches = allRawMatches.filter(m => {
-          if (!m.status?.utcTime) return false;
-          
-          // Transforma a data UTC da API no horário do telemóvel/pc do utilizador
-          const matchLocalObj = new Date(m.status.utcTime);
-          const yyyy = matchLocalObj.getFullYear();
-          const mm = String(matchLocalObj.getMonth() + 1).padStart(2, '0');
-          const dd = String(matchLocalObj.getDate()).padStart(2, '0');
-          const matchLocalStr = `${yyyy}-${mm}-${dd}`;
-          
-          // Só passa na peneira se o dia bater certo com o que clicámos no calendário
-          return matchLocalStr === date;
-        });
-
-        // 7. Passar os jogos filtrados pela nossa máquina de tradução
-        nextMatches = filteredRawMatches.map(mapApiToMatch);
-      } else {
-        // FALLBACK LOCAL PROXY
-        console.log(`[App fetchMatches] Chamada directa falhou ou vazia. Buscando do proxy local: /api/fixtures?date=${date}`);
-        const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Sao_Paulo";
-        const proxyRes = await fetch(`/api/fixtures?date=${date}&timezone=${encodeURIComponent(localTz)}`);
-        if (!proxyRes.ok) {
-          throw new Error("Falha ao carregar jogos de todas as fontes.");
-        }
-        const proxyData = await proxyRes.json();
-        nextMatches = proxyData.response || [];
-      }
+      // 7. Passar os jogos filtrados pela nossa máquina de tradução
+      nextMatches = filteredRawMatches.map(mapApiToMatch);
 
       // --- Daqui para baixo é o código original dos Toasts de Golos e Updates ---
       if (prevMatchesRef.current.length > 0 && nextMatches.length > 0) {
@@ -2017,7 +2004,7 @@ export default function App() {
                         <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
                           {isLive ? (
                             <>
-                              <span className="text-red-650 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
+                              <span className="text-[#009c3b] dark:text-emerald-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
                                 {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
                               </span>
                               <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
@@ -2272,7 +2259,7 @@ export default function App() {
                                   <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
                                     {isLive ? (
                                       <>
-                                        <span className="text-red-650 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
+                                        <span className="text-[#009c3b] dark:text-emerald-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
                                           {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
                                         </span>
                                         <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
@@ -2887,7 +2874,7 @@ export default function App() {
                                                     </div>
                                                   </div>
                                                   <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
-                                                    <span className="text-red-650 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
+                                                    <span className="text-[#009c3b] dark:text-emerald-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
                                                       {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
                                                     </span>
                                                     <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
@@ -3223,7 +3210,7 @@ export default function App() {
                                         <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-850/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
                                           {isLive ? (
                                             <>
-                                              <span className="text-red-650 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
+                                              <span className="text-[#009c3b] dark:text-emerald-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
                                                 {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
                                               </span>
                                               <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">

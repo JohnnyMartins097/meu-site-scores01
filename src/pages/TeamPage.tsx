@@ -847,8 +847,8 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                     </div>
                   ) : squad.length === 0 ? (
                     <div className="p-12 text-center bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl shadow-3xs select-none">
-                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest leading-relaxed">
-                        {isPtStr ? "Nenhum dado de elenco encontrado" : "No squad data found"}
+                      <p className="text-sm font-semibold text-slate-500">
+                        {isPtStr ? "Sem dados do elenco no momento." : "No squad data available at the moment."}
                       </p>
                     </div>
                   ) : (
