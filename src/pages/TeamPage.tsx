@@ -25,6 +25,16 @@ const TEAM_FALLBACKS: Record<number, {
   529: { coach: "Hansi Flick", stadium: "Camp Nou", city: "Barcelona", founded: 1899, stats: { matches: 38, wins: 27, draws: 4, losses: 7, gf: 94, ga: 40 } }
 };
 
+const translateRole = (roleStr: string) => {
+  if (!roleStr) return '';
+  const upperRole = roleStr.toUpperCase();
+  if (upperRole.includes('KEEPER')) return 'GOLEIRO';
+  if (upperRole.includes('DEFENDER') || upperRole.includes('CB') || upperRole.includes('LB') || upperRole.includes('RB')) return 'DEFENSOR';
+  if (upperRole.includes('MIDFIELDER') || upperRole.includes('CM') || upperRole.includes('CDM') || upperRole.includes('CAM')) return 'MEIO-CAMPISTA';
+  if (upperRole.includes('ATTACKER') || upperRole.includes('ST') || upperRole.includes('RW') || upperRole.includes('LW')) return 'ATACANTE';
+  return roleStr;
+};
+
 export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, language }: TeamPageProps) {
   const { teamId } = useParams<{ teamId: string }>();
   const teamIdNum = teamId ? parseInt(teamId, 10) : 0;
@@ -213,6 +223,32 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
     if (teamIdNum) loadStandings();
     return () => { active = false; };
   }, [teamIdNum, deducedLeagueId]);
+
+  // Processamento Matemático de Destaques (useMemo)
+  const { topScorers, topAssists } = useMemo(() => {
+    if (!squad || squad.length === 0) return { topScorers: [], topAssists: [] };
+
+    // Extrai todos os jogadores de todos os grupos (Goleiros, Defensores, etc.)
+    const allPlayers = squad.flatMap((group: any) => {
+      const titleLower = (group.title || "").toLowerCase().trim();
+      if (titleLower === "coach" || titleLower === "coaching staff") return [];
+      return group.members || [];
+    });
+
+    // Ordena do maior para o menor número de Gols
+    const scorers = [...allPlayers]
+      .filter((p: any) => p && p.id && (p.goals || 0) > 0)
+      .sort((a, b) => (b.goals || 0) - (a.goals || 0))
+      .slice(0, 3);
+
+    // Ordena do maior para o menor número de Assistências
+    const assists = [...allPlayers]
+      .filter((p: any) => p && p.id && (p.assists || 0) > 0)
+      .sort((a, b) => (b.assists || 0) - (a.assists || 0))
+      .slice(0, 3);
+
+    return { topScorers: scorers, topAssists: assists };
+  }, [squad]);
 
   const isFavorite = favorites.teams.includes(resolvedDetails.name);
 
@@ -771,7 +807,7 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                                     </h4>
                                     <div className="flex items-center gap-1.5 mt-1 flex-wrap text-[10px] text-slate-400 font-bold">
                                       <span className="uppercase text-emerald-600 dark:text-emerald-400 font-black">
-                                        {member.role?.fallback || member.role?.name || mapPositionDetail(member)}
+                                        {translateRole(member.role?.fallback || member.role?.name || mapPositionDetail(member))}
                                       </span>
                                       {member.age && (
                                         <>
@@ -821,24 +857,108 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
 
                   {/* 1. ARTILHEIROS */}
                   <div className="bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl p-5 shadow-3xs space-y-4">
-                    <h4 className="font-black text-xs text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <h4 className="font-black text-xs text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
                       <Trophy className="w-4.5 h-4.5 text-emerald-500" />
                       {isPtStr ? "Artilheiros" : "Top Scorers"}
                     </h4>
-                    <p className="text-xs font-semibold text-slate-400/80 dark:text-slate-500 italic">
-                      {isPtStr ? "Estatísticas em breve..." : "Statistics coming soon..."}
-                    </p>
+                    {topScorers.length === 0 ? (
+                      <p className="text-gray-400 text-sm italic">
+                        {isPtStr ? "Nenhum gol registrado na temporada atual." : "No goals recorded in the current season."}
+                      </p>
+                    ) : (
+                      <div className="space-y-3">
+                        {topScorers.map((player) => {
+                          const goalCount = player.goals || 0;
+                          return (
+                            <Link
+                              key={player.id}
+                              to={`/player/${player.id}`}
+                              onClick={() => handlePlayerClick(player)}
+                              className="flex items-center justify-between gap-3 p-2 rounded-xl border border-transparent hover:border-emerald-500/10 hover:bg-emerald-500/[0.02] dark:hover:bg-emerald-500/[0.01] transition-all group cursor-pointer"
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="relative shrink-0">
+                                  <img
+                                    src={`https://images.fotmob.com/image_resources/playerimages/${player.id}.png`}
+                                    alt={player.name}
+                                    className="w-10 h-10 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750"
+                                    onError={(e) => {
+                                      e.currentTarget.onerror = null;
+                                      e.currentTarget.src = "/fallback-avatar.png";
+                                    }}
+                                    referrerPolicy="no-referrer"
+                                  />
+                                </div>
+                                <div className="min-w-0">
+                                  <h5 className="text-xs font-extrabold text-slate-800 dark:text-slate-200 truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                    {player.name}
+                                  </h5>
+                                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mt-0.5">
+                                    {translateRole(player.role?.fallback || player.positionIdsDesc || "")}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 text-[11px] font-black leading-none py-1.5 px-2 rounded-lg font-mono shrink-0">
+                                {goalCount} G
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
                   {/* 2. LIDER ASSISTENCIAS */}
                   <div className="bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl p-5 shadow-3xs space-y-4">
-                    <h4 className="font-black text-xs text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <h4 className="font-black text-xs text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
                       <Award className="w-4.5 h-4.5 text-blue-500" />
                       {isPtStr ? "Líder em Assistências" : "Assists Leaders"}
                     </h4>
-                    <p className="text-xs font-semibold text-slate-400/80 dark:text-slate-500 italic">
-                      {isPtStr ? "Estatísticas em breve..." : "Statistics coming soon..."}
-                    </p>
+                    {topAssists.length === 0 ? (
+                      <p className="text-gray-400 text-sm italic">
+                        {isPtStr ? "Nenhuma assistência registrada nesta temporada." : "No assists recorded in the current season."}
+                      </p>
+                    ) : (
+                      <div className="space-y-3">
+                        {topAssists.map((player) => {
+                          const assistCount = player.assists || 0;
+                          return (
+                            <Link
+                              key={player.id}
+                              to={`/player/${player.id}`}
+                              onClick={() => handlePlayerClick(player)}
+                              className="flex items-center justify-between gap-3 p-2 rounded-xl border border-transparent hover:border-blue-500/10 hover:bg-blue-500/[0.02] dark:hover:bg-blue-500/[0.01] transition-all group cursor-pointer"
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="relative shrink-0">
+                                  <img
+                                    src={`https://images.fotmob.com/image_resources/playerimages/${player.id}.png`}
+                                    alt={player.name}
+                                    className="w-10 h-10 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750"
+                                    onError={(e) => {
+                                      e.currentTarget.onerror = null;
+                                      e.currentTarget.src = "/fallback-avatar.png";
+                                    }}
+                                    referrerPolicy="no-referrer"
+                                  />
+                                </div>
+                                <div className="min-w-0">
+                                  <h5 className="text-xs font-extrabold text-slate-800 dark:text-slate-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                    {player.name}
+                                  </h5>
+                                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mt-0.5">
+                                    {translateRole(player.role?.fallback || player.positionIdsDesc || "")}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="bg-blue-500/10 text-blue-600 dark:text-blue-450 text-[11px] font-black leading-none py-1.5 px-2 rounded-lg font-mono shrink-0">
+                                {assistCount} A
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
                   {/* 3. MAIS JOGOS */}
