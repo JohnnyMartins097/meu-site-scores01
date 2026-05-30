@@ -3,6 +3,7 @@ import { X, MapPin, Shield, Calendar, Users, Award, Table, Sparkles, Tv, Star, R
 import { Match, MatchEvent } from "../types";
 import { Language, translations } from "../i18n";
 import { SafeImage } from "./SafeImage";
+import { MatchTimeline } from "./MatchTimeline";
 import { Link } from "react-router-dom";
 import { getLeagueStandings } from "../api";
 
@@ -442,11 +443,7 @@ export default function MatchDetail({
             <div className="space-y-4">
               <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest pl-1">{isPtStr ? "Cronologia do Jogo" : "Timeline"}</h4>
               {events.length === 0 ? (
-                <div className="text-center py-10 text-slate-500 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl">
-                  <Sparkles className="w-8 h-8 mx-auto mb-2 text-slate-300 animate-pulse" />
-                  <p className="text-sm font-medium">{t.noEventsRegistered}</p>
-                  <p className="text-xs text-slate-400 mt-1">{t.eventsWillAppear}</p>
-                </div>
+                <MatchTimeline />
               ) : (
                 <div className="relative border-l border-slate-200/80 dark:border-slate-800/80 ml-4 pl-6 space-y-4">
                   {[...events]

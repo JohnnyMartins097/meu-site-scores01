@@ -45,54 +45,78 @@ export const searchTeams = async (query: string) => {
   return data.response || [];
 };
 
-export const getLeagueStandings = async (leagueId: number) => {
+export const getLeagueStandings = async (leagueId: number, tab: "Geral" | "Casa" | "Fora" = "Geral") => {
   try {
-    // Attempt 1: Direct RapidAPI Call to the correct football-get-list-all-team endpoint with redundant parameters
-    const response = await fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-list-all-team?leagueid=${leagueId}&id=${leagueId}&leagueId=${leagueId}`, {
-      method: "GET",
-      headers: {
-        "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
-        "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
+    // 1. Tenda buscar pelo proxy local primeiro
+    const proxyResponse = await fetch(`/api/standings/${leagueId}?tab=${tab}`);
+    let rawList: any[] = [];
+    
+    if (proxyResponse.ok) {
+      const proxyData = await proxyResponse.json();
+      // Ler de response.standing conforme especificado
+      if (proxyData.response?.standing && Array.isArray(proxyData.response.standing)) {
+        rawList = proxyData.response.standing;
+      } else if (proxyData.standings && Array.isArray(proxyData.standings)) {
+        rawList = proxyData.standings;
+      } else if (proxyData.response?.list && Array.isArray(proxyData.response.list)) {
+        rawList = proxyData.response.list;
       }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Direct RapidAPI error: status ${response.status}`);
+    }
+    
+    if (!rawList || rawList.length === 0) {
+      // 2. Direct call alternate fallback
+      let path = "football-get-standing-all";
+      if (tab === "Casa") path = "football-get-standing-home";
+      if (tab === "Fora") path = "football-get-standing-away";
+      
+      const response = await fetch(`https://free-api-live-football-data.p.rapidapi.com/${path}?leagueid=${leagueId}`, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+          "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
+        }
+      });
+      if (response.ok) {
+        const directData = await response.json();
+        if (directData.response?.standing && Array.isArray(directData.response.standing)) {
+          rawList = directData.response.standing;
+        } else if (directData.response?.list && Array.isArray(directData.response.list)) {
+          rawList = directData.response.list;
+        }
+      }
     }
 
-    const data = await response.json();
-    const standingsData = data.response?.list;
-    if (standingsData && Array.isArray(standingsData)) {
-      return standingsData;
+    if (rawList && Array.isArray(rawList)) {
+      return rawList.map((team: any, idx: number) => {
+        const tId = team.id ?? team.teamId ?? (50000 + idx);
+        const position = team.idx ?? team.position ?? team.pos ?? (idx + 1);
+        const name = team.name ?? team.teamName ?? "";
+        return {
+          ...team,
+          id: tId,
+          teamId: tId,
+          idx: position,
+          pos: position,
+          position: position,
+          name: name,
+          teamName: name,
+          played: team.played ?? team.matches ?? ((team.wins ?? 0) + (team.draws ?? 0) + (team.losses ?? 0)),
+          wins: team.wins ?? team.win ?? 0,
+          draws: team.draws ?? team.draw ?? 0,
+          losses: team.losses ?? team.lose ?? team.loss ?? 0,
+          goalConDiff: team.goalConDiff ?? team.gd ?? team.goalDifference ?? 0,
+          gd: team.goalConDiff ?? team.gd ?? team.goalDifference ?? 0,
+          pts: team.pts ?? team.points ?? 0,
+          points: team.pts ?? team.points ?? 0,
+          logo: team.logo ?? `https://images.fotmob.com/image_resources/logo/teamlogo/${tId}.png`,
+          scoresStr: team.scoresStr ?? `${team.gf ?? team.goalsFor ?? 0}-${team.ga ?? team.goalsAgainst ?? 0}`
+        };
+      });
     }
 
     return [];
   } catch (error) {
-    console.warn("Direct RapidAPI call failed, trying local proxy fallback /api/standings:", error);
-    try {
-      // Attempt 2: Secure server-side proxy fallback
-      const proxyResponse = await fetch(`/api/standings/${leagueId}`);
-      if (!proxyResponse.ok) {
-        throw new Error(`Proxy fallback error: status ${proxyResponse.status}`);
-      }
-      const proxyData = await proxyResponse.json();
-      
-      const rawStandings = proxyData.standings;
-      if (rawStandings) {
-        if (Array.isArray(rawStandings)) {
-          // If outer structure has group details
-          const first = rawStandings[0];
-          if (first && Array.isArray(first.rows)) return first.rows;
-          if (first && Array.isArray(first.list)) return first.list;
-          return rawStandings;
-        }
-        if (rawStandings.rows && Array.isArray(rawStandings.rows)) return rawStandings.rows;
-        if (rawStandings.list && Array.isArray(rawStandings.list)) return rawStandings.list;
-        return rawStandings;
-      }
-    } catch (proxyError) {
-      console.error("Local proxy fallback also failed:", proxyError);
-    }
-    throw error;
+    console.error("Erro ao buscar classificação:", error);
+    return [];
   }
 };

@@ -1182,10 +1182,25 @@ app.get("/api/standings/:leagueid", async (req, res) => {
   }
 
   try {
-    const path = `/football-get-list-all-team?leagueid=${leagueId}&id=${leagueId}&leagueId=${leagueId}`;
+    const tab = req.query.tab as string;
+    let path = `/football-get-standing-all?leagueid=${leagueId}`;
+    if (tab === "Casa") {
+      path = `/football-get-standing-home?leagueid=${leagueId}`;
+    } else if (tab === "Fora") {
+      path = `/football-get-standing-away?leagueid=${leagueId}`;
+    } else if (!tab) {
+      path = `/football-get-list-all-team?leagueid=${leagueId}&id=${leagueId}&leagueId=${leagueId}`;
+    }
+    
     const resultPack = await fetchWithFallback(path);
-    const standingsList = resultPack.data?.response?.list || resultPack.data;
-    return res.json({ standings: standingsList, _source: resultPack.source });
+    const responseData = resultPack.data?.response || {};
+    const standingsList = responseData.standing || responseData.list || resultPack.data;
+    
+    return res.json({ 
+      standings: standingsList, 
+      response: responseData, 
+      _source: resultPack.source 
+    });
   } catch (error: any) {
     console.log(`Standing API failed for league ${leagueId}:`, error.message);
     return res.status(500).json({ error: "Classificação não disponível para esta competição", _error: error.message });

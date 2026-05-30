@@ -147,7 +147,7 @@ export const translations: Record<Language, Record<string, string>> = {
     catChampions: "Champions",
 
     // Match Details
-    eventsTab: "Lances da Partida",
+    eventsTab: "Partida",
     statsTab: "Estatísticas",
     lineupsTab: "Escalações",
     noEventsRegistered: "Nenhum evento registrado nesta partida.",
@@ -235,7 +235,7 @@ export const translations: Record<Language, Record<string, string>> = {
     catChampions: "Champions",
 
     // Match Details
-    eventsTab: "Lances da Partida",
+    eventsTab: "Partida",
     statsTab: "Estatísticas",
     lineupsTab: "Alinhamentos",
     noEventsRegistered: "Nenhum evento registado nesta partida.",
