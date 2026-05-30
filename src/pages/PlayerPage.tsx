@@ -1,7 +1,6 @@
-import React from "react";
-import { useParams, Link } from "react-router-dom";
-import { ChevronLeft, Star, Award, Shield, Calendar, Flame, Activity } from "lucide-react";
-import { SafeImage } from "../components/SafeImage";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { ChevronLeft, Star, Award, Shield, Calendar, Activity, Coins, AlignLeft, Globe } from "lucide-react";
 
 interface PlayerPageProps {
   favorites: { players: string[] };
@@ -9,162 +8,19 @@ interface PlayerPageProps {
   language: string;
 }
 
-interface PlayerDetails {
-  name: string;
-  teamName: string;
-  teamLogo: string;
-  number: number;
-  pos: "GK" | "DF" | "MF" | "FW";
-  age: number;
-  nationality: string;
-  goals: number;
-  assists: number;
-  yellowCards: number;
-  redCards: number;
-  matchesPlayed: number;
-}
-
-const ATHLETE_REGISTRY: Record<string, PlayerDetails> = {
-  "Pedro": {
-    name: "Pedro",
-    teamName: "Flamengo",
-    teamLogo: "https://media.api-sports.io/football/teams/127.png",
-    number: 9,
-    pos: "FW",
-    age: 28,
-    nationality: "Brasil",
-    goals: 28,
-    assists: 4,
-    yellowCards: 1,
-    redCards: 0,
-    matchesPlayed: 34
-  },
-  "Gerson": {
-    name: "Gerson",
-    teamName: "Flamengo",
-    teamLogo: "https://media.api-sports.io/football/teams/127.png",
-    number: 8,
-    pos: "MF",
-    age: 29,
-    nationality: "Brasil",
-    goals: 6,
-    assists: 9,
-    yellowCards: 4,
-    redCards: 1,
-    matchesPlayed: 36
-  },
-  "Arrascaeta": {
-    name: "Arrascaeta",
-    teamName: "Flamengo",
-    teamLogo: "https://media.api-sports.io/football/teams/127.png",
-    number: 14,
-    pos: "MF",
-    age: 31,
-    nationality: "Uruguai",
-    goals: 8,
-    assists: 10,
-    yellowCards: 2,
-    redCards: 0,
-    matchesPlayed: 28
-  },
-  "Gabigol": {
-    name: "Gabigol",
-    teamName: "Flamengo",
-    teamLogo: "https://media.api-sports.io/football/teams/127.png",
-    number: 99,
-    pos: "FW",
-    age: 29,
-    nationality: "Brasil",
-    goals: 12,
-    assists: 2,
-    yellowCards: 3,
-    redCards: 0,
-    matchesPlayed: 25
-  },
-  "Estêvão": {
-    name: "Estêvão",
-    teamName: "Palmeiras",
-    teamLogo: "https://media.api-sports.io/football/teams/121.png",
-    number: 41,
-    pos: "FW",
-    age: 19,
-    nationality: "Brasil",
-    goals: 14,
-    assists: 8,
-    yellowCards: 2,
-    redCards: 0,
-    matchesPlayed: 28
-  },
-  "Raphael Veiga": {
-    name: "Raphael Veiga",
-    teamName: "Palmeiras",
-    teamLogo: "https://media.api-sports.io/football/teams/121.png",
-    number: 23,
-    pos: "MF",
-    age: 30,
-    nationality: "Brasil",
-    goals: 15,
-    assists: 6,
-    yellowCards: 4,
-    redCards: 0,
-    matchesPlayed: 33
-  },
-  "Robert Lewandowski": {
-    name: "Robert Lewandowski",
-    teamName: "Barcelona",
-    teamLogo: "https://media.api-sports.io/football/teams/529.png",
-    number: 9,
-    pos: "FW",
-    age: 37,
-    nationality: "Polônia",
-    goals: 32,
-    assists: 5,
-    yellowCards: 2,
-    redCards: 0,
-    matchesPlayed: 35
-  },
-  "Vinicius Júnior": {
-    name: "Vinicius Júnior",
-    teamName: "Real Madrid",
-    teamLogo: "https://media.api-sports.io/football/teams/541.png",
-    number: 7,
-    pos: "FW",
-    age: 25,
-    nationality: "Brasil",
-    goals: 24,
-    assists: 9,
-    yellowCards: 8,
-    redCards: 0,
-    matchesPlayed: 31
-  },
-  "Kylian Mbappé": {
-    name: "Kylian Mbappé",
-    teamName: "Real Madrid",
-    teamLogo: "https://media.api-sports.io/football/teams/541.png",
-    number: 9,
-    pos: "FW",
-    age: 27,
-    nationality: "França",
-    goals: 26,
-    assists: 6,
-    yellowCards: 2,
-    redCards: 0,
-    matchesPlayed: 30
-  }
-};
-
 export default function PlayerPage({ favorites, onToggleFavoritePlayer, language }: PlayerPageProps) {
-  const { id, playerName: routePlayerName } = useParams<{ id?: string; playerName?: string }>();
+  const { playerName: routePlayerName } = useParams<{ playerName?: string }>();
+  // Use routePlayerName as the dynamic ID
+  const playerId = routePlayerName;
   const isPtStr = language.startsWith("pt");
 
-  const rawParam = id || routePlayerName;
-  const playerName = rawParam ? decodeURIComponent(rawParam) : "Pedro";
+  const [playerData, setPlayerData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [cachedPlayer, setCachedPlayer] = useState<any>(null);
 
-  const [cachedPlayer, setCachedPlayer] = React.useState<any>(null);
-
-  React.useEffect(() => {
-    if (rawParam) {
-      const stored = localStorage.getItem(`player_${rawParam}`);
+  useEffect(() => {
+    if (playerId) {
+      const stored = localStorage.getItem(`player_${playerId}`);
       if (stored) {
         try {
           setCachedPlayer(JSON.parse(stored));
@@ -173,87 +29,107 @@ export default function PlayerPage({ favorites, onToggleFavoritePlayer, language
         }
       }
     }
-  }, [rawParam]);
+  }, [playerId]);
 
-  // Lookup in athlete registry or dynamic cached player
-  const athlete = React.useMemo(() => {
-    if (cachedPlayer) {
-      const posCode = (cachedPlayer.roleCode || cachedPlayer.posCode || cachedPlayer.position || "MF").toUpperCase();
-      let posMapped: "GK" | "DF" | "MF" | "FW" = "MF";
-      if (posCode.includes("GK") || posCode === "G") posMapped = "GK";
-      else if (posCode.includes("DF") || posCode === "D" || posCode === "CB" || posCode === "LB" || posCode === "RB") posMapped = "DF";
-      else if (posCode.includes("MF") || posCode === "M" || posCode === "DM" || posCode === "CM" || posCode === "AM") posMapped = "MF";
-      else if (posCode.includes("FW") || posCode === "F" || posCode === "ST" || posCode === "LW" || posCode === "RW") posMapped = "FW";
+  useEffect(() => {
+    const fetchPlayer = async () => {
+      if (!playerId) return;
+      setIsLoading(true);
+      setPlayerData(null);
+      try {
+        // Tenta primeiro através do proxy do nosso servidor Node (Seguro contra vazamento de chaves e CORS)
+        let response = await fetch(`/api/player/${playerId}`);
+        let data;
+        if (response.ok) {
+          const resJson = await response.json();
+          data = resJson.data || resJson;
+        } else {
+          // Fallback de contingência direta
+          const url = `https://free-api-live-football-data.p.rapidapi.com/football-get-player-detail?playerid=${playerId}`;
+          const options = {
+            method: "GET",
+            headers: {
+              "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+              "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
+            }
+          };
+          const rawRes = await fetch(url, options);
+          data = await rawRes.json();
+        }
 
-      return {
-        name: cachedPlayer.name || cachedPlayer.playerName || "Jogador",
-        teamName: cachedPlayer.teamName || "Clube de Futebol",
-        teamLogo: cachedPlayer.teamLogo || "https://media.api-sports.io/football/teams/127.png",
-        number: cachedPlayer.shirtNumber ?? cachedPlayer.number ?? 10,
-        pos: posMapped,
-        age: cachedPlayer.age ? parseInt(cachedPlayer.age, 10) || 25 : 25,
-        nationality: cachedPlayer.cname || cachedPlayer.nationality || "Internacional",
-        goals: cachedPlayer.goals ?? (cachedPlayer.shirtNumber === 9 ? 14 : cachedPlayer.shirtNumber === 11 ? 9 : 0),
-        assists: cachedPlayer.assists ?? (cachedPlayer.shirtNumber === 10 ? 8 : cachedPlayer.shirtNumber === 8 ? 5 : 0),
-        yellowCards: cachedPlayer.yellowCards ?? 2,
-        redCards: cachedPlayer.redCards ?? 0,
-        matchesPlayed: cachedPlayer.matchesPlayed ?? 15
-      };
-    }
+        if (data?.response) {
+          const detailsMap: Record<string, string> = {};
+          if (data.response.detail) {
+            data.response.detail.forEach((item: any) => {
+              if (item && item.title) {
+                detailsMap[item.title] = item.value?.fallback || item.value || "";
+              }
+            });
+          }
 
-    return ATHLETE_REGISTRY[playerName] || {
-      name: playerName,
-      teamName: "Clube de Futebol",
-      teamLogo: "https://media.api-sports.io/football/teams/127.png",
-      number: 10,
-      pos: "MF" as const,
-      age: 26,
-      nationality: "Internacional",
-      goals: 8,
-      assists: 4,
-      yellowCards: 3,
-      redCards: 1,
-      matchesPlayed: 15
+          setPlayerData({
+            name: data.response.name || 'Nome não disponível',
+            details: detailsMap
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao buscar jogador:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-  }, [playerName, cachedPlayer]);
 
-  const isFav = favorites.players.includes(athlete.name);
+    if (playerId) {
+      fetchPlayer();
+    }
+  }, [playerId]);
 
-  const getPositionText = (pos: "GK" | "DF" | "MF" | "FW") => {
-    if (pos === "GK") return isPtStr ? "Goleiro" : "Goalkeeper";
-    if (pos === "DF") return isPtStr ? "Defensor" : "Defender";
-    if (pos === "MF") return isPtStr ? "Meio-Campista" : "Midfielder";
-    return isPtStr ? "Atacante" : "Forward";
-  };
+  const athleteName = playerData?.name || cachedPlayer?.name || (playerId ? `Jogador #${playerId}` : (isPtStr ? "Jogador" : "Player"));
+  const isFav = favorites.players.includes(athleteName);
+
+  const details = playerData?.details || {};
+  const ageVal = details['Age'] || details['Idade'] || cachedPlayer?.age || '-';
+  const heightVal = details['Height'] || details['Altura'] || '-';
+  const footVal = details['Preferred foot'] || details['Pé preferido'] || '-';
+  const shirtVal = details['Shirt'] || details['Camisa'] || (cachedPlayer?.shirtNumber ? `${cachedPlayer.shirtNumber}` : '-');
+  const countryVal = details['Country'] || details['País'] || cachedPlayer?.cname || '-';
+  const marketVal = details['Market value'] || details['Valor de mercado'] || '-';
+  const posVal = cachedPlayer?.role?.fallback || cachedPlayer?.role?.name || details['Position'] || details['Posição'] || '-';
 
   return (
     <div className="bg-slate-50 dark:bg-slate-950 min-h-screen pb-12 select-none">
       {/* Visual Header */}
       <div className="bg-slate-900 text-white relative py-12 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8">
-          <Link
-            to="/"
-            className="absolute top-4 left-4 flex items-center gap-1 text-xs font-bold text-white/80 hover:text-white bg-black/30 py-1.5 px-3 rounded-full transition-all focus:outline-none"
+          <button
+            onClick={() => window.history.back()}
+            className="absolute top-4 left-4 flex items-center gap-1 text-xs font-bold text-white/80 hover:text-white bg-black/30 py-1.5 px-3 rounded-full transition-all focus:outline-none cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
-            <span>{isPtStr ? "Voltar ao Início" : "Back to Home"}</span>
-          </Link>
+            <span>{isPtStr ? "Voltar" : "Back"}</span>
+          </button>
 
-          {/* Jersey visual placeholder */}
-          <div className="relative w-28 h-28 bg-[#009c3b] rounded-full flex items-center justify-center shadow-lg shrink-0 border-4 border-emerald-500 overflow-hidden">
-            <div className="absolute inset-x-0 bottom-0 bg-emerald-850 h-10 flex items-center justify-center font-black text-2xl font-mono text-white select-none">
-              {athlete.number}
-            </div>
-            <span className="text-4xl text-white/30 font-display font-black leading-none mb-4">👕</span>
+          {/* Foto Premium */}
+          <div className="relative shrink-0">
+            <img
+              src={`https://images.fotmob.com/image_resources/playerimages/${playerId}.png`}
+              alt={athleteName}
+              className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover bg-slate-800 border-4 border-emerald-500 shadow-lg animate-fade-in animate-duration-150"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/fallback-avatar.png";
+              }}
+              referrerPolicy="no-referrer"
+            />
           </div>
 
           <div className="flex-1 text-center md:text-left">
             <div className="flex flex-col md:flex-row md:items-center gap-3 justify-center md:justify-start">
               <h1 className="text-3xl md:text-4.5xl font-display font-black tracking-tight flex items-center justify-center md:justify-start gap-4">
-                {athlete.name}
+                {athleteName}
               </h1>
               <button
-                onClick={() => onToggleFavoritePlayer(athlete.name)}
+                onClick={() => onToggleFavoritePlayer(athleteName)}
                 className="self-center p-1.5 bg-white/10 hover:bg-white/20 rounded-full cursor-pointer transition-all border border-white/10 active:scale-95"
                 title={isPtStr ? "Favoritar Jogador" : "Favorite Player"}
               >
@@ -263,92 +139,152 @@ export default function PlayerPage({ favorites, onToggleFavoritePlayer, language
 
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-3 text-sm text-slate-300 font-medium">
               <span className="bg-[#ffdf00] text-slate-900 text-[10px] font-black px-2.5 py-0.5 rounded-sm tracking-wider uppercase">
-                {getPositionText(athlete.pos)}
+                {posVal}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5 font-bold">
-                <SafeImage src={athlete.teamLogo} alt={athlete.teamName} className="w-5 h-5 object-contain" fallbackType="team" />
-                {athlete.teamName}
+                {cachedPlayer?.teamLogo && (
+                  <img src={cachedPlayer.teamLogo} alt={cachedPlayer.teamName || ""} className="w-5 h-5 object-contain" />
+                )}
+                <span>{cachedPlayer?.teamName || (isPtStr ? "Clube" : "Club")}</span>
               </span>
               <span>•</span>
-              <span>{athlete.nationality}</span>
+              <span>{countryVal}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Stats Panel */}
+      {/* Main Content Area */}
       <div className="max-w-4xl mx-auto px-6 mt-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Bio Data Card */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-4">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-2">
-              <Activity className="w-4 h-4 text-emerald-600" />
-              {isPtStr ? "Ficha Técnica" : "Biographical Data"}
-            </h2>
-
-            <div className="flex justify-between items-center text-sm border-b border-slate-100 pb-2.5">
-              <span className="text-slate-400 font-medium">{isPtStr ? "Idade / Nascimento" : "Age"}</span>
-              <span className="font-bold text-slate-700 dark:text-slate-200">{athlete.age} {isPtStr ? "anos" : "years"}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm border-b border-slate-100 pb-2.5">
-              <span className="text-slate-400 font-medium">{isPtStr ? "Nacionalidade" : "Nationality"}</span>
-              <span className="font-bold text-slate-705 dark:text-slate-200">{athlete.nationality}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm border-b border-slate-100 pb-2.5">
-              <span className="text-slate-400 font-medium">{isPtStr ? "Time Atual" : "Current Team"}</span>
-              <span className="font-bold text-slate-705 dark:text-slate-200">{athlete.teamName}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-400 font-medium">{isPtStr ? "Camisa" : "Jersey number"}</span>
-              <span className="font-mono font-black text-emerald-600 dark:text-emerald-400">Nº {athlete.number}</span>
-            </div>
+        {isLoading ? (
+          <div className="p-16 text-center bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl shadow-3xs select-none">
+            <div className="w-8 h-8 border-3 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-xs font-black text-slate-400 uppercase tracking-widest leading-relaxed animate-pulse">
+              {isPtStr ? "Carregando Ficha do Jogador..." : "Loading Player Details..."}
+            </p>
           </div>
+        ) : !playerData ? (
+          <div className="p-16 text-center bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl shadow-3xs select-none">
+            <p className="text-sm font-bold text-slate-400/80 uppercase tracking-widest leading-relaxed">
+              {isPtStr ? "Nenhum dado de elenco encontrado" : "No squad data found"}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6 animate-fade-in animate-duration-150">
+            <div className="bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xs">
+              <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-6">
+                <Activity className="w-4.5 h-4.5 text-emerald-600" />
+                {isPtStr ? "Ficha Técnica Completa" : "Full Biographical Details"}
+              </h2>
 
-          {/* Performance Dashboard */}
-          <div className="md:col-span-2 bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl p-6 shadow-2xs">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-6">
-              <Flame className="w-4 h-4 text-emerald-600" />
-              {isPtStr ? "Estatísticas da Temporada" : "Season Metrics"}
-            </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* IDADE */}
+                <div className="bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800/60 rounded-xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600">
+                      <Calendar className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider">
+                        {isPtStr ? "Idade" : "Age"}
+                      </div>
+                      <div className="text-sm font-extrabold text-slate-850 dark:text-white mt-0.5">
+                        {ageVal} {isPtStr && ageVal !== "-" && !ageVal.includes("anos") ? "anos" : ""}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 rounded-xl text-center">
-                <div className="text-[10px] text-slate-400 font-black uppercase tracking-wider">{isPtStr ? "Jogos" : "Matches"}</div>
-                <div className="text-2.5xl font-mono font-black mt-2 text-slate-850 dark:text-white">{athlete.matchesPlayed}</div>
-              </div>
+                {/* ALTURA */}
+                <div className="bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800/60 rounded-xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-blue-600">
+                      <AlignLeft className="w-5 h-5 rotate-90" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider">
+                        {isPtStr ? "Altura" : "Height"}
+                      </div>
+                      <div className="text-sm font-extrabold text-slate-850 dark:text-white mt-0.5">
+                        {heightVal}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="bg-emerald-50/20 dark:bg-emerald-950/25 p-4 border border-emerald-100/10 rounded-xl text-center">
-                <div className="text-[10px] text-emerald-600 font-black uppercase tracking-wider">{isPtStr ? "Gols" : "Goals"}</div>
-                <div className="text-2.5xl font-mono font-black mt-2 text-[#009c3b]">{athlete.goals}</div>
-              </div>
+                {/* PÉ PREFERIDO */}
+                <div className="bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800/60 rounded-xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center text-amber-500">
+                      <Award className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider">
+                        {isPtStr ? "Pé Preferido" : "Preferred Foot"}
+                      </div>
+                      <div className="text-sm font-extrabold text-slate-850 dark:text-white mt-0.5">
+                        {footVal === "Left" || footVal === "Esquerdo" ? (isPtStr ? "Esquerdo" : "Left") :
+                         footVal === "Right" || footVal === "Canhoto" || footVal === "Destro" ? (isPtStr ? "Direito" : "Right") : footVal}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="bg-emerald-50/10 dark:bg-emerald-950/15 p-4 border border-emerald-100/10 rounded-xl text-center">
-                <div className="text-[10px] text-emerald-500 font-black uppercase tracking-wider">{isPtStr ? "Assist." : "Assists"}</div>
-                <div className="text-2.5xl font-mono font-black mt-2 text-emerald-600">{athlete.assists}</div>
-              </div>
+                {/* CAMISA */}
+                <div className="bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800/60 rounded-xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center text-purple-600">
+                      <Shield className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider">
+                        {isPtStr ? "Número da Camisa" : "Shirt Number"}
+                      </div>
+                      <div className="text-sm font-extrabold text-slate-850 dark:text-white mt-0.5">
+                        {shirtVal !== "-" ? `# ${shirtVal}` : "-"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="bg-amber-50/20 dark:bg-amber-950/25 p-4 border border-amber-100/10 rounded-xl text-center font-mono">
-                <div className="text-[10px] text-amber-500 font-black uppercase tracking-wider">{isPtStr ? "Cartões" : "Cards"}</div>
-                <div className="text-[14px] font-black mt-3 flex justify-center gap-1.5 leading-none">
-                  <span className="text-amber-503">🟨 {athlete.yellowCards}</span>
-                  <span className="text-rose-500">🟥 {athlete.redCards}</span>
+                {/* PAÍS / NACIONALIDADE */}
+                <div className="bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800/60 rounded-xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-950/40 flex items-center justify-center text-rose-500">
+                      <Globe className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider">
+                        {isPtStr ? "Nacionalidade" : "Nationality"}
+                      </div>
+                      <div className="text-sm font-extrabold text-slate-850 dark:text-white mt-0.5">
+                        {countryVal}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* VALOR DE MERCADO */}
+                <div className="bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800/60 rounded-xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600">
+                      <Coins className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider">
+                        {isPtStr ? "Valor de Mercado" : "Market Value"}
+                      </div>
+                      <div className="text-sm font-extrabold text-slate-850 dark:text-white mt-0.5">
+                        {marketVal}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className="border-t border-slate-100 mt-6 pt-5 space-y-4">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Aproveitamento Médio</h3>
-              <div className="flex justify-between text-xs font-semibold text-slate-600">
-                <span>Média de Gols por Partida</span>
-                <span className="font-mono font-bold text-emerald-600">{(athlete.goals / athlete.matchesPlayed).toFixed(2)} / jogo</span>
-              </div>
-              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div className="h-full bg-[#009c3b]" style={{ width: `${Math.min(95, (athlete.goals / athlete.matchesPlayed) * 100)}%` }} />
-              </div>
-            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

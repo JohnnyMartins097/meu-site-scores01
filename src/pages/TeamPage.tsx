@@ -276,56 +276,25 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
     return isPtStr ? "Atacante" : "Forward";
   };
 
-  // Pre-load top stats values dynamically from loaded squad
-  const topSquadStats = useMemo(() => {
-    let flat: any[] = [];
-    if (squad && Array.isArray(squad)) {
-      squad.forEach((group: any) => {
-        if (group && Array.isArray(group.members)) {
-          group.members.forEach((m: any) => {
-            flat.push({ ...m, _rawGroupTitle: group.title || "" });
-          });
-        }
-      });
+  // Format and translate squad category group titles
+  const translateGroupTitle = (title: string) => {
+    const t = (title || "").toLowerCase().trim();
+    if (isPtStr) {
+      if (t === "coach") return "Comissão Técnica";
+      if (t === "keepers") return "Goleiros";
+      if (t === "defenders") return "Defensores";
+      if (t === "midfielders") return "Meio-Campistas";
+      if (t === "attackers") return "Atacantes";
+      return title;
+    } else {
+      if (t === "coach") return "Coaching Staff";
+      if (t === "keepers") return "Goalkeepers";
+      if (t === "defenders") return "Defenders";
+      if (t === "midfielders") return "Midfielders";
+      if (t === "attackers") return "Forwards";
+      return title;
     }
-
-    if (flat.length === 0) {
-      return {
-        scorers: [] as any[],
-        assists: [] as any[],
-        appearances: [] as any[]
-      };
-    }
-
-    // Sort to extract top scorers, with static fallback values if API stats are not populated
-    const scorers = [...flat]
-      .map(p => ({
-        ...p,
-        metricValue: p.goals ?? (p.shirtNumber === 9 ? 14 : p.shirtNumber === 10 ? 9 : p.shirtNumber === 7 ? 6 : Math.max(1, (p.id % 5) + 1))
-      }))
-      .sort((a, b) => b.metricValue - a.metricValue)
-      .slice(0, 3);
-
-    // Sort to extract top assists
-    const assists = [...flat]
-      .map(p => ({
-        ...p,
-        metricValue: p.assists ?? (p.shirtNumber === 10 ? 8 : p.shirtNumber === 14 ? 7 : p.shirtNumber === 8 ? 5 : Math.max(1, (p.id % 4) + 1))
-      }))
-      .sort((a, b) => b.metricValue - a.metricValue)
-      .slice(0, 3);
-
-    // Sort to extract top appearances
-    const appearances = [...flat]
-      .map(p => ({
-        ...p,
-        metricValue: p.matchesPlayed ?? (18 + (p.id % 12))
-      }))
-      .sort((a, b) => b.metricValue - a.metricValue)
-      .slice(0, 3);
-
-    return { scorers, assists, appearances };
-  }, [squad]);
+  };
 
   // Pre-load transfer history entries based on Team ID
   const transfers = useMemo(() => {
@@ -763,7 +732,7 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                         <div key={group.title || "Group"} className="space-y-4">
                           <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
                             <h3 className="text-sm sm:text-base font-black text-slate-800 dark:text-slate-100 uppercase tracking-widest">
-                              {group.title}
+                              {translateGroupTitle(group.title)}
                             </h3>
                             <span className="text-[10px] font-black text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
                               {group.members.length}
@@ -780,23 +749,20 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                               >
                                 <div className="flex items-center gap-3.5 min-w-0">
                                   <div className="w-9 h-9 rounded-full bg-emerald-50 dark:bg-emerald-950/20 flex items-center justify-center font-mono font-black text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm shrink-0 border border-emerald-100/50">
-                                    {member.shirtNumber ?? "#"}
+                                    {member.shirtNumber || (group.title?.toLowerCase() === "coach" ? "💼" : "#")}
                                   </div>
 
                                   <div className="relative shrink-0">
-                                    {!imageErrors[member.id] ? (
-                                      <img
-                                        src={`https://images.fotmob.com/image_resources/playerimages/${member.id}.png`}
-                                        alt={member.name}
-                                        className="w-11 h-11 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750 shadow-3xs animate-fade-in"
-                                        onError={() => setImageErrors(p => ({ ...p, [member.id]: true }))}
-                                        referrerPolicy="no-referrer"
-                                      />
-                                    ) : (
-                                      <div className="w-11 h-11 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-750 text-slate-400">
-                                        <User className="w-5 h-5" />
-                                      </div>
-                                    )}
+                                    <img
+                                      src={`https://images.fotmob.com/image_resources/playerimages/${member.id}.png`}
+                                      alt={member.name}
+                                      className="w-11 h-11 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750 shadow-3xs animate-fade-in"
+                                      onError={(e) => {
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = "/fallback-avatar.png";
+                                      }}
+                                      referrerPolicy="no-referrer"
+                                    />
                                   </div>
 
                                   <div className="min-w-0">
@@ -804,26 +770,31 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                                       {member.name}
                                     </h4>
                                     <div className="flex items-center gap-1.5 mt-1 flex-wrap text-[10px] text-slate-400 font-bold">
-                                      {member.roleCode && (
-                                        <span className="uppercase text-emerald-600 dark:text-emerald-400 font-black">
-                                          {mapPositionDetail(member)}
-                                        </span>
-                                      )}
+                                      <span className="uppercase text-emerald-600 dark:text-emerald-400 font-black">
+                                        {member.role?.fallback || member.role?.name || mapPositionDetail(member)}
+                                      </span>
                                       {member.age && (
                                         <>
                                           <span>•</span>
                                           <span>{member.age} {isPtStr ? "anos" : "y/o"}</span>
                                         </>
                                       )}
-                                      {member.ccode && (
+                                      {(member.ccode || member.cname) && (
                                         <>
                                           <span>•</span>
-                                          <img
-                                            src={`https://flagcdn.com/w20/${member.ccode.toLowerCase()}.png`}
-                                            alt={member.cname || ""}
-                                            className="w-3.5 h-2.5 object-cover rounded-xs border border-slate-200/50 select-none shrink-0"
-                                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                                          />
+                                          <span className="inline-flex items-center gap-1">
+                                            {member.ccode && (
+                                              <img
+                                                src={`https://flagcdn.com/w20/${member.ccode.toLowerCase()}.png`}
+                                                alt={member.cname || ""}
+                                                className="w-3.5 h-2.5 object-cover rounded-xs border border-slate-200/50 select-none shrink-0"
+                                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                              />
+                                            )}
+                                            {member.cname && (
+                                              <span>{member.cname}</span>
+                                            )}
+                                          </span>
                                         </>
                                       )}
                                     </div>
@@ -854,28 +825,9 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                       <Trophy className="w-4.5 h-4.5 text-emerald-500" />
                       {isPtStr ? "Artilheiros" : "Top Scorers"}
                     </h4>
-                    {topSquadStats.scorers.length === 0 ? (
-                      <div className="py-6 text-center">
-                        <p className="text-xs font-bold text-slate-400/80 uppercase tracking-wider animate-pulse">
-                          {isPtStr ? "Carregando..." : "Loading..."}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {topSquadStats.scorers.map((p, idx) => (
-                          <div key={p.id} className="flex items-center justify-between py-3">
-                            <div className="flex items-center gap-3 min-w-0">
-                              <span className="font-mono font-bold text-slate-350 text-sm">#{idx + 1}</span>
-                              <div className="min-w-0">
-                                <span className="font-extrabold text-sm text-slate-800 dark:text-slate-200 block truncate">{p.name}</span>
-                                <span className="text-[10px] font-black text-slate-400 uppercase">{mapPositionDetail(p)}</span>
-                              </div>
-                            </div>
-                            <span className="font-mono font-black text-sm text-emerald-600 dark:text-emerald-400">{p.metricValue} G</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <p className="text-xs font-semibold text-slate-400/80 dark:text-slate-500 italic">
+                      {isPtStr ? "Estatísticas em breve..." : "Statistics coming soon..."}
+                    </p>
                   </div>
 
                   {/* 2. LIDER ASSISTENCIAS */}
@@ -884,28 +836,9 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                       <Award className="w-4.5 h-4.5 text-blue-500" />
                       {isPtStr ? "Líder em Assistências" : "Assists Leaders"}
                     </h4>
-                    {topSquadStats.assists.length === 0 ? (
-                      <div className="py-6 text-center">
-                        <p className="text-xs font-bold text-slate-400/80 uppercase tracking-wider animate-pulse">
-                          {isPtStr ? "Carregando..." : "Loading..."}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {topSquadStats.assists.map((p, idx) => (
-                          <div key={p.id} className="flex items-center justify-between py-3">
-                            <div className="flex items-center gap-3 min-w-0">
-                              <span className="font-mono font-bold text-slate-350 text-sm">#{idx + 1}</span>
-                              <div className="min-w-0">
-                                <span className="font-extrabold text-sm text-slate-800 dark:text-slate-200 block truncate">{p.name}</span>
-                                <span className="text-[10px] font-black text-slate-400 uppercase">{mapPositionDetail(p)}</span>
-                              </div>
-                            </div>
-                            <span className="font-mono font-black text-sm text-blue-600 dark:text-blue-400">{p.metricValue} A</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <p className="text-xs font-semibold text-slate-400/80 dark:text-slate-500 italic">
+                      {isPtStr ? "Estatísticas em breve..." : "Statistics coming soon..."}
+                    </p>
                   </div>
 
                   {/* 3. MAIS JOGOS */}
@@ -914,28 +847,9 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                       <Calendar className="w-4.5 h-4.5 text-amber-500" />
                       {isPtStr ? "Mais Jogos" : "Most Appearances"}
                     </h4>
-                    {topSquadStats.appearances.length === 0 ? (
-                      <div className="py-6 text-center">
-                        <p className="text-xs font-bold text-slate-400/80 uppercase tracking-wider animate-pulse">
-                          {isPtStr ? "Carregando..." : "Loading..."}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {topSquadStats.appearances.map((p, idx) => (
-                          <div key={p.id} className="flex items-center justify-between py-3">
-                            <div className="flex items-center gap-3 min-w-0">
-                              <span className="font-mono font-bold text-slate-350 text-sm">#{idx + 1}</span>
-                              <div className="min-w-0">
-                                <span className="font-extrabold text-sm text-slate-800 dark:text-slate-200 block truncate">{p.name}</span>
-                                <span className="text-[10px] font-black text-slate-400 uppercase">{mapPositionDetail(p)}</span>
-                              </div>
-                            </div>
-                            <span className="font-mono font-black text-sm text-slate-600 dark:text-slate-400">{p.metricValue} J</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <p className="text-xs font-semibold text-slate-400/80 dark:text-slate-500 italic">
+                      {isPtStr ? "Estatísticas em breve..." : "Statistics coming soon..."}
+                    </p>
                   </div>
                 </div>
               </div>

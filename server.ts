@@ -1247,6 +1247,26 @@ app.get("/api/team-squad/:teamid", async (req, res) => {
   }
 });
 
+// Proxy to get player details
+app.get("/api/player/:playerid", async (req, res) => {
+  const playerId = req.params.playerid;
+  if (!playerId) {
+    return res.status(400).json({ error: "Parâmetro ID do jogador é obrigatório" });
+  }
+
+  try {
+    const path = `/football-get-player-detail?playerid=${playerId}`;
+    const resultPack = await fetchWithFallback(path);
+    return res.json({
+      data: resultPack.data,
+      _source: resultPack.source
+    });
+  } catch (error: any) {
+    console.log(`Player Detail API failed for player ${playerId}:`, error.message);
+    return res.status(500).json({ error: "Detalhes do jogador não disponíveis", _error: error.message });
+  }
+});
+
 // Dynamic Match Detail Fetcher for Free API Live Football Data (Lineups, Incidents, Statistics on Demand)
 app.get("/api/fixture-detail", async (req, res) => {
   const matchId = req.query.id;
