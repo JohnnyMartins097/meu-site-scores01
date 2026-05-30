@@ -1247,6 +1247,52 @@ app.get("/api/team-squad/:teamid", async (req, res) => {
   }
 });
 
+// Proxy to get league leaders (goals, assists, ratings)
+app.get("/api/league-leaders/goals/:leagueId", async (req, res) => {
+  const leagueId = req.params.leagueId;
+  if (!leagueId) {
+    return res.status(400).json({ error: "Parâmetro ID da liga é obrigatório" });
+  }
+  try {
+    const path = `/football-get-top-players-by-goals?leagueid=${leagueId}`;
+    const resultPack = await fetchWithFallback(path);
+    return res.json(resultPack.data);
+  } catch (error: any) {
+    console.log(`Goals Leader API failed for league ${leagueId}:`, error.message);
+    return res.status(500).json({ error: "Artilheiros não disponíveis", _error: error.message });
+  }
+});
+
+app.get("/api/league-leaders/assists/:leagueId", async (req, res) => {
+  const leagueId = req.params.leagueId;
+  if (!leagueId) {
+    return res.status(400).json({ error: "Parâmetro ID da liga é obrigatório" });
+  }
+  try {
+    const path = `/football-get-top-players-by-assists?leagueid=${leagueId}`;
+    const resultPack = await fetchWithFallback(path);
+    return res.json(resultPack.data);
+  } catch (error: any) {
+    console.log(`Assists Leader API failed for league ${leagueId}:`, error.message);
+    return res.status(500).json({ error: "Líderes de assistências não disponíveis", _error: error.message });
+  }
+});
+
+app.get("/api/league-leaders/rating/:leagueId", async (req, res) => {
+  const leagueId = req.params.leagueId;
+  if (!leagueId) {
+    return res.status(400).json({ error: "Parâmetro ID da liga é obrigatório" });
+  }
+  try {
+    const path = `/football-get-top-players-by-rating?leagueid=${leagueId}`;
+    const resultPack = await fetchWithFallback(path);
+    return res.json(resultPack.data);
+  } catch (error: any) {
+    console.log(`Rating Leader API failed for league ${leagueId}:`, error.message);
+    return res.status(500).json({ error: "Melhores notas não disponíveis", _error: error.message });
+  }
+});
+
 // Proxy to get player details
 app.get("/api/player/:playerid", async (req, res) => {
   const playerId = req.params.playerid;

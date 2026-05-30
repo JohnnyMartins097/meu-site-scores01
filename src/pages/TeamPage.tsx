@@ -28,11 +28,30 @@ const TEAM_FALLBACKS: Record<number, {
 const translateRole = (roleStr: string) => {
   if (!roleStr) return '';
   const upperRole = roleStr.toUpperCase();
-  if (upperRole.includes('KEEPER')) return 'GOLEIRO';
+  if (upperRole.includes('COACH') || upperRole.includes('MANAGER')) return 'TREINADOR';
+  if (upperRole.includes('KEEPER') || upperRole.includes('GK')) return 'GOLEIRO';
   if (upperRole.includes('DEFENDER') || upperRole.includes('CB') || upperRole.includes('LB') || upperRole.includes('RB')) return 'DEFENSOR';
   if (upperRole.includes('MIDFIELDER') || upperRole.includes('CM') || upperRole.includes('CDM') || upperRole.includes('CAM')) return 'MEIO-CAMPISTA';
   if (upperRole.includes('ATTACKER') || upperRole.includes('ST') || upperRole.includes('RW') || upperRole.includes('LW')) return 'ATACANTE';
   return roleStr;
+};
+
+const translateCountry = (countryStr: string) => {
+  if (!countryStr) return '';
+  const c = countryStr.toLowerCase().trim();
+  if (c === 'brazil') return 'Brasil';
+  if (c === 'argentina') return 'Argentina';
+  if (c === 'spain') return 'Espanha';
+  if (c === 'england') return 'Inglaterra';
+  if (c === 'france') return 'França';
+  if (c === 'germany') return 'Alemanha';
+  if (c === 'italy') return 'Itália';
+  if (c === 'portugal') return 'Portugal';
+  if (c === 'uruguay') return 'Uruguai';
+  if (c === 'paraguay') return 'Paraguai';
+  if (c === 'colombia') return 'Colômbia';
+  if (c === 'chile') return 'Chile';
+  return countryStr;
 };
 
 export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, language }: TeamPageProps) {
@@ -48,6 +67,7 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
   const [standings, setStandings] = useState<any[]>([]);
   const [isStandingsLoading, setIsStandingsLoading] = useState(false);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+  const [leagueStats, setLeagueStats] = useState<any>(null);
 
   // Overview Filters State
   const [selectedCompetition, setSelectedCompetition] = useState<string>("All");
@@ -62,6 +82,7 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
     setActiveTab("overview");
     setIsLoading(true);
     setTeamDetails(null);
+    setLeagueStats(null);
     setImageErrors({});
 
     let isMounted = true;
@@ -78,6 +99,7 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
             name: d.name || "",
             country: d.country || "",
             league: d.primaryLeagueName || "",
+            primaryLeagueId: d.primaryLeagueId || null,
             logo: schema.logo || `https://images.fotmob.com/image_resources/logo/teamlogo/${d.id}.png`,
             stadium: schema.location?.name || d.sportsTeamJSONLD?.location?.name || "",
             city: schema.location?.address?.addressLocality || d.sportsTeamJSONLD?.location?.address?.addressLocality || ""
@@ -223,6 +245,71 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
     if (teamIdNum) loadStandings();
     return () => { active = false; };
   }, [teamIdNum, deducedLeagueId]);
+
+  // Fetch real league stats silently for the header
+  useEffect(() => {
+    let isMounted = true;
+    const fetchTeamLeagueStats = async () => {
+      const leagueIdToUse = teamDetails?.primaryLeagueId || deducedLeagueId;
+      if (!leagueIdToUse) return;
+      try {
+        // Tenta buscar pelo proxy local primeiro (através de getLeagueStandings) para manter consistência e velocidade
+        const standingsData = await getLeagueStandings(leagueIdToUse);
+        if (!isMounted) return;
+
+        if (Array.isArray(standingsData)) {
+          const teamInLeague = standingsData.find(
+            (t: any) => Number(t.id) === Number(teamId) || Number(t.teamId) === Number(teamId)
+          );
+          if (teamInLeague) {
+            setLeagueStats({
+              played: teamInLeague.played ?? teamInLeague.matches ?? ((teamInLeague.wins ?? 0) + (teamInLeague.draws ?? 0) + (teamInLeague.losses ?? 0)),
+              wins: teamInLeague.wins ?? 0,
+              draws: teamInLeague.draws ?? 0,
+              losses: teamInLeague.losses ?? 0
+            });
+            return;
+          }
+        }
+
+        // Chamada direta se o proxy não tiver o time ou falhar
+        const directUrl = `https://free-api-live-football-data.p.rapidapi.com/football-get-standing-all?leagueid=${leagueIdToUse}`;
+        const options = {
+          method: "GET",
+          headers: {
+            "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+            "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
+          }
+        };
+        const response = await fetch(directUrl, options);
+        if (!isMounted) return;
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data?.response?.standing) {
+            const teamInLeague = data.response.standing.find(
+              (t: any) => Number(t.id) === Number(teamId) || Number(t.teamId) === Number(teamId)
+            );
+            if (teamInLeague) {
+              setLeagueStats({
+                played: teamInLeague.played ?? teamInLeague.matches ?? ((teamInLeague.wins ?? 0) + (teamInLeague.draws ?? 0) + (teamInLeague.losses ?? 0)),
+                wins: teamInLeague.wins ?? 0,
+                draws: teamInLeague.draws ?? 0,
+                losses: teamInLeague.losses ?? 0
+              });
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao buscar estatísticas da liga para o cabeçalho:", error);
+      }
+    };
+
+    fetchTeamLeagueStats();
+    return () => {
+      isMounted = false;
+    };
+  }, [teamDetails, teamId, deducedLeagueId]);
 
   // Processamento Matemático de Destaques (useMemo)
   const { topScorers, topAssists } = useMemo(() => {
@@ -451,22 +538,25 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
               </div>
 
               {/* Victories Counter Stats Row */}
-              <div className="flex gap-4 bg-white/[0.04] backdrop-blur-xs rounded-xl p-4 border border-white/10 shrink-0 text-center shadow-lg">
-                <div>
-                  <div className="text-2xl font-mono font-black text-emerald-400">{resolvedDetails.stats.wins}</div>
-                  <div className="text-[9px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">{isPtStr ? "Vitórias" : "Wins"}</div>
+              {leagueStats && (
+                <div className="flex gap-4 bg-white/[0.04] backdrop-blur-xs rounded-xl p-4 border border-white/10 shrink-0 text-center shadow-lg">
+                  <div>
+                    <div className="text-2xl font-mono font-black text-emerald-400">{leagueStats.wins}</div>
+                    <div className="text-[9px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">{isPtStr ? "Vitórias" : "Wins"}</div>
+                  </div>
+                  <div className="border-l border-white/10" />
+                  <div>
+                    <div className="text-2xl font-mono font-black text-amber-400">{leagueStats.draws}</div>
+                    <div className="text-[9px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">{isPtStr ? "Empates" : "Draws"}</div>
+                  </div>
+                  <div className="border-l border-white/10" />
+                  <div>
+                    <div className="text-2xl font-mono font-black text-rose-500">{leagueStats.losses}</div>
+                    <div className="text-[9px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">{isPtStr ? "Derrotas" : "Losses"}</div>
+                  </div>
                 </div>
-                <div className="border-l border-white/10" />
-                <div>
-                  <div className="text-2xl font-mono font-black text-amber-400">{resolvedDetails.stats.draws}</div>
-                  <div className="text-[9px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">{isPtStr ? "Empates" : "Draws"}</div>
-                </div>
-                <div className="border-l border-white/10" />
-                <div>
-                  <div className="text-2xl font-mono font-black text-rose-500">{resolvedDetails.stats.losses}</div>
-                  <div className="text-[9px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">{isPtStr ? "Derrotas" : "Losses"}</div>
-                </div>
-              </div>
+              )}
+
             </div>
           </div>
 
@@ -789,16 +879,21 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                                   </div>
 
                                   <div className="relative shrink-0">
-                                    <img
-                                      src={`https://images.fotmob.com/image_resources/playerimages/${member.id}.png`}
-                                      alt={member.name}
-                                      className="w-11 h-11 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750 shadow-3xs animate-fade-in"
-                                      onError={(e) => {
-                                        e.currentTarget.onerror = null;
-                                        e.currentTarget.src = "/fallback-avatar.png";
-                                      }}
-                                      referrerPolicy="no-referrer"
-                                    />
+                                    {imageErrors[member.id] ? (
+                                      <div className="w-11 h-11 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-755 text-slate-600 dark:text-slate-350 font-black flex items-center justify-center text-xs uppercase shadow-3xs select-none">
+                                        {(member.name || "?").trim().split(/\s+/).slice(0, 2).map((n: string) => n[0]).join("")}
+                                      </div>
+                                    ) : (
+                                      <img
+                                        src={`https://images.fotmob.com/image_resources/playerimages/${member.id}.png`}
+                                        alt={member.name}
+                                        className="w-11 h-11 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750 shadow-3xs animate-fade-in"
+                                        onError={() => {
+                                          setImageErrors(prev => ({ ...prev, [member.id]: true }));
+                                        }}
+                                        referrerPolicy="no-referrer"
+                                      />
+                                    )}
                                   </div>
 
                                   <div className="min-w-0">
@@ -828,7 +923,7 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                                               />
                                             )}
                                             {member.cname && (
-                                              <span>{member.cname}</span>
+                                              <span>{translateCountry(member.cname)}</span>
                                             )}
                                           </span>
                                         </>
@@ -878,16 +973,21 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <div className="relative shrink-0">
-                                  <img
-                                    src={`https://images.fotmob.com/image_resources/playerimages/${player.id}.png`}
-                                    alt={player.name}
-                                    className="w-10 h-10 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750"
-                                    onError={(e) => {
-                                      e.currentTarget.onerror = null;
-                                      e.currentTarget.src = "/fallback-avatar.png";
-                                    }}
-                                    referrerPolicy="no-referrer"
-                                  />
+                                  {imageErrors[player.id] ? (
+                                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-755 text-slate-600 dark:text-slate-350 font-black flex items-center justify-center text-[10px] uppercase shadow-3xs select-none">
+                                      {(player.name || "?").trim().split(/\s+/).slice(0, 2).map((n: string) => n[0]).join("")}
+                                    </div>
+                                  ) : (
+                                    <img
+                                      src={`https://images.fotmob.com/image_resources/playerimages/${player.id}.png`}
+                                      alt={player.name}
+                                      className="w-10 h-10 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750"
+                                      onError={() => {
+                                        setImageErrors(prev => ({ ...prev, [player.id]: true }));
+                                      }}
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  )}
                                 </div>
                                 <div className="min-w-0">
                                   <h5 className="text-xs font-extrabold text-slate-800 dark:text-slate-200 truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
@@ -931,16 +1031,21 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <div className="relative shrink-0">
-                                  <img
-                                    src={`https://images.fotmob.com/image_resources/playerimages/${player.id}.png`}
-                                    alt={player.name}
-                                    className="w-10 h-10 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750"
-                                    onError={(e) => {
-                                      e.currentTarget.onerror = null;
-                                      e.currentTarget.src = "/fallback-avatar.png";
-                                    }}
-                                    referrerPolicy="no-referrer"
-                                  />
+                                  {imageErrors[player.id] ? (
+                                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-755 text-slate-600 dark:text-slate-350 font-black flex items-center justify-center text-[10px] uppercase shadow-3xs select-none">
+                                      {(player.name || "?").trim().split(/\s+/).slice(0, 2).map((n: string) => n[0]).join("")}
+                                    </div>
+                                  ) : (
+                                    <img
+                                      src={`https://images.fotmob.com/image_resources/playerimages/${player.id}.png`}
+                                      alt={player.name}
+                                      className="w-10 h-10 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750"
+                                      onError={() => {
+                                        setImageErrors(prev => ({ ...prev, [player.id]: true }));
+                                      }}
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  )}
                                 </div>
                                 <div className="min-w-0">
                                   <h5 className="text-xs font-extrabold text-slate-800 dark:text-slate-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">

@@ -6,6 +6,7 @@ import { Match, StandingItem } from "../types";
 import { LEAGUE_DICTIONARY, getLeagueDictEntry } from "../App";
 import { StandingsTable } from "../components/StandingsTable";
 import { getLeagueStandings } from "../api";
+import { LeagueLeadersWidget } from "../components/LeagueLeadersWidget";
 
 
 interface LeaguePageProps {
@@ -198,42 +199,48 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
       <div className="max-w-7xl mx-auto px-6 mt-8">
         {/* STANDINGS TABLE */}
         {activePageTab === "table" && (
-          <div>
-            {/* Filter UI - Geral, Casa, Fora */}
-            <div className="flex gap-4 mb-4 select-none">
-              {(["Geral", "Casa", "Fora"] as const).map((tab) => {
-                const isActive = activeTab === tab;
-                return (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-lg border transition-all cursor-pointer ${
-                      isActive
-                        ? "bg-[#009c3b] text-white border-[#009c3b] shadow-xs"
-                        : "bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-300 border-slate-250/60 dark:border-slate-700 hover:bg-slate-200/80 dark:hover:bg-slate-750"
-                    }`}
-                  >
-                    {isPtStr ? tab : (tab === "Geral" ? "Overall" : tab === "Casa" ? "Home" : "Away")}
-                  </button>
-                );
-              })}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div className="lg:col-span-2">
+              {/* Filter UI - Geral, Casa, Fora */}
+              <div className="flex gap-4 mb-4 select-none">
+                {(["Geral", "Casa", "Fora"] as const).map((tab) => {
+                  const isActive = activeTab === tab;
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-lg border transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-[#009c3b] text-white border-[#009c3b] shadow-xs"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-300 border-slate-250/60 dark:border-slate-700 hover:bg-slate-200/80 dark:hover:bg-slate-750"
+                      }`}
+                    >
+                      {isPtStr ? tab : (tab === "Geral" ? "Overall" : tab === "Casa" ? "Home" : "Away")}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {loadingStandings ? (
+                <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 p-6">
+                  <div className="animate-spin rounded-full h-8 w-8 border-3 border-emerald-600 border-t-transparent mb-4"></div>
+                  <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                    {isPtStr ? "Carregando classificação..." : "Loading standings..."}
+                  </p>
+                </div>
+              ) : errorStandings ? (
+                <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 p-6">
+                  <Table className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">{errorStandings}</p>
+                </div>
+              ) : (
+                <StandingsTable items={leagueStandings} />
+              )}
             </div>
 
-            {loadingStandings ? (
-              <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 p-6">
-                <div className="animate-spin rounded-full h-8 w-8 border-3 border-emerald-600 border-t-transparent mb-4"></div>
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                  {isPtStr ? "Carregando classificação..." : "Loading standings..."}
-                </p>
-              </div>
-            ) : errorStandings ? (
-              <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 p-6">
-                <Table className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-                <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">{errorStandings}</p>
-              </div>
-            ) : (
-              <StandingsTable items={leagueStandings} />
-            )}
+            <div className="lg:col-span-1">
+              <LeagueLeadersWidget leagueId={leagueId} language={language} />
+            </div>
           </div>
         )}
 
