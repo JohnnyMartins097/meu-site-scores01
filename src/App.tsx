@@ -795,7 +795,7 @@ export default function App() {
     }
 
     const isFinished = item.status?.finished || false;
-    const isOngoing = item.status?.ongoing || item.status?.live === true || item.status?.started === true || !!item.status?.liveTime || false;
+    const isOngoing = item.status?.started === true || !!item.status?.liveTime || (!!item.status?.scoreStr && item.status?.finished === false) || item.status?.ongoing || item.status?.live === true || false;
     const isCancelled = item.status?.cancelled || false;
 
     let statusShort = "NS";
@@ -1930,10 +1930,41 @@ export default function App() {
                     </div>
                   )}
                   {groupMatches.map((match) => {
-                    const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
-                      match.fixture.status.short
-                    );
-                    const isFinished = match.fixture.status.short === "FT";
+                    const status = (match as any).status || {};
+                    const reasonShort = status.reason?.short;
+
+                    // 1. Análise Agressiva de Fim de Jogo (Lida com o bug do Brasileirão)
+                    const isFinished = status.finished || status.cancelled || reasonShort === 'FT' || reasonShort === 'Pen';
+
+                    // 2. Análise Agressiva de Ao Vivo
+                    const isLive = (status.started || status.liveTime?.short || status.scoreStr) && !isFinished;
+
+                    // 3. Extração de Placar (Prioridade MÁXIMA para scoreStr, ignora os 0s fantasmas)
+                    let homeScore = "";
+                    let awayScore = "";
+
+                    if (status.scoreStr) {
+                      const parts = status.scoreStr.split('-');
+                      homeScore = parts[0]?.trim() || "";
+                      awayScore = parts[1]?.trim() || "";
+                    } else {
+                      homeScore = match.home?.score !== undefined ? String(match.home.score) : "";
+                      awayScore = match.away?.score !== undefined ? String(match.away.score) : "";
+                    }
+
+                    // 4. Limpeza Anti-Zero para jogos Futuros
+                    if (!isLive && !isFinished && !status.scoreStr && (homeScore === "0" || Number(homeScore) === 0) && (awayScore === "0" || Number(awayScore) === 0)) {
+                      homeScore = "";
+                      awayScore = "";
+                    }
+
+                    // 5. Controle de Tempo/Status
+                    let timeDisplay = match.time;
+                    if (isFinished) {
+                      timeDisplay = "FIM";
+                    } else if (isLive) {
+                      timeDisplay = status.liveTime?.short ? `${status.liveTime.short}'` : "VIVO";
+                    }
                     const isSelected = selectedMatch?.fixture.id === match.fixture.id;
                     // Unique Key format representing pinned lists to prevent duplicate keys code crashes (Rule 2)
                     const reactKey = `pinned-${match.fixture.id}`;
@@ -1946,7 +1977,7 @@ export default function App() {
                           isSelected 
                             ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
                             : isLive
-                            ? "bg-white dark:bg-slate-900 border-l-4 border-l-[#ffdf00] border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
+                            ? "bg-white dark:bg-slate-900 border-l-4 border-l-red-500 border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
                             : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
                         }`}
                       >
@@ -1979,7 +2010,7 @@ export default function App() {
                               <span className={`font-mono text-xs font-black pr-1 ${
                                 isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
                               }`}>
-                                {match.goals.home ?? "-"}
+                                {homeScore}
                               </span>
                             </div>
 
@@ -2001,7 +2032,7 @@ export default function App() {
                               <span className={`font-mono text-xs font-black pr-1 ${
                                 isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
                               }`}>
-                                {match.goals.away ?? "-"}
+                                {awayScore}
                               </span>
                             </div>
                           </div>
@@ -2010,16 +2041,16 @@ export default function App() {
                         <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
                           {isLive ? (
                             <>
-                              <span className="text-[#009c3b] dark:text-emerald-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
-                                {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
+                              <span className="text-red-500 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
+                                {timeDisplay}{!isNaN(Number(timeDisplay)) ? "'" : ""}
                               </span>
                               <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
                                 {isPt ? "VIVO" : language === "en" ? "LIVE" : language === "es" ? "VIVO" : language === "fr" ? "DIRECT" : language === "it" ? "LIVE" : "LIVE"}
                               </span>
                             </>
                           ) : isFinished ? (
-                            <span className="text-slate-404 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
-                              FT
+                            <span className="text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
+                              {timeDisplay}
                             </span>
                           ) : (
                             <span className="text-slate-500 dark:text-slate-400 font-mono text-[10.5px] font-bold bg-slate-100/50 dark:bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-200/10 shadow-3xs">
@@ -2184,10 +2215,41 @@ export default function App() {
                               </div>
                             )}
                             {groupMatches.map((match) => {
-                              const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
-                                match.fixture.status.short
-                              );
-                              const isFinished = match.fixture.status.short === "FT";
+                              const status = (match as any).status || {};
+                              const reasonShort = status.reason?.short;
+
+                              // 1. Análise Agressiva de Fim de Jogo (Lida com o bug do Brasileirão)
+                              const isFinished = status.finished || status.cancelled || reasonShort === 'FT' || reasonShort === 'Pen';
+
+                              // 2. Análise Agressiva de Ao Vivo
+                              const isLive = (status.started || status.liveTime?.short || status.scoreStr) && !isFinished;
+
+                              // 3. Extração de Placar (Prioridade MÁXIMA para scoreStr, ignora os 0s fantasmas)
+                              let homeScore = "";
+                              let awayScore = "";
+
+                              if (status.scoreStr) {
+                                const parts = status.scoreStr.split('-');
+                                homeScore = parts[0]?.trim() || "";
+                                awayScore = parts[1]?.trim() || "";
+                              } else {
+                                homeScore = match.home?.score !== undefined ? String(match.home.score) : "";
+                                awayScore = match.away?.score !== undefined ? String(match.away.score) : "";
+                              }
+
+                              // 4. Limpeza Anti-Zero para jogos Futuros
+                              if (!isLive && !isFinished && !status.scoreStr && (homeScore === "0" || Number(homeScore) === 0) && (awayScore === "0" || Number(awayScore) === 0)) {
+                                homeScore = "";
+                                awayScore = "";
+                              }
+
+                              // 5. Controle de Tempo/Status
+                              let timeDisplay = match.time;
+                              if (isFinished) {
+                                timeDisplay = "FIM";
+                              } else if (isLive) {
+                                timeDisplay = status.liveTime?.short ? `${status.liveTime.short}'` : "VIVO";
+                              }
                               const isSelected = selectedMatch?.fixture.id === match.fixture.id;
                               
                               // Explicit distinct format 'country-' to prevent any duplication crash (Rule 2)
@@ -2201,7 +2263,7 @@ export default function App() {
                                     isSelected 
                                       ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
                                       : isLive
-                                      ? "bg-white dark:bg-slate-900 border-l-4 border-l-[#ffdf00] border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
+                                      ? "bg-white dark:bg-slate-900 border-l-4 border-l-red-500 border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
                                       : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
                                   }`}
                                 >
@@ -2234,7 +2296,7 @@ export default function App() {
                                         <span className={`font-mono text-xs font-black pr-1 ${
                                           isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
                                         }`}>
-                                          {match.goals.home ?? "-"}
+                                          {homeScore}
                                         </span>
                                       </div>
 
@@ -2256,7 +2318,7 @@ export default function App() {
                                         <span className={`font-mono text-xs font-black pr-1 ${
                                           isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
                                         }`}>
-                                          {match.goals.away ?? "-"}
+                                          {awayScore}
                                         </span>
                                       </div>
                                     </div>
@@ -2265,16 +2327,16 @@ export default function App() {
                                   <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
                                     {isLive ? (
                                       <>
-                                        <span className="text-[#009c3b] dark:text-emerald-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
-                                          {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
+                                        <span className="text-red-500 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
+                                          {timeDisplay}{!isNaN(Number(timeDisplay)) ? "'" : ""}
                                         </span>
                                         <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
                                           {isPt ? "VIVO" : language === "en" ? "LIVE" : language === "es" ? "VIVO" : language === "fr" ? "DIRECT" : language === "it" ? "LIVE" : "LIVE"}
                                         </span>
                                       </>
                                     ) : isFinished ? (
-                                      <span className="text-slate-404 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
-                                        FT
+                                      <span className="text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
+                                        {timeDisplay}
                                       </span>
                                     ) : (
                                       <span className="text-slate-500 dark:text-slate-400 font-mono text-[10.5px] font-bold bg-slate-100/50 dark:bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-200/10 shadow-3xs">

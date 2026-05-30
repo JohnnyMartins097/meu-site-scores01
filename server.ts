@@ -1288,6 +1288,72 @@ app.get("/api/player/:playerid", async (req, res) => {
   }
 });
 
+app.get("/api/football-get-match-detail", async (req, res) => {
+  const eventid = req.query.eventid;
+  if (!eventid) return res.status(400).json({ error: "Missing eventid" });
+  try {
+    const result = await fetchWithFallback(`/football-get-match-detail?eventid=${eventid}`);
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/football-get-match-score", async (req, res) => {
+  const eventid = req.query.eventid;
+  if (!eventid) return res.status(400).json({ error: "Missing eventid" });
+  try {
+    const result = await fetchWithFallback(`/football-get-match-score?eventid=${eventid}`);
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/football-get-match-status", async (req, res) => {
+  const eventid = req.query.eventid;
+  if (!eventid) return res.status(400).json({ error: "Missing eventid" });
+  try {
+    const result = await fetchWithFallback(`/football-get-match-status?eventid=${eventid}`);
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/football-get-match-location", async (req, res) => {
+  const eventid = req.query.eventid;
+  if (!eventid) return res.status(400).json({ error: "Missing eventid" });
+  try {
+    const result = await fetchWithFallback(`/football-get-match-location?eventid=${eventid}`);
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/football-get-match-all-stats", async (req, res) => {
+  const eventid = req.query.eventid;
+  if (!eventid) return res.status(400).json({ error: "Missing eventid" });
+  try {
+    const result = await fetchWithFallback(`/football-get-match-all-stats?eventid=${eventid}`);
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/football-get-match-referee", async (req, res) => {
+  const eventid = req.query.eventid;
+  if (!eventid) return res.status(400).json({ error: "Missing eventid" });
+  try {
+    const result = await fetchWithFallback(`/football-get-match-referee?eventid=${eventid}`);
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // Dynamic Match Detail Fetcher for Free API Live Football Data (Lineups, Incidents, Statistics on Demand)
 app.get("/api/fixture-detail", async (req, res) => {
   const matchId = req.query.id;

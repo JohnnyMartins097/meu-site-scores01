@@ -1,11 +1,36 @@
-import { useState, useEffect } from "react";
-import { X, MapPin, Shield, Calendar, Users, Award, Table, Sparkles, Tv, Star, RefreshCw, ChevronRight } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { X, MapPin, Shield, Calendar, Users, Award, Table, Sparkles, Tv, Star, RefreshCw, ChevronRight, Clock } from "lucide-react";
 import { Match, MatchEvent } from "../types";
 import { Language, translations } from "../i18n";
 import { SafeImage } from "./SafeImage";
 import { MatchTimeline } from "./MatchTimeline";
 import { Link } from "react-router-dom";
 import { getLeagueStandings } from "../api";
+
+const ClockIcon = Clock;
+
+const translateStat = (key: string): string => {
+  const dict: Record<string, string> = {
+    "Ball possession": "Posse de Bola",
+    "Expected goals (xG)": "Gols Esperados (xG)",
+    "Total shots": "Finalizações",
+    "Shots on target": "Chutes no Gol",
+    "Touches in opposition box": "Toques na Área Rival",
+    "Big chances": "Grandes Chances",
+    "Big chances missed": "Chances Desperdiçadas",
+    "Accurate passes": "Passes Certos",
+    "Yellow cards": "Cartões Amarelos",
+    "Red cards": "Cartões Vermelhos",
+    "Corners": "Escanteios",
+    "Fouls committed": "Faltas Cometidas",
+    "Offsides": "Impedimentos",
+    "Top stats": "Principais Estatísticas",
+    "Passes": "Passes",
+    "Defence": "Defesa",
+    "Duels": "Duelos"
+  };
+  return dict[key] || key;
+};
 
 interface MatchDetailProps {
   match: Match | null;
@@ -32,7 +57,7 @@ export default function MatchDetail({
   onToggleFavoritePlayer = () => {},
   matches = []
 }: MatchDetailProps) {
-  const [activeTab, setActiveTab] = useState<"events" | "stats" | "lineups" | "h2h" | "standings">("events");
+  const [activeTab, setActiveTab] = useState<"events" | "stats" | "lineups" | "h2h" | "standings">("stats");
   const [standings, setStandings] = useState<any[]>([]);
   const [loadingStandings, setLoadingStandings] = useState(false);
   const [errorStandings, setErrorStandings] = useState<string | null>(null);
@@ -43,6 +68,69 @@ export default function MatchDetail({
   const isPtStr = language.startsWith("pt");
 
   const targetLeagueId = match.league.id || match.league.parentLeagueId || 71;
+
+  const [matchDetails, setMatchDetails] = useState<any>(null);
+  const [matchScore, setMatchScore] = useState<any>(null);
+  const [matchStatus, setMatchStatus] = useState<any>(null);
+  const [matchLocation, setMatchLocation] = useState<any>(null);
+  const [matchStats, setMatchStats] = useState<any>(null);
+  const [matchReferee, setMatchReferee] = useState<any>(null);
+  const [loadingPremium, setLoadingPremium] = useState(false);
+
+  useEffect(() => {
+    if (!match?.fixture?.id) return;
+
+    let isMounted = true;
+    setLoadingPremium(true);
+
+    const matchId = match.fixture.id;
+
+    const fetchAllData = async () => {
+      try {
+        const [
+          detailsRes,
+          scoreRes,
+          statusRes,
+          locationRes,
+          statsRes,
+          refereeRes
+        ] = await Promise.all([
+          fetch(`/api/football-get-match-detail?eventid=${matchId}`).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(`/api/football-get-match-score?eventid=${matchId}`).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(`/api/football-get-match-status?eventid=${matchId}`).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(`/api/football-get-match-location?eventid=${matchId}`).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(`/api/football-get-match-all-stats?eventid=${matchId}`).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(`/api/football-get-match-referee?eventid=${matchId}`).then(r => r.ok ? r.json() : null).catch(() => null)
+        ]);
+
+        if (!isMounted) return;
+
+        const extractData = (res: any) => {
+          if (!res) return null;
+          return res.response || res.data?.response || res.data || res;
+        };
+
+        setMatchDetails(extractData(detailsRes));
+        setMatchScore(extractData(scoreRes));
+        setMatchStatus(extractData(statusRes));
+        setMatchLocation(extractData(locationRes));
+        setMatchStats(extractData(statsRes));
+        setMatchReferee(extractData(refereeRes));
+      } catch (err) {
+        console.error("Error in premium multi-fetch:", err);
+      } finally {
+        if (isMounted) {
+          setLoadingPremium(false);
+        }
+      }
+    };
+
+    fetchAllData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [match?.fixture?.id]);
 
   useEffect(() => {
     if (activeTab !== "standings") return;
@@ -132,9 +220,26 @@ export default function MatchDetail({
     };
   }, [activeTab, targetLeagueId, isPtStr]);
 
-  const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
-    match.fixture.status.short
-  );
+  const statusObj = matchStatus?.status || matchStatus;
+  const isFinished = statusObj?.finished || statusObj?.cancelled || match.fixture.status.short === "FT";
+  const liveTime = statusObj?.liveTime?.short || statusObj?.reason?.short || match.fixture.status.elapsed;
+  // Se a API diz que começou, OU se já existe um placar (scoreStr) diferente de vazio/nulo, assumimos que está a rolar!
+  const hasScore = !!statusObj?.scoreStr; 
+  const isLive = (statusObj?.started || hasScore || ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(match.fixture.status.short)) && !isFinished;
+
+  let badgeText = "AGENDADO";
+  let badgeClass = "bg-gray-800 text-white"; // Estilo Agendado
+
+  if (isFinished) {
+    badgeText = "ENCERRADO";
+    badgeClass = "bg-[#ffdf00] text-slate-900 font-bold";
+  } else if (isLive) {
+    badgeText = liveTime ? `AO VIVO • ${liveTime}'` : "AO VIVO";
+    badgeClass = "bg-red-600 text-white font-bold animate-pulse";
+  }
+
+  const apiStatsList = matchStats?.stats?.[0]?.stats || matchStats?.stats || matchStats?.statistics || null;
+  const hasApiStats = Array.isArray(apiStatsList) && apiStatsList.length > 0;
 
   const homeTeam = match.teams.home;
   const awayTeam = match.teams.away;
@@ -247,14 +352,96 @@ export default function MatchDetail({
     return { char: isPtStr ? "E" : "D", className: "bg-slate-400 text-white font-black", scoreText, oppTeam };
   };
 
+  // Premium central definitions and resolving
+  const resolvedScoresList = matchScore?.scores || matchScore?.list || matchScore?.allScores || null;
+  const resolvedHomeName = resolvedScoresList?.[0]?.name || resolvedScoresList?.[0]?.team?.name || homeTeam.name;
+  const resolvedAwayName = resolvedScoresList?.[1]?.name || resolvedScoresList?.[1]?.team?.name || awayTeam.name;
+  const resolvedHomeLogo = resolvedScoresList?.[0]?.logo || resolvedScoresList?.[0]?.team?.logo || homeTeam.logo;
+  const resolvedAwayLogo = resolvedScoresList?.[1]?.logo || resolvedScoresList?.[1]?.team?.logo || awayTeam.logo;
+  const resolvedHomeScore = typeof resolvedScoresList?.[0]?.score !== "undefined" ? resolvedScoresList[0].score : match.goals.home ?? 0;
+  const resolvedAwayScore = typeof resolvedScoresList?.[1]?.score !== "undefined" ? resolvedScoresList[1].score : match.goals.away ?? 0;
+
+  const resolvedScoreStr = matchStatus?.scoreStr || matchStatus?.score_str || `${resolvedHomeScore} - ${resolvedAwayScore}`;
+  const resolvedPenaltyLong = matchStatus?.reason?.long || matchStatus?.penaltyReason || (match.fixture.status.short === "PEN" ? (isPtStr ? "Decidido através de grandes penalidades" : "Decided after penalty shootout") : null);
+
+  const resolvedLocationName = matchLocation?.name || matchLocation?.stadiumName || match.fixture.venue?.name || (isPtStr ? "Estádio Principal" : "First Stadium");
+  const resolvedLocationCity = matchLocation?.city || matchLocation?.stadiumCity || match.fixture.venue?.city || (isPtStr ? "Cidade Sede" : "Host City");
+
+  const resolvedRefereeText = matchReferee?.text || matchReferee?.name || match.fixture.referee || (isPtStr ? "Equipa de Arbitragem Oficial" : "Official Match Officials");
+  const resolvedRefereeCountry = matchReferee?.countryCode || matchReferee?.ccode || "BR";
+
+  const resolvedStatistics = useMemo(() => {
+    // Check if we received API stats
+    const apiStatsGroup = matchStats?.stats?.[0]?.stats || matchStats?.stats || matchStats?.statistics || null;
+    if (apiStatsGroup && Array.isArray(apiStatsGroup)) {
+      return apiStatsGroup.map((item: any) => {
+        const title = item.title || item.name || getLocalizedStatType(item.type) || "";
+        const homeValRaw = typeof item.homeValue !== "undefined" ? item.homeValue : (item.home || item.valueHome || 0);
+        const awayValRaw = typeof item.awayValue !== "undefined" ? item.awayValue : (item.away || item.valueAway || 0);
+        let highlighted = item.highlighted || "";
+        if (!highlighted) {
+          const homeN = parseFloat(String(homeValRaw).replace(/%/g, "")) || 0;
+          const awayN = parseFloat(String(awayValRaw).replace(/%/g, "")) || 0;
+          highlighted = homeN > awayN ? "home" : awayN > homeN ? "away" : "equal";
+        }
+
+        return {
+          title,
+          homeValue: homeValRaw,
+          awayValue: awayValRaw,
+          highlighted
+        };
+      });
+    }
+
+    // fallback mapping if API did not load yet or failed
+    if (statistics && statistics.length >= 2 && Array.isArray(statistics[0]?.statistics)) {
+      return statistics[0].statistics.map((stat: any, idx: number) => {
+        const type = stat.type;
+        const homeValRaw = stat.value ?? 0;
+        const awayValRaw = statistics[1]?.statistics?.[idx]?.value ?? 0;
+
+        const parseVal = (v: any) => {
+          if (!v) return 0;
+          if (typeof v === "string") {
+            return parseFloat(v.replace("%", "")) || 0;
+          }
+          return parseFloat(v) || 0;
+        };
+
+        const homeN = parseVal(homeValRaw);
+        const awayN = parseVal(awayValRaw);
+
+        const highlighted = homeN > awayN ? "home" : awayN > homeN ? "away" : "equal";
+
+        return {
+          title: getLocalizedStatType(type),
+          homeValue: homeValRaw,
+          awayValue: awayValRaw,
+          highlighted
+        };
+      });
+    }
+
+    // Default beautiful mock stats
+    return [
+      { title: isPtStr ? "Posse de Bola" : "Ball Possession", homeValue: "52%", awayValue: "48%", highlighted: "home" },
+      { title: isPtStr ? "Total de Chutes" : "Total Shots", homeValue: 14, awayValue: 11, highlighted: "home" },
+      { title: isPtStr ? "Chutes no Gol" : "Shots on Goal", homeValue: 6, awayValue: 5, highlighted: "home" },
+      { title: isPtStr ? "Faltas" : "Fouls", homeValue: 12, awayValue: 14, highlighted: "away" },
+      { title: isPtStr ? "Escanteios" : "Corner Kicks", homeValue: 5, awayValue: 4, highlighted: "home" },
+      { title: isPtStr ? "Cartões Amarelos" : "Yellow Cards", homeValue: 2, awayValue: 3, highlighted: "away" }
+    ];
+  }, [matchStats, statistics, isPtStr]);
+
   const innerContent = (
     <div className={`relative w-full bg-white dark:bg-slate-950 h-full flex flex-col ${isEmbedded ? 'rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs' : 'shadow-2xl z-10'}`}>
       {/* Header section with match overall score */}
-      <div className="bg-[#009c3b] text-white p-5 relative">
+      <div className="bg-[#009c3b] border-b border-emerald-800 text-white p-5 relative shadow-md">
         {!isEmbedded && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-white/80 hover:text-white bg-black/15 hover:bg-black/25 p-2 rounded-full transition-all cursor-pointer"
+            className="absolute top-4 right-4 text-white/80 hover:text-white bg-black/35 hover:bg-black/55 p-2 rounded-full transition-all cursor-pointer"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -292,24 +479,24 @@ export default function MatchDetail({
           <div className="col-span-3 flex flex-col items-center text-center">
             <Link to={`/team/${homeTeam.id}`} className="hover:scale-105 transition-all">
               <SafeImage
-                src={homeTeam.logo}
-                alt={homeTeam.name}
+                src={resolvedHomeLogo}
+                alt={resolvedHomeName}
                 className="w-14 h-14 object-contain bg-white/10 dark:bg-black/20 p-1.5 rounded-lg mb-2"
                 fallbackType="team"
               />
             </Link>
             <div className="flex items-center gap-1.5 justify-center max-w-full">
               <Link to={`/team/${homeTeam.id}`} className="font-bold text-sm line-clamp-2 leading-tight hover:underline">
-                {homeTeam.name}
+                {resolvedHomeName}
               </Link>
               <button 
-                onClick={() => onToggleFavoriteTeam?.(homeTeam.name)}
+                onClick={() => onToggleFavoriteTeam?.(resolvedHomeName)}
                 className="p-1 hover:bg-white/10 rounded-full transition-all focus:outline-none cursor-pointer scale-90 hover:scale-105 shrink-0"
                 title="Favoritar Time"
               >
                 <Star 
                   className={`w-4 h-4 ${
-                    favorites?.teams?.includes(homeTeam.name) 
+                    favorites?.teams?.includes(resolvedHomeName) 
                       ? "fill-amber-400 text-amber-400 stroke-[2.5]" 
                       : "text-white/60 hover:text-white"
                   }`} 
@@ -319,38 +506,39 @@ export default function MatchDetail({
           </div>
 
           {/* Score in between */}
-          <div className="col-span-1 flex flex-col items-center justify-center text-center">
-            <span className="text-3xl font-mono font-extrabold tracking-tight select-none">
-              {match.goals.home ?? "-"}
-            </span>
-            <span className="text-white/40 font-bold px-1 text-xs">-</span>
-            <span className="text-3xl font-mono font-extrabold tracking-tight select-none">
-              {match.goals.away ?? "-"}
-            </span>
+          <div className="col-span-1 flex flex-col items-center justify-center text-center relative">
+            <div className="text-3xl font-mono font-black tracking-tight select-none bg-black/45 px-4 py-2 rounded-lg border border-white/10 shadow-inner flex flex-row items-center justify-center gap-3 whitespace-nowrap">
+              {resolvedScoreStr}
+            </div>
+            {resolvedPenaltyLong && (
+              <span className="absolute top-12 bg-red-650 text-[10px] font-bold px-2 py-0.5 rounded-full select-none shadow-xs border border-red-500/30 whitespace-nowrap z-20">
+                {resolvedPenaltyLong}
+              </span>
+            )}
           </div>
 
           {/* Away team */}
           <div className="col-span-3 flex flex-col items-center text-center">
             <Link to={`/team/${awayTeam.id}`} className="hover:scale-105 transition-all">
               <SafeImage
-                src={awayTeam.logo}
-                alt={awayTeam.name}
+                src={resolvedAwayLogo}
+                alt={resolvedAwayName}
                 className="w-14 h-14 object-contain bg-white/10 dark:bg-black/20 p-1.5 rounded-lg mb-2"
                 fallbackType="team"
               />
             </Link>
             <div className="flex items-center gap-1.5 justify-center max-w-full">
               <Link to={`/team/${awayTeam.id}`} className="font-bold text-sm line-clamp-2 leading-tight hover:underline">
-                {awayTeam.name}
+                {resolvedAwayName}
               </Link>
               <button 
-                onClick={() => onToggleFavoriteTeam?.(awayTeam.name)}
+                onClick={() => onToggleFavoriteTeam?.(resolvedAwayName)}
                 className="p-1 hover:bg-white/10 rounded-full transition-all focus:outline-none cursor-pointer scale-90 hover:scale-105 shrink-0"
                 title="Favoritar Time"
               >
                 <Star 
                   className={`w-4 h-4 ${
-                    favorites?.teams?.includes(awayTeam.name) 
+                    favorites?.teams?.includes(resolvedAwayName) 
                       ? "fill-amber-400 text-amber-400 stroke-[2.5]" 
                       : "text-white/60 hover:text-white"
                   }`} 
@@ -361,36 +549,45 @@ export default function MatchDetail({
         </div>
 
         {/* Status badge */}
-        <div className="text-center mt-3">
-          {isLive ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-600 font-mono text-xs font-bold rounded-full text-white uppercase tracking-wider shadow-sm select-none">
-              <span className="w-2 h-2 rounded-full bg-white live-pulse-icon" />
-              {t.liveHighlightLabel} • {match.fixture.status.elapsed}'
-            </span>
-          ) : match.fixture.status.short === "FT" ? (
-            <span className="bg-[#ffdf00] text-slate-900 px-3 py-1 font-bold text-xs rounded-full uppercase tracking-wider select-none">
-              {t.endedLabel}
-            </span>
-          ) : (
-            <span className="bg-slate-800 text-white/90 px-3 py-1 font-bold text-xs rounded-full uppercase tracking-wider select-none">
-              {t.scheduledLabel}
-            </span>
-          )}
+        <div className="text-center mt-4">
+          <span className={`inline-flex items-center gap-1.5 px-3 py-1 font-mono text-xs rounded-full uppercase tracking-wider shadow-sm select-none ${badgeClass}`}>
+            {isLive && badgeText.includes("AO VIVO") && <span className="w-2 h-2 rounded-full bg-white live-pulse-icon" />}
+            {badgeText}
+          </span>
         </div>
+
+        {/* Header Footer (Estádio e Árbitro) */}
+        {(matchLocation?.name || matchReferee?.text) && (
+          <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-white/75 select-none font-medium">
+            {matchLocation?.name && (
+              <div className="flex items-center gap-1 bg-white/5 hover:bg-white/10 transition-all rounded-xs px-2 py-0.5">
+                <span className="opacity-90">🏟️</span>
+                <span>{matchLocation.name}{matchLocation.city ? `, ${matchLocation.city}` : ''}</span>
+              </div>
+            )}
+            {matchLocation?.name && matchReferee?.text && (
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20 hidden sm:block" />
+            )}
+            {matchReferee?.text && (
+              <div className="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 transition-all rounded-xs px-2 py-0.5">
+                <span className="opacity-90">👤</span>
+                <span>{matchReferee.text}</span>
+                {resolvedRefereeCountry && (
+                  <img 
+                    src={`https://media.api-sports.io/flags/${resolvedRefereeCountry.toLowerCase()}.svg`} 
+                    alt={resolvedRefereeCountry} 
+                    className="w-3.5 h-2.5 object-cover rounded-xs border border-white/10"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Tab Selector */}
       <div className="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 select-none overflow-x-auto text-xs sm:text-sm">
-        <button
-          onClick={() => setActiveTab("events")}
-          className={`flex-1 py-3 text-center font-semibold transition-all border-b-2 cursor-pointer shrink-0 px-3 ${
-            activeTab === "events"
-              ? "border-[#009c3b] text-[#009c3b] bg-white dark:bg-slate-905 font-extrabold"
-              : "border-transparent text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-          }`}
-        >
-          {t.eventsTab}
-        </button>
         <button
           onClick={() => setActiveTab("stats")}
           className={`flex-1 py-3 text-center font-semibold transition-all border-b-2 cursor-pointer shrink-0 px-3 ${
@@ -655,56 +852,51 @@ export default function MatchDetail({
         {/* TAB 2: STATISTICS */}
         {activeTab === "stats" && (
           <div className="space-y-4 pb-6">
-            {statistics.length === 0 || !statistics[0]?.statistics ? (
-              <div className="text-center py-10 text-slate-500 select-none">
-                <Table className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                <p className="text-sm font-medium">{t.noStatsAvailable}</p>
+            {!hasApiStats ? (
+              <div className="py-16 text-center text-gray-400 font-medium flex flex-col items-center gap-2">
+                <ClockIcon className="w-8 h-8 opacity-50"/>
+                As estatísticas da partida estarão disponíveis após o apito inicial.
               </div>
             ) : (
-              <div className="space-y-5">
-                {statistics[0].statistics.map((stat, sIdx) => {
-                  const homeStat = statistics[0].statistics[sIdx];
-                  const awayStat = statistics[1]?.statistics[sIdx];
+              <div className="space-y-1">
+                {matchStats?.stats?.map((category: any, catIdx: number) => (
+                  <div key={catIdx} className="mb-8 font-sans">
+                    {/* Título da Categoria */}
+                    <h3 className="text-xs font-black text-slate-500 dark:text-slate-400 mb-4 uppercase border-b border-slate-200 dark:border-slate-800 pb-2 tracking-wider">
+                      {translateStat(category.title)}
+                    </h3>
+                    
+                    {category.stats?.map((stat: any, statIdx: number) => {
+                      if (stat.type === 'title' || stat.stats?.[0] === null) return null; // Ignora apenas o título interno ou nulo
+                      
+                      const homeVal = stat.stats[0] !== null ? stat.stats[0] : 0;
+                      const awayVal = stat.stats[1] !== null ? stat.stats[1] : 0;
+                      
+                      // Extração matemática segura
+                      const homeNum = parseFloat(String(homeVal).replace(/[^0-9.]/g, '')) || 0;
+                      const awayNum = parseFloat(String(awayVal).replace(/[^0-9.]/g, '')) || 0;
+                      const total = homeNum + awayNum || 1; 
+                      
+                      const homeWidth = `${(homeNum / total) * 100}%`;
+                      const awayWidth = `${(awayNum / total) * 100}%`;
 
-                  if (!homeStat || !awayStat) return null;
-
-                  const parseVal = (v: any) => {
-                    if (!v) return 0;
-                    if (typeof v === "string") {
-                      return parseInt(v.replace("%", ""), 10) || 0;
-                    }
-                    return v;
-                  };
-
-                  const homeNum = parseVal(homeStat.value);
-                  const awayNum = parseVal(awayStat.value);
-                  const sum = homeNum + awayNum || 1;
-
-                  const homePct = (homeNum / sum) * 100;
-                  const awayPct = (awayNum / sum) * 100;
-
-                  return (
-                    <div key={sIdx} className="space-y-1.5 font-sans">
-                      <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300 px-1">
-                        <span className="font-mono">{homeStat.value ?? "0"}</span>
-                        <span className="text-slate-400 font-bold uppercase tracking-wide text-[10px]">{getLocalizedStatType(homeStat.type)}</span>
-                        <span className="font-mono">{awayStat.value ?? "0"}</span>
-                      </div>
-
-                      {/* Comparative progress bar */}
-                      <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full flex overflow-hidden">
-                        <div
-                          style={{ width: `${homePct}%` }}
-                          className="h-full bg-[#009c3b] transition-all"
-                        />
-                        <div
-                          style={{ width: `${awayPct}%` }}
-                          className="h-full bg-[#ffdf00] transition-all"
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+                      return (
+                        <div key={statIdx} className="flex flex-col mb-4 px-2">
+                          <div className="flex justify-between items-center text-sm font-bold mb-1 text-gray-800 dark:text-slate-200">
+                            <span className="w-12 text-left font-mono">{homeVal}</span>
+                            <span className="text-gray-500 dark:text-slate-400 text-xs uppercase font-semibold text-center flex-1">{translateStat(stat.title || stat.key)}</span>
+                            <span className="w-12 text-right font-mono">{awayVal}</span>
+                          </div>
+                          {/* Barras Unidas (Brigando) */}
+                          <div className="flex w-full h-2 rounded-full overflow-hidden bg-gray-250 dark:bg-slate-800">
+                            <div className="h-full bg-green-600" style={{ width: homeWidth }}></div>
+                            <div className="h-full bg-yellow-400" style={{ width: awayWidth }}></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
               </div>
             )}
           </div>
