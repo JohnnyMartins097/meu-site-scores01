@@ -137,3 +137,63 @@ export const getLeagueStandings = async (leagueId: number, tab: "Geral" | "Casa"
     return [];
   }
 };
+
+export const getTeamDetails = async (teamId: number) => {
+  try {
+    const url = `https://free-api-live-football-data.p.rapidapi.com/football-league-team?teamid=${teamId}`;
+    let data: any = null;
+
+    // 1. Try to fetch from local server proxy first
+    const proxyResponse = await fetch(`/api/team/${teamId}`);
+    if (proxyResponse.ok) {
+      const resJson = await proxyResponse.json();
+      data = resJson.data;
+    } else {
+      // 2. Direct call as a fallback
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+          "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
+        }
+      });
+      if (response.ok) {
+        data = await response.json();
+      }
+    }
+    return data;
+  } catch (error) {
+    console.error("Erro ao buscar detalhes do time:", error);
+    return null;
+  }
+};
+
+export const getTeamSquad = async (teamId: number) => {
+  try {
+    const url = `https://free-api-live-football-data.p.rapidapi.com/football-team-player?teamid=${teamId}`;
+    let data: any = null;
+
+    // 1. Try to fetch from local server proxy first
+    const proxyResponse = await fetch(`/api/team-squad/${teamId}`);
+    if (proxyResponse.ok) {
+      const resJson = await proxyResponse.json();
+      data = resJson.data;
+    } else {
+      // 2. Direct call as a fallback
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+          "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
+        }
+      });
+      if (response.ok) {
+        data = await response.json();
+      }
+    }
+    return data;
+  } catch (error) {
+    console.error("Erro ao buscar elenco do time:", error);
+    return null;
+  }
+};

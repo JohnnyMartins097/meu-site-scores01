@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { StandingItem } from "../types";
 import { SafeImage } from "./SafeImage";
 
@@ -50,19 +51,19 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({ items }) => {
                 
                 {/* Clube */}
                 <td className="py-3 px-4 text-left max-w-[180px] sm:max-w-xs">
-                  <div className="flex items-center gap-2.5">
+                  <Link to={`/team/${item.id}`} className="flex items-center gap-2.5 group/team hover:text-[#009c3b] dark:hover:text-emerald-400">
                     <SafeImage 
                       src={item.logo} 
                       alt={item.name} 
-                      className="w-5.5 h-5.5 object-contain shrink-0 p-0.5 bg-slate-100/40 dark:bg-slate-800/60 rounded-md"
+                      className="w-5.5 h-5.5 object-contain shrink-0 p-0.5 bg-slate-100/40 dark:bg-slate-800/60 rounded-md group-hover/team:scale-105 transition-transform"
                       fallbackType="team"
                     />
                     <div className="flex flex-col min-w-0">
-                      <span className="font-semibold text-xs sm:text-sm truncate text-slate-850 dark:text-slate-100">
+                      <span className="font-semibold text-xs sm:text-sm truncate text-slate-850 dark:text-slate-100 group-hover/team:underline">
                         {item.shortName || item.name}
                       </span>
                     </div>
-                  </div>
+                  </Link>
                 </td>
 
                 {/* Pontos */}

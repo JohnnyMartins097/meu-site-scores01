@@ -304,10 +304,10 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
                     {groupMatches.map((match) => (
                       <div key={match.fixture.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 p-5 shadow-2xs">
                         <div className="flex items-center justify-between gap-4">
-                          <div className="flex items-center gap-2 flex-1 justify-end text-right">
-                            <span className="font-bold text-slate-800 dark:text-slate-100 text-xs sm:text-sm truncate">{match.teams.home.name}</span>
-                            <SafeImage src={match.teams.home.logo} alt={match.teams.home.name} className="w-7 h-7 object-contain" fallbackType="team" />
-                          </div>
+                          <Link to={`/team/${match.teams.home.id}`} className="flex items-center gap-2 flex-1 justify-end text-right hover:text-[#009c3b] dark:hover:text-emerald-400 group/home">
+                            <span className="font-bold text-slate-800 dark:text-slate-100 text-xs sm:text-sm truncate group-hover/home:underline">{match.teams.home.name}</span>
+                            <SafeImage src={match.teams.home.logo} alt={match.teams.home.name} className="w-7 h-7 object-contain group-hover/home:scale-105 transition-transform" fallbackType="team" />
+                          </Link>
                           {match.goals.home !== null && match.goals.away !== null ? (
                             <div className="flex flex-col items-center gap-1">
                               <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg leading-none font-mono font-extrabold text-sm border border-slate-200/50">
@@ -330,10 +330,10 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
                               {new Date(match.fixture.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </div>
                           )}
-                          <div className="flex items-center gap-2 flex-1 text-left">
-                            <SafeImage src={match.teams.away.logo} alt={match.teams.away.name} className="w-7 h-7 object-contain" fallbackType="team" />
-                            <span className="font-bold text-slate-850 dark:text-slate-105 text-xs sm:text-sm truncate">{match.teams.away.name}</span>
-                          </div>
+                          <Link to={`/team/${match.teams.away.id}`} className="flex items-center gap-2 flex-1 text-left hover:text-[#009c3b] dark:hover:text-emerald-400 group/away">
+                            <SafeImage src={match.teams.away.logo} alt={match.teams.away.name} className="w-7 h-7 object-contain group-hover/away:scale-105 transition-transform" fallbackType="team" />
+                            <span className="font-bold text-slate-850 dark:text-slate-105 text-xs sm:text-sm truncate group-hover/away:underline">{match.teams.away.name}</span>
+                          </Link>
                         </div>
                       </div>
                     ))}

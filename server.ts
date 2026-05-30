@@ -1207,6 +1207,46 @@ app.get("/api/standings/:leagueid", async (req, res) => {
   }
 });
 
+// Proxy to get details about a single team
+app.get("/api/team/:teamid", async (req, res) => {
+  const teamId = req.params.teamid;
+  if (!teamId) {
+    return res.status(400).json({ error: "Parâmetro ID do time é obrigatório" });
+  }
+
+  try {
+    const path = `/football-league-team?teamid=${teamId}`;
+    const resultPack = await fetchWithFallback(path);
+    return res.json({
+      data: resultPack.data,
+      _source: resultPack.source
+    });
+  } catch (error: any) {
+    console.log(`Team API failed for team ${teamId}:`, error.message);
+    return res.status(500).json({ error: "Detalhes do time não disponíveis", _error: error.message });
+  }
+});
+
+// Proxy to get squad/players of a single team
+app.get("/api/team-squad/:teamid", async (req, res) => {
+  const teamId = req.params.teamid;
+  if (!teamId) {
+    return res.status(400).json({ error: "Parâmetro ID do time é obrigatório" });
+  }
+
+  try {
+    const path = `/football-get-list-player?teamid=${teamId}`;
+    const resultPack = await fetchWithFallback(path);
+    return res.json({
+      data: resultPack.data,
+      _source: resultPack.source
+    });
+  } catch (error: any) {
+    console.log(`Team Squad API failed for team ${teamId}:`, error.message);
+    return res.status(500).json({ error: "Elenco do time não disponível", _error: error.message });
+  }
+});
+
 // Dynamic Match Detail Fetcher for Free API Live Football Data (Lineups, Incidents, Statistics on Demand)
 app.get("/api/fixture-detail", async (req, res) => {
   const matchId = req.query.id;

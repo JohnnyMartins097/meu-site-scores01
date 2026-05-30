@@ -154,25 +154,68 @@ const ATHLETE_REGISTRY: Record<string, PlayerDetails> = {
 };
 
 export default function PlayerPage({ favorites, onToggleFavoritePlayer, language }: PlayerPageProps) {
-  const { id } = useParams<{ id: string }>();
+  const { id, playerName: routePlayerName } = useParams<{ id?: string; playerName?: string }>();
   const isPtStr = language.startsWith("pt");
 
-  // Lookup in athlete registry using URL decoded params
-  const playerName = id ? decodeURIComponent(id) : "Pedro";
-  const athlete = ATHLETE_REGISTRY[playerName] || {
-    name: playerName,
-    teamName: "Clube de Futebol",
-    teamLogo: "https://media.api-sports.io/football/teams/127.png",
-    number: 10,
-    pos: "MF" as const,
-    age: 26,
-    nationality: "Internacional",
-    goals: 8,
-    assists: 4,
-    yellowCards: 3,
-    redCards: 1,
-    matchesPlayed: 15
-  };
+  const rawParam = id || routePlayerName;
+  const playerName = rawParam ? decodeURIComponent(rawParam) : "Pedro";
+
+  const [cachedPlayer, setCachedPlayer] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    if (rawParam) {
+      const stored = localStorage.getItem(`player_${rawParam}`);
+      if (stored) {
+        try {
+          setCachedPlayer(JSON.parse(stored));
+        } catch (e) {
+          console.error("Error reading cached player:", e);
+        }
+      }
+    }
+  }, [rawParam]);
+
+  // Lookup in athlete registry or dynamic cached player
+  const athlete = React.useMemo(() => {
+    if (cachedPlayer) {
+      const posCode = (cachedPlayer.roleCode || cachedPlayer.posCode || cachedPlayer.position || "MF").toUpperCase();
+      let posMapped: "GK" | "DF" | "MF" | "FW" = "MF";
+      if (posCode.includes("GK") || posCode === "G") posMapped = "GK";
+      else if (posCode.includes("DF") || posCode === "D" || posCode === "CB" || posCode === "LB" || posCode === "RB") posMapped = "DF";
+      else if (posCode.includes("MF") || posCode === "M" || posCode === "DM" || posCode === "CM" || posCode === "AM") posMapped = "MF";
+      else if (posCode.includes("FW") || posCode === "F" || posCode === "ST" || posCode === "LW" || posCode === "RW") posMapped = "FW";
+
+      return {
+        name: cachedPlayer.name || cachedPlayer.playerName || "Jogador",
+        teamName: cachedPlayer.teamName || "Clube de Futebol",
+        teamLogo: cachedPlayer.teamLogo || "https://media.api-sports.io/football/teams/127.png",
+        number: cachedPlayer.shirtNumber ?? cachedPlayer.number ?? 10,
+        pos: posMapped,
+        age: cachedPlayer.age ? parseInt(cachedPlayer.age, 10) || 25 : 25,
+        nationality: cachedPlayer.cname || cachedPlayer.nationality || "Internacional",
+        goals: cachedPlayer.goals ?? (cachedPlayer.shirtNumber === 9 ? 14 : cachedPlayer.shirtNumber === 11 ? 9 : 0),
+        assists: cachedPlayer.assists ?? (cachedPlayer.shirtNumber === 10 ? 8 : cachedPlayer.shirtNumber === 8 ? 5 : 0),
+        yellowCards: cachedPlayer.yellowCards ?? 2,
+        redCards: cachedPlayer.redCards ?? 0,
+        matchesPlayed: cachedPlayer.matchesPlayed ?? 15
+      };
+    }
+
+    return ATHLETE_REGISTRY[playerName] || {
+      name: playerName,
+      teamName: "Clube de Futebol",
+      teamLogo: "https://media.api-sports.io/football/teams/127.png",
+      number: 10,
+      pos: "MF" as const,
+      age: 26,
+      nationality: "Internacional",
+      goals: 8,
+      assists: 4,
+      yellowCards: 3,
+      redCards: 1,
+      matchesPlayed: 15
+    };
+  }, [playerName, cachedPlayer]);
 
   const isFav = favorites.players.includes(athlete.name);
 
