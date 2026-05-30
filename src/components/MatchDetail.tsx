@@ -83,10 +83,10 @@ export default function MatchDetail({
         }
 
         const parsed = rawRows.map((item: any, idx: number) => {
-          const teamId = item.team?.id || item.teamId || (50000 + idx);
+          const teamId = item.team?.id || item.teamId || item.id || (50000 + idx);
           const pos = item.position || item.pos || item.idx || (idx + 1);
-          const teamName = item.team?.name || item.team?.shortName || item.teamName || "";
-          const teamLogo = item.team?.logo || item.teamLogo || `https://img.sofascore.com/api/v1/team/${teamId}/image`;
+          const teamName = item.team?.name || item.team?.shortName || item.teamName || item.name || "";
+          const teamLogo = teamId ? `https://images.fotmob.com/image_resources/logo/teamlogo/${teamId}.png` : '/fallback-shield.png';
           const played = item.matches ?? item.played ?? ((item.win || 0) + (item.draw || 0) + (item.loss || 0));
           const wins = item.win ?? item.wins ?? 0;
           const draws = item.draw ?? item.draws ?? 0;

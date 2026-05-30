@@ -88,48 +88,8 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
     const fetchStandings = async () => {
       try {
         setIsLoading(true);
-        
-        // Fallback Premium para Brasileirão devido a bloqueio da API gratuita
-        if (leagueId === 268 || leagueId === 71) {
-          // Simulando o tempo de resposta da rede para manter o efeito de loading visual
-          await new Promise(resolve => setTimeout(resolve, 800));
-          
-          let mockList = [];
-          if (activeTab === "Casa") {
-            mockList = [
-              { id: 10020, idx: 1, name: "Botafogo (Casa)", shortName: "Botafogo", played: 16, wins: 11, draws: 3, losses: 2, pts: 36, goalConDiff: 15, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/10020.png" },
-              { id: 10214, idx: 2, name: "Palmeiras (Casa)", shortName: "Palmeiras", played: 17, wins: 11, draws: 2, losses: 4, pts: 35, goalConDiff: 16, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/10214.png" },
-              { id: 9769, idx: 3, name: "Fortaleza (Casa)", shortName: "Fortaleza", played: 17, wins: 12, draws: 5, losses: 0, pts: 41, goalConDiff: 18, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/9769.png" },
-              { id: 10273, idx: 4, name: "Flamengo (Casa)", shortName: "Flamengo", played: 16, wins: 9, draws: 4, losses: 3, pts: 31, goalConDiff: 9, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/10273.png" },
-              { id: 9768, idx: 17, name: "Corinthians (Casa)", shortName: "Corinthians", played: 16, wins: 7, draws: 7, losses: 2, pts: 28, goalConDiff: 8, qualColor: "#FF4646", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/9768.png" },
-              { id: 9781, idx: 20, name: "Atlético GO (Casa)", shortName: "Atlético GO", played: 16, wins: 4, draws: 4, losses: 8, pts: 16, goalConDiff: -9, qualColor: "#FF4646", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/9781.png" }
-            ].sort((a,b) => b.pts - a.pts).map((t, idx) => ({ ...t, idx: idx + 1 }));
-          } else if (activeTab === "Fora") {
-            mockList = [
-              { id: 10020, idx: 1, name: "Botafogo (Fora)", shortName: "Botafogo", played: 17, wins: 9, draws: 5, losses: 3, pts: 32, goalConDiff: 11, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/10020.png" },
-              { id: 10214, idx: 2, name: "Palmeiras (Fora)", shortName: "Palmeiras", played: 16, wins: 8, draws: 5, losses: 3, pts: 29, goalConDiff: 10, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/10214.png" },
-              { id: 9769, idx: 3, name: "Fortaleza (Fora)", shortName: "Fortaleza", played: 16, wins: 6, draws: 4, losses: 6, pts: 22, goalConDiff: -3, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/9769.png" },
-              { id: 10273, idx: 4, name: "Flamengo (Fora)", shortName: "Flamengo", played: 17, wins: 8, draws: 4, losses: 5, pts: 28, goalConDiff: 6, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/10273.png" },
-              { id: 9768, idx: 17, name: "Corinthians (Fora)", shortName: "Corinthians", played: 17, wins: 3, draws: 4, losses: 10, pts: 13, goalConDiff: -10, qualColor: "#FF4646", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/9768.png" },
-              { id: 9781, idx: 20, name: "Atlético GO (Fora)", shortName: "Atlético GO", played: 17, wins: 2, draws: 4, losses: 11, pts: 10, goalConDiff: -17, qualColor: "#FF4646", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/9781.png" }
-            ].sort((a,b) => b.pts - a.pts).map((t, idx) => ({ ...t, idx: idx + 1 }));
-          } else {
-            mockList = [
-              { id: 10020, idx: 1, name: "Botafogo", shortName: "Botafogo", played: 33, wins: 20, draws: 8, losses: 5, pts: 68, goalConDiff: 26, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/10020.png" },
-              { id: 10214, idx: 2, name: "Palmeiras", shortName: "Palmeiras", played: 33, wins: 19, draws: 7, losses: 7, pts: 64, goalConDiff: 26, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/10214.png" },
-              { id: 9769, idx: 3, name: "Fortaleza", shortName: "Fortaleza", played: 33, wins: 18, draws: 9, losses: 6, pts: 63, goalConDiff: 15, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/9769.png" },
-              { id: 10273, idx: 4, name: "Flamengo", shortName: "Flamengo", played: 33, wins: 17, draws: 8, losses: 8, pts: 59, goalConDiff: 15, qualColor: "#2AD572", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/10273.png" },
-              { id: 9768, idx: 17, name: "Corinthians", shortName: "Corinthians", played: 33, wins: 10, draws: 11, losses: 12, pts: 41, goalConDiff: -2, qualColor: "#FF4646", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/9768.png" },
-              { id: 9781, idx: 20, name: "Atlético GO", shortName: "Atlético GO", played: 33, wins: 6, draws: 8, losses: 19, pts: 26, goalConDiff: -26, qualColor: "#FF4646", logo: "https://images.fotmob.com/image_resources/logo/teamlogo/9781.png" }
-            ];
-          }
-
-          setStandings(mockList);
-        } else {
-          // Ligas sem mock disponível mostram os dados reais pela API filtrada
-          const realData = await getLeagueStandings(leagueId, activeTab);
-          setStandings(realData);
-        }
+        const realData = await getLeagueStandings(leagueId, activeTab);
+        setStandings(realData);
       } catch (error) {
         console.error("Erro ao carregar classificação:", error);
         setStandings([]);

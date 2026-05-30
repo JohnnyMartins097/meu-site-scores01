@@ -47,29 +47,21 @@ export const searchTeams = async (query: string) => {
 
 export const getLeagueStandings = async (leagueId: number, tab: "Geral" | "Casa" | "Fora" = "Geral") => {
   try {
-    // 1. Tenda buscar pelo proxy local primeiro
+    let endpoint = 'football-get-standing-all';
+    if (tab === 'Casa') endpoint = 'football-get-standing-home';
+    if (tab === 'Fora') endpoint = 'football-get-standing-away';
+
+    const url = `https://free-api-live-football-data.p.rapidapi.com/${endpoint}?leagueid=${leagueId}`;
+    
+    // 1. Tenta buscar pelo proxy local primeiro
     const proxyResponse = await fetch(`/api/standings/${leagueId}?tab=${tab}`);
-    let rawList: any[] = [];
+    let data: any = null;
     
     if (proxyResponse.ok) {
-      const proxyData = await proxyResponse.json();
-      // Ler de response.standing conforme especificado
-      if (proxyData.response?.standing && Array.isArray(proxyData.response.standing)) {
-        rawList = proxyData.response.standing;
-      } else if (proxyData.standings && Array.isArray(proxyData.standings)) {
-        rawList = proxyData.standings;
-      } else if (proxyData.response?.list && Array.isArray(proxyData.response.list)) {
-        rawList = proxyData.response.list;
-      }
-    }
-    
-    if (!rawList || rawList.length === 0) {
+      data = await proxyResponse.json();
+    } else {
       // 2. Direct call alternate fallback
-      let path = "football-get-standing-all";
-      if (tab === "Casa") path = "football-get-standing-home";
-      if (tab === "Fora") path = "football-get-standing-away";
-      
-      const response = await fetch(`https://free-api-live-football-data.p.rapidapi.com/${path}?leagueid=${leagueId}`, {
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
@@ -77,18 +69,13 @@ export const getLeagueStandings = async (leagueId: number, tab: "Geral" | "Casa"
         }
       });
       if (response.ok) {
-        const directData = await response.json();
-        if (directData.response?.standing && Array.isArray(directData.response.standing)) {
-          rawList = directData.response.standing;
-        } else if (directData.response?.list && Array.isArray(directData.response.list)) {
-          rawList = directData.response.list;
-        }
+        data = await response.json();
       }
     }
 
-    if (rawList && Array.isArray(rawList)) {
-      return rawList.map((team: any, idx: number) => {
-        const tId = team.id ?? team.teamId ?? (50000 + idx);
+    if (data?.response?.standing && Array.isArray(data.response.standing)) {
+      return data.response.standing.map((team: any, idx: number) => {
+        const tId = team.id ?? (50000 + idx);
         const position = team.idx ?? team.position ?? team.pos ?? (idx + 1);
         const name = team.name ?? team.teamName ?? "";
         return {
@@ -108,10 +95,40 @@ export const getLeagueStandings = async (leagueId: number, tab: "Geral" | "Casa"
           gd: team.goalConDiff ?? team.gd ?? team.goalDifference ?? 0,
           pts: team.pts ?? team.points ?? 0,
           points: team.pts ?? team.points ?? 0,
-          logo: team.logo ?? `https://images.fotmob.com/image_resources/logo/teamlogo/${tId}.png`,
+          logo: team.id ? `https://images.fotmob.com/image_resources/logo/teamlogo/${team.id}.png` : '/fallback-shield.png',
           scoresStr: team.scoresStr ?? `${team.gf ?? team.goalsFor ?? 0}-${team.ga ?? team.goalsAgainst ?? 0}`
         };
       });
+    } else {
+      // Se tiver outros caminhos (por ex: standingsList diretamente) tentamos mapear também
+      const otherList = data?.standings || data?.response?.list;
+      if (otherList && Array.isArray(otherList)) {
+        return otherList.map((team: any, idx: number) => {
+          const tId = team.id ?? (50000 + idx);
+          const position = team.idx ?? team.position ?? team.pos ?? (idx + 1);
+          const name = team.name ?? team.teamName ?? "";
+          return {
+            ...team,
+            id: tId,
+            teamId: tId,
+            idx: position,
+            pos: position,
+            position: position,
+            name: name,
+            teamName: name,
+            played: team.played ?? team.matches ?? ((team.wins ?? 0) + (team.draws ?? 0) + (team.losses ?? 0)),
+            wins: team.wins ?? team.win ?? 0,
+            draws: team.draws ?? team.draw ?? 0,
+            losses: team.losses ?? team.lose ?? team.loss ?? 0,
+            goalConDiff: team.goalConDiff ?? team.gd ?? team.goalDifference ?? 0,
+            gd: team.goalConDiff ?? team.gd ?? team.goalDifference ?? 0,
+            pts: team.pts ?? team.points ?? 0,
+            points: team.pts ?? team.points ?? 0,
+            logo: team.id ? `https://images.fotmob.com/image_resources/logo/teamlogo/${team.id}.png` : '/fallback-shield.png',
+            scoresStr: team.scoresStr ?? `${team.gf ?? team.goalsFor ?? 0}-${team.ga ?? team.goalsAgainst ?? 0}`
+          };
+        });
+      }
     }
 
     return [];
