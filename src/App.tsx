@@ -329,7 +329,7 @@ export const LEAGUE_DICTIONARY: Record<number, LeagueInfo> = {
   8971: { name: "Brasileirão Série C", country: "Brasil", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
   326: { name: "Brasileirão Série D", country: "Brasil", tier: 4, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
   9464: { name: "Brasileirão Série D", country: "Brasil", tier: 4, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
-  225: { name: "Copa do Brasil", country: "Brasil", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/br.svg" },
+  225: { name: "Copa do Brasil", country: "Brasil", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/br.svg" },
 
   // AMÉRICA DO SUL E CONCACAF
   112: { name: "Liga Profesional", country: "Argentina", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
@@ -344,7 +344,7 @@ export const LEAGUE_DICTIONARY: Record<number, LeagueInfo> = {
   140: { name: "Serie A", country: "Equador", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ec.svg" },
   139: { name: "Liga FUTVE", country: "Venezuela", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ve.svg" },
   230: { name: "Liga MX", country: "México", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/mx.svg" },
-  130: { name: "MLS", country: "EUA", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/us.svg" },
+  130: { name: "MLS", country: "EUA", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
 
   // NOVOS IDs DAS AMÉRICAS
   144: { name: "Primera División", country: "Bolívia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/bo.svg" },
@@ -354,43 +354,43 @@ export const LEAGUE_DICTIONARY: Record<number, LeagueInfo> = {
   916345: { name: "USL League One", country: "EUA", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
   10282: { name: "MLS Next Pro", country: "EUA", tier: 4, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
   931420: { name: "USL Super League (F)", country: "EUA", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
-  929416: { name: "Copa Colombia", country: "Colômbia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/co.svg" },
-  929417: { name: "Copa Colombia", country: "Colômbia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/co.svg" },
-  919426: { name: "Primera División", country: "Chile", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/cl.svg" },
-  919710: { name: "Liga 1", country: "Peru", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/pe.svg" },
-  920228: { name: "NWSL (Feminino)", country: "EUA", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/us.svg" },
+  929416: { name: "Copa Colombia", country: "Colômbia", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/co.svg" },
+  929417: { name: "Copa Colombia", country: "Colômbia", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/co.svg" },
+  919426: { name: "Primera División", country: "Chile", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/cl.svg" },
+  919710: { name: "Liga 1", country: "Peru", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/pe.svg" },
+  920228: { name: "NWSL (Feminino)", country: "EUA", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/us.svg" },
 
   // EUROPA (CORREÇÃO CRÍTICA ITÁLIA & ALEMANHA)
   53: { name: "Serie A", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
   65: { name: "Serie B", country: "Itália", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
-  141: { name: "Coppa Italia", country: "Itália", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/it.svg" },
+  141: { name: "Coppa Italia", country: "Itália", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
   54: { name: "Bundesliga", country: "Alemanha", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/de.svg" },
   55: { name: "2. Bundesliga", country: "Alemanha", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/de.svg" },
   47: { name: "Premier League", country: "Inglaterra", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/gb.svg" },
   87: { name: "La Liga", country: "Espanha", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/es.svg" },
   9666: { name: "Ligue 1", country: "França", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/fr.svg" },
   122: { name: "Eredivisie", country: "Holanda", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/nl.svg" },
-  61: { name: "Liga Portugal", country: "Portugal", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/pt.svg" },
+  61: { name: "Liga Portugal", country: "Portugal", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/pt.svg" },
   67: { name: "Allsvenskan", country: "Suécia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/se.svg" },
   924725: { name: "Pro League", country: "Bélgica", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/be.svg" },
 
   // MAIS EUROPA (Ligas Principais e Secundárias)
-  929420: { name: "Division 1 Féminine", country: "França", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/fr.svg" },
+  929420: { name: "Division 1 Féminine", country: "França", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/fr.svg" },
   930062: { name: "Serie B / Playoffs", country: "Itália", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/it.svg" },
   933862: { name: "Primera Federación", country: "Espanha", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/es.svg" },
   931417: { name: "Regionalliga", country: "Alemanha", tier: 4, isMajor: false, flag: "https://media.api-sports.io/flags/de.svg" },
-  931759: { name: "Liga 1", country: "Romênia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/ro.svg" },
-  933740: { name: "First League", country: "Bulgária", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/bg.svg" },
+  931759: { name: "Liga 1", country: "Romênia", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/ro.svg" },
+  933740: { name: "First League", country: "Bulgária", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/bg.svg" },
   925948: { name: "2. Division", country: "Dinamarca", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/dk.svg" },
   925949: { name: "3. Division", country: "Dinamarca", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/dk.svg" },
-  923422: { name: "Besta deild karla", country: "Islândia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/is.svg" },
-  923169: { name: "Vysshaya Liga", country: "Bielorrússia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/by.svg" },
+  923422: { name: "Besta deild karla", country: "Islândia", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/is.svg" },
+  923169: { name: "Vysshaya Liga", country: "Bielorrússia", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/by.svg" },
   916016: { name: "First Division", country: "Irlanda", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ie.svg" },
-  9178: { name: "1. CFL", country: "Montenegro", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/me.svg" },
+  9178: { name: "1. CFL", country: "Montenegro", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/me.svg" },
   919794: { name: "3. Division", country: "Noruega", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/no.svg" },
   919795: { name: "3. Division", country: "Noruega", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/no.svg" },
-  916229: { name: "1. Divisjon (Feminino)", country: "Noruega", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/no.svg" },
-  923619: { name: "Kansallinen Liiga (F)", country: "Finlândia", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/fi.svg" },
+  916229: { name: "1. Divisjon (Feminino)", country: "Noruega", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/no.svg" },
+  923619: { name: "Kansallinen Liiga (F)", country: "Finlândia", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/fi.svg" },
   920261: { name: "Ykkösliiga", country: "Finlândia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/fi.svg" },
   920263: { name: "Kakkonen", country: "Finlândia", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/fi.svg" },
 
@@ -401,19 +401,26 @@ export const LEAGUE_DICTIONARY: Record<number, LeagueInfo> = {
   920267: { name: "Copa da China / League One", country: "China", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/cn.svg" },
   906616: { name: "Premier League", country: "Rússia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/ru.svg" },
   59: { name: "Eliteserien", country: "Noruega", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/no.svg" },
-  931556: { name: "Eredivisie (Playoffs)", country: "Holanda", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/nl.svg" },
+  931556: { name: "Eredivisie (Playoffs)", country: "Holanda", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/nl.svg" },
   923718: { name: "Torneo Federal A", country: "Argentina", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/ar.svg" },
   917951: { name: "Copa do Imperador", country: "Japão", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/jp.svg" },
 
   // RESTO DO MUNDO
-  923880: { name: "Premier League", country: "Egito", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/eg.svg" },
-  920266: { name: "Super League", country: "China", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/cn.svg" },
+  923880: { name: "Premier League", country: "Egito", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/eg.svg" },
+  920266: { name: "Super League", country: "China", tier: 3, isMajor: false, flag: "https://media.api-sports.io/flags/cn.svg" },
   915708: { name: "Amistosos de Clubes", country: "Mundo", tier: 4, isMajor: false, flag: "https://media.api-sports.io/flags/world.svg" },
 
-  // CHAMPIONS LEAGUE (Masculina e Feminina) e Liga Europa
+  // BACKUP ADICIONAL PEDIDO: Turquia e Arábia
+  71: { name: "Süper Lig", country: "Turquia", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/tr.svg" },
+  902649: { name: "Premier League", country: "Arábia Saudita", tier: 2, isMajor: false, flag: "https://media.api-sports.io/flags/sa.svg" },
+
+  // CHAMPIONS LEAGUE (Masculina e Feminina) e Liga Europa e Libertadores
   42: { name: "UEFA Champions League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
-  904995: { name: "Women's Champions League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
-  73: { name: "UEFA Europa League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" }
+  904995: { name: "UEFA Champions League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  73: { name: "UEFA Europa League", country: "Europa", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  924597: { name: "Copa Libertadores", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  10032: { name: "Copa Libertadores", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" },
+  10036: { name: "Copa Sudamericana", country: "América do Sul", tier: 1, isMajor: true, flag: "https://media.api-sports.io/flags/world.svg" }
 };
 
 export const getLeagueDictEntry = (leagueId: number, rawName?: string): LeagueInfo | undefined => {
@@ -699,16 +706,42 @@ export default function App() {
     let leagueId = item.leagueId;
     
     const rawLeagueNameCheck = (item.league?.name || item.leagueName || "").toLowerCase();
+
+    // Group Mapping & Inheriting logic
+    let parentLeagueId = leagueId;
+    let groupName = "";
+
+    // Mapeamento de Grupos - Libertadores
+    if ([924595, 924597].includes(leagueId)) {
+      parentLeagueId = 10032; // ID Pai da Libertadores (para puxar o Logo)
+      if (leagueId === 924595) groupName = "Grupo D";
+      if (leagueId === 924597) groupName = "Grupo F";
+    }
+    // Mapeamento de Grupos - Sudamericana
+    else if ([924591, 924596].includes(leagueId)) {
+      parentLeagueId = 10036; // ID Pai da Sudamericana
+      if (leagueId === 924591) groupName = "Grupo A";
+    } else {
+      // Fallback caso o nome original da liga contenha "Group" ou "Grupo"
+      const matchGroup = rawLeagueNameCheck.match(/(?:group|grupo)\s+([a-z0-9]+)/i);
+      if (matchGroup) {
+        groupName = "Grupo " + matchGroup[1].toUpperCase();
+      }
+    }
+
     const isChampionsLeague = rawLeagueNameCheck.includes("champions league") && 
       !rawLeagueNameCheck.includes("women") && 
       !rawLeagueNameCheck.includes("femin") && 
       leagueId !== 904995;
 
-    // Fallback logic using the smart resolver function
-    let dictEntry = getLeagueDictEntry(leagueId, item.league?.name || item.leagueName);
+    if (isChampionsLeague) {
+      parentLeagueId = 42;
+    }
+
+    // Fallback logic using the smart resolver function on parentLeagueId
+    let dictEntry = getLeagueDictEntry(parentLeagueId, item.league?.name || item.leagueName);
     
     if (isChampionsLeague) {
-      leagueId = 42;
       dictEntry = { 
         name: "UEFA Champions League", 
         country: "Europa", 
@@ -725,10 +758,10 @@ export default function App() {
     if (dictEntry) {
       resolvedName = dictEntry.name;
       resolvedCountry = dictEntry.country;
-      resolvedTier = dictEntry.tier || 3;
+      resolvedTier = dictEntry.tier || 99;
     } else {
-      const dynEntry = dynamicLeagues[leagueId];
-      const rawLeagueName = item.league?.name || item.leagueName || dynEntry?.name || `LIGA ${leagueId}`;
+      const dynEntry = dynamicLeagues[parentLeagueId];
+      const rawLeagueName = item.league?.name || item.leagueName || dynEntry?.name || `LIGA ${parentLeagueId}`;
       const rawLeagueCountry = item.league?.country || item.leagueCountry || dynEntry?.country || "";
       
       resolvedName = rawLeagueName;
@@ -742,7 +775,7 @@ export default function App() {
         resolvedCountry = "Outros Países";
       }
       
-      resolvedTier = 3;
+      resolvedTier = 99;
 
       // Smart promotion of continental tournaments (Rule 3)
       const normCheck = rawLeagueName.toLowerCase();
@@ -801,7 +834,7 @@ export default function App() {
 
     const homeLogo = `https://images.fotmob.com/image_resources/logo/teamlogo/${item.home?.id}_large.png`;
     const awayLogo = `https://images.fotmob.com/image_resources/logo/teamlogo/${item.away?.id}_large.png`;
-    const leagueLogo = `https://images.fotmob.com/image_resources/logo/leaguelogo/${leagueId}.png`;
+    const leagueLogo = parentLeagueId === 904995 ? 'https://images.fotmob.com/image_resources/logo/leaguelogo/42.png' : 'https://images.fotmob.com/image_resources/logo/leaguelogo/' + parentLeagueId + '.png';
 
     const resolvedCountryDetails = getLocalizedCountryDetails(resolvedCountry);
     const leagueFlag = resolvedCountryDetails?.flag || "https://media.api-sports.io/flags/world.svg";
@@ -819,6 +852,8 @@ export default function App() {
       },
       league: {
         id: leagueId,
+        parentLeagueId: parentLeagueId,
+        groupName: groupName,
         name: resolvedName,
         country: resolvedCountry,
         logo: leagueLogo,
@@ -1640,10 +1675,14 @@ export default function App() {
       };
     }
     
-    const leagueKey = `${match.league.name}-${match.league.id}`;
+    const parentId = match.league.parentLeagueId || match.league.id;
+    const leagueKey = `${match.league.name}-${parentId}`;
     if (!drawersMap[drawerKey].leagues[leagueKey]) {
       drawersMap[drawerKey].leagues[leagueKey] = {
-        league: match.league,
+        league: {
+          ...match.league,
+          id: parentId
+        },
         matches: []
       };
     }
@@ -1723,10 +1762,13 @@ export default function App() {
     return 100;
   };
 
-  // Group tier: 1 matches into individual league blocks for the Absolute Top (Rule 1)
+  // Logical Dynamic of Highlights (Pinning Logic) - Steps A, B, C, D
   const pinnedLeaguesMap: Record<number, { league: any; matches: Match[] }> = {};
+  const hasTier1Matches = filteredMatches.some((match) => match.tier === 1);
+  const targetHighlightTier = hasTier1Matches ? 1 : 2;
+
   filteredMatches.forEach((match) => {
-    if (match.tier === 1) {
+    if (match.tier === targetHighlightTier) {
       const leagueId = match.league.id;
       if (!pinnedLeaguesMap[leagueId]) {
         pinnedLeaguesMap[leagueId] = {
@@ -1860,110 +1902,129 @@ export default function App() {
         {/* Custom Pinned Matches List */}
         {isOpen && (
           <div className="flex flex-col gap-2 pt-3 mt-2 border-t border-slate-100 dark:border-slate-850/60 transition-all duration-300">
-            {matches.map((match) => {
-              const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
-                match.fixture.status.short
-              );
-              const isFinished = match.fixture.status.short === "FT";
-              const isSelected = selectedMatch?.fixture.id === match.fixture.id;
-              // Unique Key format representing pinned lists to prevent duplicate keys code crashes (Rule 2)
-              const reactKey = `pinned-${match.fixture.id}`;
-              
-              return (
-                <div
-                  key={reactKey}
-                  onClick={() => setSelectedMatch(match)}
-                  className={`rounded-xl shadow-2xs p-3.5 flex items-center justify-between cursor-pointer border transition-all ${
-                    isSelected 
-                      ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
-                      : isLive
-                      ? "bg-white dark:bg-slate-900 border-l-4 border-l-[#ffdf00] border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
-                      : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
-                  }`}
-                >
-                  <div className="mr-3 shrink-0 select-none bg-slate-100/50 dark:bg-slate-800 p-1 rounded-lg flex items-center justify-center">
-                    <SafeImage 
-                      src={match.league.logo} 
-                      alt={match.league.name} 
-                      className="w-5 h-5 object-contain"
-                      fallbackType="league"
-                    />
-                  </div>
+            {(() => {
+              // Group matches inside this pinned league by groupName
+              const grouped: Record<string, Match[]> = {};
+              matches.forEach(m => {
+                const g = m.league.groupName || "";
+                if (!grouped[g]) grouped[g] = [];
+                grouped[g].push(m);
+              });
 
-                  <div className="flex-1 overflow-hidden pr-3 font-sans">
-                    <div className="flex flex-col gap-1.5 py-0.5">
-                      {/* Home Team Row */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <SafeImage 
-                            src={match.teams.home.logo} 
-                            alt={match.teams.home.name} 
-                            className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                            fallbackType="team"
-                          />
-                          <span className={`text-xs truncate ${
-                            isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-850 dark:text-slate-105"
-                          }`}>
-                            {match.teams.home.name}
-                          </span>
-                        </div>
-                        <span className={`font-mono text-xs font-black pr-1 ${
-                          isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
-                        }`}>
-                          {match.goals.home ?? "-"}
-                        </span>
-                      </div>
-
-                      {/* Away Team Row */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <SafeImage 
-                            src={match.teams.away.logo} 
-                            alt={match.teams.away.name} 
-                            className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                            fallbackType="team"
-                          />
-                          <span className={`text-xs truncate ${
-                            isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-855 dark:text-slate-105"
-                          }`}>
-                            {match.teams.away.name}
-                          </span>
-                        </div>
-                        <span className={`font-mono text-xs font-black pr-1 ${
-                          isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
-                        }`}>
-                          {match.goals.away ?? "-"}
-                        </span>
-                      </div>
+              return Object.entries(grouped).map(([gName, groupMatches]) => (
+                <div key={gName || "all"} className="flex flex-col gap-2">
+                  {gName && (
+                    <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase py-2 mt-1 first:mt-0 tracking-wider font-sans select-none px-1 border-b border-slate-100 dark:border-slate-800/40">
+                      {gName}
                     </div>
-                  </div>
+                  )}
+                  {groupMatches.map((match) => {
+                    const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
+                      match.fixture.status.short
+                    );
+                    const isFinished = match.fixture.status.short === "FT";
+                    const isSelected = selectedMatch?.fixture.id === match.fixture.id;
+                    // Unique Key format representing pinned lists to prevent duplicate keys code crashes (Rule 2)
+                    const reactKey = `pinned-${match.fixture.id}`;
+                    
+                    return (
+                      <div
+                        key={reactKey}
+                        onClick={() => setSelectedMatch(match)}
+                        className={`rounded-xl shadow-2xs p-3.5 flex items-center justify-between cursor-pointer border transition-all ${
+                          isSelected 
+                            ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
+                            : isLive
+                            ? "bg-white dark:bg-slate-900 border-l-4 border-l-[#ffdf00] border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
+                            : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
+                        }`}
+                      >
+                        <div className="mr-3 shrink-0 select-none bg-slate-100/50 dark:bg-slate-800 p-1 rounded-lg flex items-center justify-center">
+                          <SafeImage 
+                            src={match.league.logo} 
+                            alt={match.league.name} 
+                            className="w-5 h-5 object-contain"
+                            fallbackType="league"
+                          />
+                        </div>
 
-                  <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
-                    {isLive ? (
-                      <>
-                        <span className="text-red-650 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
-                          {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
-                        </span>
-                        <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
-                          {isPt ? "VIVO" : language === "en" ? "LIVE" : language === "es" ? "VIVO" : language === "fr" ? "DIRECT" : language === "it" ? "LIVE" : "LIVE"}
-                        </span>
-                      </>
-                    ) : isFinished ? (
-                      <span className="text-slate-404 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
-                        FT
-                      </span>
-                    ) : (
-                      <span className="text-slate-500 dark:text-slate-400 font-mono text-[10.5px] font-bold bg-slate-100/50 dark:bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-200/10 shadow-3xs">
-                        {new Date(match.fixture.date).toLocaleTimeString(localeStr, {
-                          hour: "2-digit",
-                          minute: "2-digit"
-                        })}
-                      </span>
-                    )}
-                  </div>
+                        <div className="flex-1 overflow-hidden pr-3 font-sans">
+                          <div className="flex flex-col gap-1.5 py-0.5">
+                            {/* Home Team Row */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <SafeImage 
+                                  src={match.teams.home.logo} 
+                                  alt={match.teams.home.name} 
+                                  className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
+                                  fallbackType="team"
+                                />
+                                <span className={`text-xs truncate ${
+                                  isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-850 dark:text-slate-105"
+                                }`}>
+                                  {match.teams.home.name}
+                                </span>
+                              </div>
+                              <span className={`font-mono text-xs font-black pr-1 ${
+                                isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
+                              }`}>
+                                {match.goals.home ?? "-"}
+                              </span>
+                            </div>
+
+                            {/* Away Team Row */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <SafeImage 
+                                  src={match.teams.away.logo} 
+                                  alt={match.teams.away.name} 
+                                  className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
+                                  fallbackType="team"
+                                />
+                                <span className={`text-xs truncate ${
+                                  isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-850 dark:text-slate-105"
+                                }`}>
+                                  {match.teams.away.name}
+                                </span>
+                              </div>
+                              <span className={`font-mono text-xs font-black pr-1 ${
+                                isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
+                              }`}>
+                                {match.goals.away ?? "-"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
+                          {isLive ? (
+                            <>
+                              <span className="text-red-650 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
+                                {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
+                              </span>
+                              <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
+                                {isPt ? "VIVO" : language === "en" ? "LIVE" : language === "es" ? "VIVO" : language === "fr" ? "DIRECT" : language === "it" ? "LIVE" : "LIVE"}
+                              </span>
+                            </>
+                          ) : isFinished ? (
+                            <span className="text-slate-404 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
+                              FT
+                            </span>
+                          ) : (
+                            <span className="text-slate-500 dark:text-slate-400 font-mono text-[10.5px] font-bold bg-slate-100/50 dark:bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-200/10 shadow-3xs">
+                              {new Date(match.fixture.date).toLocaleTimeString(localeStr, {
+                                hour: "2-digit",
+                                minute: "2-digit"
+                              })}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              ));
+            })()}
           </div>
         )}
       </div>
@@ -2036,8 +2097,8 @@ export default function App() {
           <div className="flex flex-col gap-3.5 pt-3 mt-2 border-t border-slate-100 dark:border-slate-850/60 transition-all duration-300">
             {Object.values(drawer.leagues)
               .sort((a, b) => {
-                const tierA = a.league.tier ?? 3;
-                const tierB = b.league.tier ?? 3;
+                const tierA = a.league.tier ?? 99;
+                const tierB = b.league.tier ?? 99;
                 if (tierA !== tierB) {
                   return tierA - tierB;
                 }
@@ -2096,111 +2157,129 @@ export default function App() {
                   {/* Actual Game Cards (collapsed/expanded conditionally) */}
                   {isSubOpen && (
                     <div className="flex flex-col gap-2">
-                      {leagueMatches.map((match) => {
-                        const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
-                          match.fixture.status.short
-                        );
-                        const isFinished = match.fixture.status.short === "FT";
-                        const isSelected = selectedMatch?.fixture.id === match.fixture.id;
-                        
-                        // Explicit distinct format 'country-' to prevent any duplication crash (Rule 2)
-                        const reactKey = `country-${match.fixture.id}`;
-                        
-                        return (
-                          <div
-                            key={reactKey}
-                            onClick={() => setSelectedMatch(match)}
-                            className={`rounded-xl shadow-2xs p-3.5 flex items-center justify-between cursor-pointer border transition-all ${
-                              isSelected 
-                                ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
-                                : isLive
-                                ? "bg-white dark:bg-slate-900 border-l-4 border-l-[#ffdf00] border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
-                                : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
-                            }`}
-                          >
-                            <div className="mr-3 shrink-0 select-none bg-slate-100/50 dark:bg-slate-800 p-1 rounded-lg flex items-center justify-center">
-                              <SafeImage 
-                                src={match.league.logo} 
-                                alt={match.league.name} 
-                                className="w-5 h-5 object-contain"
-                                fallbackType="league"
-                              />
-                            </div>
+                      {(() => {
+                        const grouped: Record<string, Match[]> = {};
+                        leagueMatches.forEach(m => {
+                          const g = m.league.groupName || "";
+                          if (!grouped[g]) grouped[g] = [];
+                          grouped[g].push(m);
+                        });
 
-                            <div className="flex-1 overflow-hidden pr-3 font-sans">
-                              <div className="flex flex-col gap-1.5 py-0.5">
-                                {/* Home Team Row */}
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-1.5 min-w-0">
-                                    <SafeImage 
-                                      src={match.teams.home.logo} 
-                                      alt={match.teams.home.name} 
-                                      className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                                      fallbackType="team"
-                                    />
-                                    <span className={`text-xs truncate ${
-                                      isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-850 dark:text-slate-105"
-                                    }`}>
-                                      {match.teams.home.name}
-                                    </span>
-                                  </div>
-                                  <span className={`font-mono text-xs font-black pr-1 ${
-                                    isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
-                                  }`}>
-                                    {match.goals.home ?? "-"}
-                                  </span>
-                                </div>
-
-                                {/* Away Team Row */}
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-1.5 min-w-0">
-                                    <SafeImage 
-                                      src={match.teams.away.logo} 
-                                      alt={match.teams.away.name} 
-                                      className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                                      fallbackType="team"
-                                    />
-                                    <span className={`text-xs truncate ${
-                                      isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-85B dark:text-slate-105"
-                                    }`}>
-                                      {match.teams.away.name}
-                                    </span>
-                                  </div>
-                                  <span className={`font-mono text-xs font-black pr-1 ${
-                                    isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
-                                  }`}>
-                                    {match.goals.away ?? "-"}
-                                  </span>
-                                </div>
+                        return Object.entries(grouped).map(([gName, groupMatches]) => (
+                          <div key={gName || "all"} className="flex flex-col gap-2">
+                            {gName && (
+                              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase py-2 mt-1 first:mt-0 tracking-wider font-sans select-none px-1 border-b border-slate-100 dark:border-slate-800/40">
+                                {gName}
                               </div>
-                            </div>
+                            )}
+                            {groupMatches.map((match) => {
+                              const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
+                                match.fixture.status.short
+                              );
+                              const isFinished = match.fixture.status.short === "FT";
+                              const isSelected = selectedMatch?.fixture.id === match.fixture.id;
+                              
+                              // Explicit distinct format 'country-' to prevent any duplication crash (Rule 2)
+                              const reactKey = `country-${match.fixture.id}`;
+                              
+                              return (
+                                <div
+                                  key={reactKey}
+                                  onClick={() => setSelectedMatch(match)}
+                                  className={`rounded-xl shadow-2xs p-3.5 flex items-center justify-between cursor-pointer border transition-all ${
+                                    isSelected 
+                                      ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
+                                      : isLive
+                                      ? "bg-white dark:bg-slate-900 border-l-4 border-l-[#ffdf00] border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
+                                      : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
+                                  }`}
+                                >
+                                  <div className="mr-3 shrink-0 select-none bg-slate-100/50 dark:bg-slate-800 p-1 rounded-lg flex items-center justify-center">
+                                    <SafeImage 
+                                      src={match.league.logo} 
+                                      alt={match.league.name} 
+                                      className="w-5 h-5 object-contain"
+                                      fallbackType="league"
+                                    />
+                                  </div>
 
-                            <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
-                              {isLive ? (
-                                <>
-                                  <span className="text-red-650 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
-                                    {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
-                                  </span>
-                                  <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
-                                    {isPt ? "VIVO" : language === "en" ? "LIVE" : language === "es" ? "VIVO" : language === "fr" ? "DIRECT" : language === "it" ? "LIVE" : "LIVE"}
-                                  </span>
-                                </>
-                              ) : isFinished ? (
-                                <span className="text-slate-404 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
-                                  FT
-                                </span>
-                              ) : (
-                                <span className="text-slate-500 dark:text-slate-400 font-mono text-[10.5px] font-bold bg-slate-100/50 dark:bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-200/10 shadow-3xs">
-                                  {new Date(match.fixture.date).toLocaleTimeString(localeStr, {
-                                    hour: "2-digit",
-                                    minute: "2-digit"
-                                  })}
-                                </span>
-                              )}
-                            </div>
+                                  <div className="flex-1 overflow-hidden pr-3 font-sans">
+                                    <div className="flex flex-col gap-1.5 py-0.5">
+                                      {/* Home Team Row */}
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                          <SafeImage 
+                                            src={match.teams.home.logo} 
+                                            alt={match.teams.home.name} 
+                                            className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
+                                            fallbackType="team"
+                                          />
+                                          <span className={`text-xs truncate ${
+                                            isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-850 dark:text-slate-105"
+                                          }`}>
+                                            {match.teams.home.name}
+                                          </span>
+                                        </div>
+                                        <span className={`font-mono text-xs font-black pr-1 ${
+                                          isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
+                                        }`}>
+                                          {match.goals.home ?? "-"}
+                                        </span>
+                                      </div>
+
+                                      {/* Away Team Row */}
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                          <SafeImage 
+                                            src={match.teams.away.logo} 
+                                            alt={match.teams.away.name} 
+                                            className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
+                                            fallbackType="team"
+                                          />
+                                          <span className={`text-xs truncate ${
+                                            isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-85B dark:text-slate-105"
+                                          }`}>
+                                            {match.teams.away.name}
+                                          </span>
+                                        </div>
+                                        <span className={`font-mono text-xs font-black pr-1 ${
+                                          isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
+                                        }`}>
+                                          {match.goals.away ?? "-"}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
+                                    {isLive ? (
+                                      <>
+                                        <span className="text-red-650 dark:text-red-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
+                                          {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
+                                        </span>
+                                        <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
+                                          {isPt ? "VIVO" : language === "en" ? "LIVE" : language === "es" ? "VIVO" : language === "fr" ? "DIRECT" : language === "it" ? "LIVE" : "LIVE"}
+                                        </span>
+                                      </>
+                                    ) : isFinished ? (
+                                      <span className="text-slate-404 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
+                                        FT
+                                      </span>
+                                    ) : (
+                                      <span className="text-slate-500 dark:text-slate-400 font-mono text-[10.5px] font-bold bg-slate-100/50 dark:bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-200/10 shadow-3xs">
+                                        {new Date(match.fixture.date).toLocaleTimeString(localeStr, {
+                                          hour: "2-digit",
+                                          minute: "2-digit"
+                                        })}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
-                        );
-                      })}
+                        ));
+                      })()}
                     </div>
                   )}
                 </div>
@@ -3009,8 +3088,8 @@ export default function App() {
                           // For standard countries
                           Object.values(drawer.leagues)
                             .sort((a, b) => {
-                              const tierA = a.league.tier ?? 3;
-                              const tierB = b.league.tier ?? 3;
+                              const tierA = a.league.tier ?? 99;
+                              const tierB = b.league.tier ?? 99;
                               if (tierA !== tierB) {
                                 return tierA - tierB;
                               }

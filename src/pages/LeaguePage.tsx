@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Award, Calendar, ChevronLeft, Shield, Star, Table, Trophy, Users } from "lucide-react";
 import { SafeImage } from "../components/SafeImage";
-import { Match } from "../types";
+import { Match, StandingItem } from "../types";
 import { LEAGUE_DICTIONARY, getLeagueDictEntry } from "../App";
+import { StandingsTable } from "../components/StandingsTable";
+import { getLeagueStandings } from "../api";
+
 
 interface LeaguePageProps {
   matches: Match[];
@@ -27,76 +30,6 @@ interface StandingRow {
   points: number;
 }
 
-// Custom mock standings for major leagues if offline/simulation
-const getCustomMockStandings = (leagueId: number, leagueName: string): StandingRow[] => {
-  const nameLower = leagueName.toLowerCase();
-  
-  if (leagueId === 71 || nameLower.includes("brasileirão") || nameLower.includes("brazil")) {
-    return [
-      { pos: 1, teamId: 127, teamName: "Flamengo", teamLogo: "https://img.sofascore.com/api/v1/team/5981/image", played: 12, win: 8, draw: 3, lose: 1, gf: 24, ga: 10, gd: 14, points: 27 },
-      { pos: 2, teamId: 121, teamName: "Palmeiras", teamLogo: "https://img.sofascore.com/api/v1/team/1963/image", played: 12, win: 7, draw: 4, lose: 1, gf: 20, ga: 9, gd: 11, points: 25 },
-      { pos: 3, teamId: 126, teamName: "São Paulo", teamLogo: "https://img.sofascore.com/api/v1/team/1981/image", played: 12, win: 6, draw: 4, lose: 2, gf: 18, ga: 11, gd: 7, points: 22 },
-      { pos: 4, teamId: 131, teamName: "Corinthians", teamLogo: "https://img.sofascore.com/api/v1/team/1957/image", played: 12, win: 5, draw: 4, lose: 3, gf: 14, ga: 13, gd: 1, points: 19 },
-      { pos: 5, teamId: 125, teamName: "Grêmio", teamLogo: "https://img.sofascore.com/api/v1/team/1954/image", played: 12, win: 5, draw: 3, lose: 4, gf: 15, ga: 14, gd: 1, points: 18 },
-      { pos: 6, teamId: 130, teamName: "Fluminense", teamLogo: "https://img.sofascore.com/api/v1/team/1961/image", played: 12, win: 4, draw: 4, lose: 4, gf: 13, ga: 14, gd: -1, points: 16 }
-    ];
-  }
-  
-  if (leagueId === 39 || nameLower.includes("premier") || nameLower.includes("england") || nameLower.includes("inglaterra")) {
-    return [
-      { pos: 1, teamId: 17, teamName: "Manchester City", teamLogo: "https://img.sofascore.com/api/v1/team/17/image", played: 12, win: 9, draw: 2, lose: 1, gf: 32, ga: 11, gd: 21, points: 29 },
-      { pos: 2, teamId: 42, teamName: "Arsenal", teamLogo: "https://img.sofascore.com/api/v1/team/42/image", played: 12, win: 8, draw: 3, lose: 1, gf: 26, ga: 8, gd: 18, points: 27 },
-      { pos: 3, teamId: 44, teamName: "Liverpool", teamLogo: "https://img.sofascore.com/api/v1/team/44/image", played: 12, win: 8, draw: 2, lose: 2, gf: 25, ga: 10, gd: 15, points: 26 },
-      { pos: 4, teamId: 38, teamName: "Aston Villa", teamLogo: "https://img.sofascore.com/api/v1/team/38/image", played: 12, win: 7, draw: 3, lose: 2, gf: 21, ga: 15, gd: 6, points: 24 },
-      { pos: 5, teamId: 33, teamName: "Chelsea", teamLogo: "https://img.sofascore.com/api/v1/team/33/image", played: 12, win: 6, draw: 3, lose: 3, gf: 22, ga: 16, gd: 6, points: 21 },
-      { pos: 6, teamId: 35, teamName: "Manchester United", teamLogo: "https://img.sofascore.com/api/v1/team/35/image", played: 12, win: 5, draw: 4, lose: 3, gf: 16, ga: 14, gd: 2, points: 19 }
-    ];
-  }
-  
-  if (leagueId === 140 || nameLower.includes("liga") || nameLower.includes("spain") || nameLower.includes("espanha")) {
-    return [
-      { pos: 1, teamId: 2817, teamName: "Real Madrid", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", played: 12, win: 9, draw: 3, lose: 0, gf: 28, ga: 9, gd: 19, points: 30 },
-      { pos: 2, teamId: 2816, teamName: "Barcelona", teamLogo: "https://img.sofascore.com/api/v1/team/2816/image", played: 12, win: 9, draw: 1, lose: 2, gf: 31, ga: 12, gd: 19, points: 28 },
-      { pos: 3, teamId: 2825, teamName: "Atlético Madrid", teamLogo: "https://img.sofascore.com/api/v1/team/2836/image", played: 12, win: 7, draw: 3, lose: 2, gf: 20, ga: 10, gd: 10, points: 24 },
-      { pos: 4, teamId: 2824, teamName: "Girona", teamLogo: "https://img.sofascore.com/api/v1/team/2893/image", played: 12, win: 7, draw: 2, lose: 3, gf: 23, ga: 15, gd: 8, points: 23 },
-      { pos: 5, teamId: 2814, teamName: "Athletic Club", teamLogo: "https://img.sofascore.com/api/v1/team/2825/image", played: 12, win: 6, draw: 3, lose: 3, gf: 19, ga: 14, gd: 5, points: 21 }
-    ];
-  }
-
-  if (nameLower.includes("champions") || nameLower.includes("europe") || nameLower.includes("uefa") || leagueId === 2) {
-    return [
-      { pos: 1, teamId: 2829, teamName: "Real Madrid", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", played: 6, win: 5, draw: 1, lose: 0, gf: 16, ga: 5, gd: 11, points: 16 },
-      { pos: 2, teamId: 17, teamName: "Manchester City", teamLogo: "https://img.sofascore.com/api/v1/team/17/image", played: 6, win: 5, draw: 0, lose: 1, gf: 18, ga: 7, gd: 11, points: 15 },
-      { pos: 3, teamId: 2816, teamName: "Barcelona", teamLogo: "https://img.sofascore.com/api/v1/team/2816/image", played: 6, win: 4, draw: 1, lose: 1, gf: 12, ga: 6, gd: 6, points: 13 },
-      { pos: 4, teamId: 2673, teamName: "Bayern München", teamLogo: "https://img.sofascore.com/api/v1/team/2674/image", played: 6, win: 4, draw: 1, lose: 1, gf: 11, ga: 6, gd: 5, points: 13 },
-      { pos: 5, teamId: 42, teamName: "Arsenal", teamLogo: "https://img.sofascore.com/api/v1/team/42/image", played: 6, win: 4, draw: 0, lose: 2, gf: 14, ga: 4, gd: 10, points: 12 },
-      { pos: 6, teamId: 44, teamName: "Liverpool", teamLogo: "https://img.sofascore.com/api/v1/team/44/image", played: 6, win: 4, draw: 0, lose: 2, gf: 12, ga: 5, gd: 7, points: 12 }
-    ];
-  }
-
-  // General fallback simulation
-  return [
-    { pos: 1, teamId: 5981, teamName: "Flamengo", teamLogo: "https://img.sofascore.com/api/v1/team/5981/image", played: 10, win: 7, draw: 2, lose: 1, gf: 18, ga: 8, gd: 10, points: 23 },
-    { pos: 2, teamId: 1963, teamName: "Palmeiras", teamLogo: "https://img.sofascore.com/api/v1/team/1963/image", played: 10, win: 6, draw: 3, lose: 1, gf: 15, ga: 7, gd: 8, points: 21 },
-    { pos: 3, teamId: 2829, teamName: "Real Madrid", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", played: 10, win: 5, draw: 4, lose: 1, gf: 17, ga: 9, gd: 8, points: 19 },
-    { pos: 4, teamId: 2816, teamName: "Barcelona", teamLogo: "https://img.sofascore.com/api/v1/team/2816/image", played: 10, win: 5, draw: 3, lose: 2, gf: 14, ga: 11, gd: 3, points: 18 }
-  ];
-};
-
-// Complete realistic standings dataset for major supported leagues
-const STANDINGS_DATA: Record<number, StandingRow[]> = {
-  71: [ // Brasileirão Série A
-    { pos: 1, teamId: 121, teamName: "Palmeiras", teamLogo: "https://img.sofascore.com/api/v1/team/1963/image", played: 38, win: 22, draw: 9, lose: 7, gf: 61, ga: 29, gd: 32, points: 75 },
-    { pos: 2, teamId: 127, teamName: "Flamengo", teamLogo: "https://img.sofascore.com/api/v1/team/5981/image", played: 38, win: 21, draw: 10, lose: 7, gf: 68, ga: 35, gd: 33, points: 73 },
-    { pos: 3, teamId: 126, teamName: "São Paulo", teamLogo: "https://img.sofascore.com/api/v1/team/1981/image", played: 38, win: 18, draw: 12, lose: 8, gf: 50, ga: 33, gd: 17, points: 66 },
-    { pos: 4, teamId: 131, teamName: "Corinthians", teamLogo: "https://img.sofascore.com/api/v1/team/1957/image", played: 38, win: 15, draw: 10, lose: 13, gf: 44, ga: 40, gd: 4, points: 55 }
-  ],
-  140: [ // La Liga España
-    { pos: 1, teamId: 2829, teamName: "Real Madrid", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", played: 38, win: 29, draw: 8, lose: 1, gf: 87, ga: 26, gd: 61, points: 95 },
-    { pos: 2, teamId: 2816, teamName: "Barcelona", teamLogo: "https://img.sofascore.com/api/v1/team/2816/image", played: 38, win: 27, draw: 4, lose: 7, gf: 94, ga: 40, gd: 54, points: 85 }
-  ]
-};
-
 // Top scorers datasets
 const SCORERS_DATA: Record<number, Array<{ name: string; teamLogo: string; teamName: string; goals: number; assists: number; matches: number }>> = {
   71: [
@@ -112,10 +45,10 @@ const SCORERS_DATA: Record<number, Array<{ name: string; teamLogo: string; teamN
 };
 
 export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague, language }: LeaguePageProps) {
-  const { id } = useParams<{ id: string }>();
+  const { id, leagueId: routeLeagueId } = useParams<{ id?: string; leagueId?: string }>();
   const [activeTab, setActiveTab] = useState<"table" | "scorers" | "calendar">("table");
 
-  const leagueId = id ? parseInt(id, 10) : 71;
+  const leagueId = routeLeagueId ? parseInt(routeLeagueId, 10) : (id ? parseInt(id, 10) : 71);
   const isPtStr = language.startsWith("pt");
 
   // Lookup in active fixtures / dictionary to identify details of league
@@ -127,74 +60,129 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
 
   // Live standings state
   const [standings, setStandings] = useState<StandingRow[]>([]);
+  const [leagueStandings, setLeagueStandings] = useState<StandingItem[]>([]);
   const [loadingStandings, setLoadingStandings] = useState(true);
-
-  const initialList = STANDINGS_DATA[leagueId] || getCustomMockStandings(leagueId, leagueName);
+  const [errorStandings, setErrorStandings] = useState<string | null>(null);
 
   useEffect(() => {
-    // Populate immediately with visual fallback so layout is fully complete
-    setStandings(initialList);
+    if (activeTab !== "table") return;
+
     setLoadingStandings(true);
+    setErrorStandings(null);
 
     const fetchLiveStandings = async () => {
       try {
-        const res = await fetch(`/api/standings/${leagueId}`);
-        if (!res.ok) throw new Error("Could not find standing details on server");
-        const data = await res.json();
-        const rawStandings = data.standings;
+        const rawList = await getLeagueStandings(leagueId);
 
+        if (!rawList || !Array.isArray(rawList) || rawList.length === 0) {
+          setErrorStandings(isPtStr ? "Classificação não disponível para esta competição." : "Standings not available for this competition.");
+          return;
+        }
+
+        // Flatten the raw standings list if it contains nested groups or structures
         let rawRows: any[] = [];
-        if (Array.isArray(rawStandings)) {
-          // Check for first standing group
-          const firstGroup = rawStandings[0];
-          if (firstGroup && Array.isArray(firstGroup.rows)) {
-            rawRows = firstGroup.rows;
-          } else if (Array.isArray(firstGroup)) {
-            rawRows = firstGroup;
+        if (Array.isArray(rawList)) {
+          if (rawList[0] && Array.isArray(rawList[0].rows)) {
+            rawRows = rawList[0].rows;
+          } else if (rawList[0] && Array.isArray(rawList[0].list)) {
+            rawRows = rawList[0].list;
           } else {
-            rawRows = rawStandings;
+            rawRows = rawList;
           }
-        } else if (rawStandings && Array.isArray(rawStandings.rows)) {
-          rawRows = rawStandings.rows;
-        } else if (rawStandings && typeof rawStandings === "object") {
-          const keys = Object.keys(rawStandings);
+        } else if (rawList && Array.isArray((rawList as any).rows)) {
+          rawRows = (rawList as any).rows;
+        } else if (rawList && Array.isArray((rawList as any).list)) {
+          rawRows = (rawList as any).list;
+        } else if (rawList && typeof rawList === "object") {
+          const keys = Object.keys(rawList);
           for (const k of keys) {
-            if (Array.isArray(rawStandings[k])) {
-              rawRows = rawStandings[k];
+            if (Array.isArray((rawList as any)[k])) {
+              rawRows = (rawList as any)[k];
               break;
             }
           }
         }
 
-        if (rawRows.length > 0) {
-          const parsedRows = rawRows.map((row: any, idx: number) => {
-            const teamId = row.team?.id || (50000 + idx);
+        if (rawRows.length === 0) {
+          setErrorStandings(isPtStr ? "Classificação não disponível para esta competição." : "Standings not available for this competition.");
+          return;
+        }
+
+        const parsed: StandingItem[] = rawRows.map((item: any, idx: number) => {
+          // If already matches StandingItem structure
+          if (typeof item.idx === "number" && typeof item.pts === "number") {
             return {
-              pos: row.position || row.pos || (idx + 1),
-              teamId,
-              teamName: row.team?.name || row.team?.shortName || (isPtStr ? "Clube" : "Team"),
-              teamLogo: `https://img.sofascore.com/api/v1/team/${teamId}/image`,
-              played: row.matches ?? row.played ?? ((row.win || 0) + (row.draw || 0) + (row.loss || 0)),
-              win: row.win ?? row.wins ?? 0,
-              draw: row.draw ?? row.draws ?? 0,
-              lose: row.loss ?? row.losses ?? row.lose ?? 0,
-              gf: row.scoresFor ?? row.gf ?? row.goalsFor ?? 0,
-              ga: row.scoresAgainst ?? row.ga ?? row.goalsAgainst ?? 0,
-              gd: row.goalDifference ?? row.gd ?? ((row.scoresFor ?? 0) - (row.scoresAgainst ?? 0)),
-              points: row.points ?? row.pts ?? 0
+              id: item.id ?? item.teamId ?? (50000 + idx),
+              idx: item.idx,
+              name: item.name ?? item.teamName ?? "",
+              shortName: item.shortName ?? item.teamName ?? "",
+              logo: item.logo ?? item.teamLogo ?? `https://img.sofascore.com/api/v1/team/${item.id || item.teamId}/image`,
+              played: item.played ?? 0,
+              wins: item.wins ?? 0,
+              draws: item.draws ?? 0,
+              losses: item.losses ?? 0,
+              scoresStr: item.scoresStr ?? `${item.wins * 2}-${item.losses * 2}`,
+              goalConDiff: item.goalConDiff ?? 0,
+              pts: item.pts,
+              qualColor: item.qualColor ?? null
             };
-          });
-          setStandings(parsedRows);
+          }
+
+          // Convert from raw API fields
+          const teamId = item.team?.id || item.teamId || (50000 + idx);
+          const pos = item.position || item.pos || item.idx || (idx + 1);
+          const teamName = item.team?.name || item.team?.shortName || item.teamName || (isPtStr ? "Clube" : "Team");
+          const teamLogo = item.team?.logo || item.teamLogo || `https://img.sofascore.com/api/v1/team/${teamId}/image`;
+          const played = item.matches ?? item.played ?? ((item.win || 0) + (item.draw || 0) + (item.loss || 0));
+          const wins = item.win ?? item.wins ?? 0;
+          const draws = item.draw ?? item.draws ?? 0;
+          const losses = item.loss ?? item.losses ?? item.lose ?? 0;
+          const gf = item.scoresFor ?? item.gf ?? item.goalsFor ?? 0;
+          const ga = item.scoresAgainst ?? item.ga ?? item.goalsAgainst ?? 0;
+          const gd = item.goalDifference ?? item.gd ?? (gf - ga);
+          const pts = item.points ?? item.pts ?? 0;
+
+          let qualColor: string | null = null;
+          if (pos <= 4) {
+            qualColor = "#0046c7"; // Champions League / top zone
+          } else if (pos <= 6) {
+            qualColor = "#fa6400"; // Europa League zone
+          } else if (pos > 16) {
+            qualColor = "#ef4444"; // Relegation zone
+          }
+
+          return {
+            id: teamId,
+            idx: pos,
+            name: teamName,
+            shortName: item.team?.shortName || teamName,
+            logo: teamLogo,
+            played,
+            wins,
+            draws,
+            losses,
+            scoresStr: `${gf}-${ga}`,
+            goalConDiff: gd,
+            pts,
+            qualColor
+          };
+        });
+
+        if (parsed.length > 0) {
+          setLeagueStandings(parsed);
+        } else {
+          setErrorStandings(isPtStr ? "Classificação não disponível para esta competição." : "Standings not available for this competition.");
         }
       } catch (err) {
-        console.log("[Client Standings] Error requesting live standing table, falling back to static lists:", err);
+        console.error("[Client Standings] Error requesting live standing table:", err);
+        setErrorStandings(isPtStr ? "Classificação não disponível para esta competição." : "Standings not available for this competition.");
       } finally {
         setLoadingStandings(false);
       }
     };
 
     fetchLiveStandings();
-  }, [leagueId, leagueName]);
+  }, [leagueId, leagueName, activeTab]);
 
   const scorers = SCORERS_DATA[leagueId] || [
     { name: "Jogador de Elite 1", teamLogo: "https://img.sofascore.com/api/v1/team/5981/image", teamName: "Time A", goals: 9, assists: 3, matches: 12 },
@@ -202,7 +190,7 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
     { name: "Jogador de Elite 3", teamLogo: "https://img.sofascore.com/api/v1/team/2829/image", teamName: "Time C", goals: 6, assists: 2, matches: 10 }
   ];
 
-  const leagueMatches = matches.filter(m => m.league.id === leagueId);
+  const leagueMatches = matches.filter(m => m.league.id === leagueId || m.league.parentLeagueId === leagueId);
 
   return (
     <div className="bg-slate-50 dark:bg-slate-950 min-h-screen pb-12">
@@ -293,49 +281,21 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
       <div className="max-w-7xl mx-auto px-6 mt-8">
         {/* STANDINGS TABLE */}
         {activeTab === "table" && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-2xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[600px]">
-                <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-150 dark:border-slate-800 text-xs text-slate-400 font-bold uppercase tracking-wider">
-                    <th className="py-4 px-5 text-center w-12">#</th>
-                    <th className="py-4 px-3">{isPtStr ? "Clube" : "Team"}</th>
-                    <th className="py-4 px-3 text-center w-16">P</th>
-                    <th className="py-4 px-3 text-center w-12">J</th>
-                    <th className="py-4 px-3 text-center w-12">V</th>
-                    <th className="py-4 px-3 text-center w-12">E</th>
-                    <th className="py-4 px-3 text-center w-12">D</th>
-                    <th className="py-4 px-3 text-center w-16">SG</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 text-sm">
-                  {standings.map((row) => (
-                    <tr key={row.pos} className="hover:bg-slate-50/55 dark:hover:bg-slate-800/30 transition-all font-medium">
-                      <td className="py-4 px-5 font-mono font-black text-center text-slate-400">
-                        {row.pos}
-                      </td>
-                      <td className="py-4 px-3">
-                        <Link to={`/team/${row.teamId}`} className="flex items-center gap-2.5 hover:underline text-slate-800 dark:text-slate-100 font-bold group">
-                          <SafeImage src={row.teamLogo} alt={row.teamName} className="w-6 h-6 object-contain group-hover:scale-105 transition-all p-0.5" fallbackType="team" />
-                          <span>{row.teamName}</span>
-                        </Link>
-                      </td>
-                      <td className="py-4 px-3 text-center font-black text-slate-905 dark:text-white font-mono bg-slate-50/30">
-                        {row.points}
-                      </td>
-                      <td className="py-4 px-3 text-center font-mono font-semibold text-slate-500">{row.played}</td>
-                      <td className="py-4 px-3 text-center font-mono text-emerald-600 font-semibold">{row.win}</td>
-                      <td className="py-4 px-3 text-center font-mono text-slate-400">{row.draw}</td>
-                      <td className="py-4 px-3 text-center font-mono text-rose-500">{row.lose}</td>
-                      <td className={`py-4 px-3 text-center font-mono font-bold ${row.gd >= 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
-                        {row.gd > 0 ? `+${row.gd}` : row.gd}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          loadingStandings ? (
+            <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 p-6">
+              <div className="animate-spin rounded-full h-8 w-8 border-3 border-emerald-600 border-t-transparent mb-4"></div>
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                {isPtStr ? "Carregando classificação..." : "Loading standings..."}
+              </p>
             </div>
-          </div>
+          ) : errorStandings ? (
+            <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 p-6">
+              <Table className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+              <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">{errorStandings}</p>
+            </div>
+          ) : (
+            <StandingsTable items={leagueStandings} />
+          )
         )}
 
         {/* TOP SCORERS / ARTILHEIROS */}
@@ -384,45 +344,63 @@ export default function LeaguePage({ matches, favorites, onToggleFavoriteLeague,
             {leagueMatches.length === 0 ? (
               <div className="text-center py-10 bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 p-6">
                 <Calendar className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-                <p className="text-sm font-semibold">{isPtStr ? "Sem partidas registradas nas últimas 2 hours" : "No registered matches in this window"}</p>
+                <p className="text-sm font-semibold">{isPtStr ? "Sem partidas registradas" : "No registered matches in this window"}</p>
               </div>
             ) : (
-              leagueMatches.map((match) => (
-                <div key={match.fixture.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 p-5 shadow-2xs">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-2 flex-1 justify-end text-right">
-                      <span className="font-bold text-slate-800 dark:text-slate-100 text-xs sm:text-sm truncate">{match.teams.home.name}</span>
-                      <SafeImage src={match.teams.home.logo} alt={match.teams.home.name} className="w-7 h-7 object-contain" fallbackType="team" />
-                    </div>
-                    {match.goals.home !== null && match.goals.away !== null ? (
-                      <div className="flex flex-col items-center gap-1">
-                        <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg leading-none font-mono font-extrabold text-sm border border-slate-200/50">
-                          <span className={match.fixture.status.short === "FT" && match.teams.home.winner === false ? "text-slate-400" : "text-[#009c3b]"}>
-                            {match.goals.home ?? 0}
-                          </span>
-                          <span className="text-slate-300 font-bold">-</span>
-                          <span className={match.fixture.status.short === "FT" && match.teams.away.winner === false ? "text-slate-400" : "text-[#009c3b]"}>
-                            {match.goals.away ?? 0}
-                          </span>
-                        </div>
-                        {match.fixture.status.short !== "FT" && (
-                          <span className="text-[10px] text-red-500 font-extrabold font-mono animate-pulse">
-                            {match.fixture.status.short === "HT" ? "INT" : `${match.fixture.status.elapsed}'`}
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="bg-slate-100 dark:bg-slate-800 font-mono font-bold text-xs px-2.5 py-1.5 rounded-lg">
-                        {new Date(match.fixture.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              (() => {
+                const grouped: Record<string, Match[]> = {};
+                leagueMatches.forEach(m => {
+                  const g = m.league.groupName || "";
+                  if (!grouped[g]) grouped[g] = [];
+                  grouped[g].push(m);
+                });
+
+                return Object.entries(grouped).map(([gName, groupMatches]) => (
+                  <div key={gName || "all"} className="flex flex-col gap-4">
+                    {gName && (
+                      <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase py-2 tracking-wider font-sans select-none px-1 border-b border-slate-100 dark:border-slate-800/40">
+                        {gName}
                       </div>
                     )}
-                    <div className="flex items-center gap-2 flex-1 text-left">
-                      <SafeImage src={match.teams.away.logo} alt={match.teams.away.name} className="w-7 h-7 object-contain" fallbackType="team" />
-                      <span className="font-bold text-slate-800 dark:text-slate-100 text-xs sm:text-sm truncate">{match.teams.away.name}</span>
-                    </div>
+                    {groupMatches.map((match) => (
+                      <div key={match.fixture.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 p-5 shadow-2xs">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-2 flex-1 justify-end text-right">
+                            <span className="font-bold text-slate-800 dark:text-slate-100 text-xs sm:text-sm truncate">{match.teams.home.name}</span>
+                            <SafeImage src={match.teams.home.logo} alt={match.teams.home.name} className="w-7 h-7 object-contain" fallbackType="team" />
+                          </div>
+                          {match.goals.home !== null && match.goals.away !== null ? (
+                            <div className="flex flex-col items-center gap-1">
+                              <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg leading-none font-mono font-extrabold text-sm border border-slate-200/50">
+                                <span className={match.fixture.status.short === "FT" && match.teams.home.winner === false ? "text-slate-400" : "text-[#009c3b]"}>
+                                  {match.goals.home ?? 0}
+                                </span>
+                                <span className="text-slate-300 font-bold">-</span>
+                                <span className={match.fixture.status.short === "FT" && match.teams.away.winner === false ? "text-slate-400" : "text-[#009c3b]"}>
+                                  {match.goals.away ?? 0}
+                                </span>
+                              </div>
+                              {match.fixture.status.short !== "FT" && (
+                                <span className="text-[10px] text-red-500 font-extrabold font-mono animate-pulse">
+                                  {match.fixture.status.short === "HT" ? "INT" : `${match.fixture.status.elapsed}'`}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="bg-slate-100 dark:bg-slate-800 font-mono font-bold text-xs px-2.5 py-1.5 rounded-lg">
+                              {new Date(match.fixture.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2 flex-1 text-left">
+                            <SafeImage src={match.teams.away.logo} alt={match.teams.away.name} className="w-7 h-7 object-contain" fallbackType="team" />
+                            <span className="font-bold text-slate-850 dark:text-slate-105 text-xs sm:text-sm truncate">{match.teams.away.name}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              ))
+                ));
+              })()
             )}
           </div>
         )}

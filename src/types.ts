@@ -14,6 +14,8 @@ export interface League {
   season?: number;
   round?: string;
   tier?: number;
+  parentLeagueId?: number;
+  groupName?: string;
 }
 
 export interface MatchPeriod {
@@ -136,3 +138,20 @@ export interface Match {
   detailsLoaded?: boolean;
   tier?: number;
 }
+
+export interface StandingItem {
+  id: number;
+  idx: number; // Posição
+  name: string;
+  shortName: string;
+  logo: string;
+  played: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  scoresStr: string; // Ex: "122-36"
+  goalConDiff: number; // Saldo de Gols
+  pts: number;
+  qualColor: string | null; // Cor da zona de qualificação/rebaixamento
+}
+

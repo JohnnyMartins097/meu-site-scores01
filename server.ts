@@ -1182,24 +1182,13 @@ app.get("/api/standings/:leagueid", async (req, res) => {
   }
 
   try {
-    const path = `/football-get-standing-all?leagueid=${leagueId}`;
+    const path = `/football-get-list-all-team?leagueid=${leagueId}&id=${leagueId}&leagueId=${leagueId}`;
     const resultPack = await fetchWithFallback(path);
-    return res.json({ standings: resultPack.data, _source: resultPack.source });
+    const standingsList = resultPack.data?.response?.list || resultPack.data;
+    return res.json({ standings: standingsList, _source: resultPack.source });
   } catch (error: any) {
     console.log(`Standing API failed for league ${leagueId}:`, error.message);
-    
-    // Fallback standing mockup data to keep system responsive if api is restricted or offline
-    const mockStandingsDefault = [
-      {
-        rows: [
-          { position: 1, team: { name: "Flamengo" }, matches: 10, win: 8, draw: 1, loss: 1, points: 25 },
-          { position: 2, team: { name: "Palmeiras" }, matches: 10, win: 7, draw: 2, loss: 1, points: 23 },
-          { position: 3, team: { name: "Botafogo" }, matches: 10, win: 6, draw: 2, loss: 2, points: 20 },
-          { position: 4, team: { name: "São Paulo" }, matches: 10, win: 5, draw: 3, loss: 2, points: 18 }
-        ]
-      }
-    ];
-    return res.json({ standings: mockStandingsDefault, _simulated: true, _error: error.message });
+    return res.status(500).json({ error: "Classificação não disponível para esta competição", _error: error.message });
   }
 });
 

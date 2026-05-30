@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, MapPin, Shield, Calendar, Users, Award, Table, Sparkles, Tv, Star, RefreshCw, ChevronRight } from "lucide-react";
 import { Match, MatchEvent } from "../types";
 import { Language, translations } from "../i18n";
 import { SafeImage } from "./SafeImage";
 import { Link } from "react-router-dom";
+import { getLeagueStandings } from "../api";
 
 interface MatchDetailProps {
   match: Match | null;
@@ -31,11 +32,104 @@ export default function MatchDetail({
   matches = []
 }: MatchDetailProps) {
   const [activeTab, setActiveTab] = useState<"events" | "stats" | "lineups" | "h2h" | "standings">("events");
+  const [standings, setStandings] = useState<any[]>([]);
+  const [loadingStandings, setLoadingStandings] = useState(false);
+  const [errorStandings, setErrorStandings] = useState<string | null>(null);
 
   if (!match) return null;
 
   const t = translations[language] || translations.pt_br;
   const isPtStr = language.startsWith("pt");
+
+  const targetLeagueId = match.league.id || match.league.parentLeagueId || 71;
+
+  useEffect(() => {
+    if (activeTab !== "standings") return;
+
+    let isMounted = true;
+    setLoadingStandings(true);
+    setErrorStandings(null);
+
+    const loadStandingsData = async () => {
+      try {
+        const rawList = await getLeagueStandings(targetLeagueId);
+        if (!isMounted) return;
+
+        if (!rawList || !Array.isArray(rawList) || rawList.length === 0) {
+          setErrorStandings(isPtStr ? "Classificação indisponível de momento." : "Standings currently unavailable.");
+          return;
+        }
+
+        // Flatten groups or custom nested list structures
+        let rawRows: any[] = [];
+        if (Array.isArray(rawList)) {
+          if (rawList[0] && Array.isArray(rawList[0].rows)) {
+            rawRows = rawList[0].rows;
+          } else if (rawList[0] && Array.isArray(rawList[0].list)) {
+            rawRows = rawList[0].list;
+          } else {
+            rawRows = rawList;
+          }
+        } else if (rawList && Array.isArray((rawList as any).rows)) {
+          rawRows = (rawList as any).rows;
+        } else if (rawList && Array.isArray((rawList as any).list)) {
+          rawRows = (rawList as any).list;
+        }
+
+        if (rawRows.length === 0) {
+          setErrorStandings(isPtStr ? "Classificação indisponível de momento." : "Standings currently unavailable.");
+          return;
+        }
+
+        const parsed = rawRows.map((item: any, idx: number) => {
+          const teamId = item.team?.id || item.teamId || (50000 + idx);
+          const pos = item.position || item.pos || item.idx || (idx + 1);
+          const teamName = item.team?.name || item.team?.shortName || item.teamName || "";
+          const teamLogo = item.team?.logo || item.teamLogo || `https://img.sofascore.com/api/v1/team/${teamId}/image`;
+          const played = item.matches ?? item.played ?? ((item.win || 0) + (item.draw || 0) + (item.loss || 0));
+          const wins = item.win ?? item.wins ?? 0;
+          const draws = item.draw ?? item.draws ?? 0;
+          const losses = item.loss ?? item.losses ?? item.lose ?? 0;
+          const gf = item.scoresFor ?? item.gf ?? item.goalsFor ?? 0;
+          const ga = item.scoresAgainst ?? item.ga ?? item.goalsAgainst ?? 0;
+          const gd = item.goalDifference ?? item.gd ?? (gf - ga);
+          const pts = item.points ?? item.pts ?? 0;
+
+          return {
+            id: teamId,
+            idx: pos,
+            name: teamName,
+            logo: teamLogo,
+            played,
+            wins,
+            draws,
+            losses,
+            goalConDiff: gd,
+            pts
+          };
+        });
+
+        if (isMounted) {
+          setStandings(parsed);
+        }
+      } catch (err) {
+        console.error("Error loading standings inside MatchDetail:", err);
+        if (isMounted) {
+          setErrorStandings(isPtStr ? "Classificação indisponível de momento." : "Standings currently unavailable.");
+        }
+      } finally {
+        if (isMounted) {
+          setLoadingStandings(false);
+        }
+      }
+    };
+
+    loadStandingsData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeTab, targetLeagueId, isPtStr]);
 
   const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
     match.fixture.status.short
@@ -732,20 +826,102 @@ export default function MatchDetail({
 
         {/* TAB 4: STANDINGS (Classificação) */}
         {activeTab === "standings" && (
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
-              {isPtStr ? "Tabela Geral da Competição" : "League Standings"}
-            </h3>
-
-            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-xl p-8 flex flex-col items-center justify-center text-center shadow-3xs">
-              <RefreshCw className="w-8 h-8 text-emerald-600 animate-spin mb-3" />
-              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                {isPtStr ? "Carregando classificação oficial..." : "Loading official league standings..."}
-              </p>
-              <p className="text-xs text-slate-400 mt-1">
-                {isPtStr ? "Sincronizando tabelas em tempo real com os servidores..." : "Synchronizing real-time table rankings..."}
-              </p>
+          <div className="space-y-4 animate-fade-in">
+            <div className="flex items-center justify-between px-1">
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                {isPtStr ? "Tabela Geral da Competição" : "League Standings"}
+              </h3>
+              
+              <Link 
+                to={`/league/${targetLeagueId}`}
+                className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                onClick={onClose}
+              >
+                {isPtStr ? "Ver Liga Completa" : "See Full League"} <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
+
+            {loadingStandings ? (
+              <div className="bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-850 rounded-xl p-8 flex flex-col items-center justify-center text-center shadow-3xs">
+                <RefreshCw className="w-7 h-7 text-emerald-600 animate-spin mb-3" />
+                <p className="text-sm font-semibold text-slate-750 dark:text-slate-300">
+                  {isPtStr ? "Carregando classificação oficial..." : "Loading official league standings..."}
+                </p>
+              </div>
+            ) : errorStandings ? (
+              <div className="bg-amber-50/50 dark:bg-amber-950/10 border border-amber-200 dark:border-amber-900/30 rounded-xl p-6 text-center">
+                <p className="text-sm text-amber-700 dark:text-amber-300 font-medium">{errorStandings}</p>
+                <Link 
+                  to={`/league/${targetLeagueId}`}
+                  className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline active:scale-95"
+                  onClick={onClose}
+                >
+                  {isPtStr ? "Ir para a Página da Competição" : "Go to League Page"} <ChevronRight className="w-3" />
+                </Link>
+              </div>
+            ) : (
+              <div className="overflow-hidden border border-slate-100 dark:border-slate-800 rounded-xl shadow-xs">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse bg-white dark:bg-slate-900 text-xs">
+                    <thead>
+                      <tr className="bg-slate-50 dark:bg-slate-950 text-slate-500 font-semibold border-b border-slate-100 dark:border-slate-800">
+                        <th className="py-2.5 px-3 text-center w-8">#</th>
+                        <th className="py-2.5 px-2">{isPtStr ? "Clube" : "Club"}</th>
+                        <th className="py-2.5 px-2 text-center w-8">J</th>
+                        <th className="py-2.5 px-1 text-center w-6">{isPtStr ? "V" : "W"}</th>
+                        <th className="py-2.5 px-1 text-center w-6">{isPtStr ? "E" : "D"}</th>
+                        <th className="py-2.5 px-1 text-center w-6">{isPtStr ? "D" : "L"}</th>
+                        <th className="py-2.5 px-2 text-center w-10">DG</th>
+                        <th className="py-2.5 px-3 text-center w-10 font-bold">Pts</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {standings.slice(0, 10).map((row: any) => {
+                        const isTargetTeam = row.name === homeTeam.name || row.name === awayTeam.name;
+                        return (
+                          <tr 
+                            key={row.id} 
+                            className={`hover:bg-slate-50/50 dark:hover:bg-slate-850/40 transition-colors ${
+                              isTargetTeam ? "bg-emerald-50/20 dark:bg-emerald-950/20 font-medium" : ""
+                            }`}
+                          >
+                            <td className="py-2 px-3 text-center font-semibold text-slate-505">{row.idx}</td>
+                            <td className="py-2 px-2 flex items-center gap-2">
+                              <SafeImage 
+                                src={row.logo} 
+                                alt={row.name} 
+                                className="w-5 h-5 object-contain"
+                                fallbackType="team"
+                              />
+                              <span className="truncate max-w-[125px] inline-block">{row.name}</span>
+                            </td>
+                            <td className="py-2 px-1 text-center text-slate-500">{row.played}</td>
+                            <td className="py-1.5 px-1 text-center text-slate-600 dark:text-slate-400">{row.wins}</td>
+                            <td className="py-1.5 px-1 text-center text-slate-600 dark:text-slate-400">{row.draws}</td>
+                            <td className="py-1.5 px-1 text-center text-slate-600 dark:text-slate-400">{row.losses}</td>
+                            <td className={`py-1.5 px-2 text-center text-xs ${row.goalConDiff > 0 ? "text-emerald-600" : row.goalConDiff < 0 ? "text-rose-500" : "text-slate-400"}`}>
+                              {row.goalConDiff > 0 ? `+${row.goalConDiff}` : row.goalConDiff}
+                            </td>
+                            <td className="py-2 px-3 text-center font-bold text-slate-800 dark:text-slate-100">{row.pts}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                {standings.length > 10 && (
+                  <div className="p-2.5 bg-slate-50 dark:bg-slate-950 text-center border-t border-slate-100 dark:border-slate-800">
+                    <Link 
+                      to={`/league/${targetLeagueId}`}
+                      className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 active:scale-95"
+                      onClick={onClose}
+                    >
+                      {isPtStr ? "Mostrar classificação completa" : "Show complete standings"} <ChevronRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
