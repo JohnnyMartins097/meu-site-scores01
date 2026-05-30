@@ -7,7 +7,8 @@ const fetchApiSports = async (endpoint: string) => {
       headers: {
         "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
         "x-rapidapi-host": "v3.football.api-sports.io"
-      }
+      },
+      cache: "no-store"
     });
     
     const data = await response.json();

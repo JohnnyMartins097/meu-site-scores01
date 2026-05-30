@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import { HashRouter as Router } from 'react-router-dom';

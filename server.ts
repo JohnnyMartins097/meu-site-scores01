@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
@@ -841,8 +844,7 @@ async function fetchWithFallback(path: string, options: { bypassRapid?: boolean;
 
 // Helper to resolve the true real-world calendar date (instantly using physical container clock bounds)
 async function getRealTodayDate(): Promise<string> {
-  const localDateStr = new Date().toISOString().slice(0, 10);
-  return localDateStr;
+  return getLocalDateStringInTimezone(Date.now(), "America/Sao_Paulo");
 }
 
 function getLocalDateStringInTimezone(timestampMs: number, timezone: string): string {
@@ -944,7 +946,7 @@ app.get("/api/leagues", (req, res) => {
 
 // API router to get fixtures/matches by date
 app.get("/api/fixtures", async (req, res) => {
-  const dateStr = (req.query.date as string) || new Date().toISOString().slice(0, 10);
+  const dateStr = (req.query.date as string) || getLocalDateStringInTimezone(Date.now(), "America/Sao_Paulo");
   const clientToday = (req.query.today as string) || dateStr;
   const timezone = (req.query.timezone as string) || "America/Sao_Paulo";
 

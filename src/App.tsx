@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import { useState, useEffect, useRef } from "react";
 import { 
   Shield, 
@@ -307,10 +310,24 @@ function getMockSportMatches(sport: string, date: string): Match[] {
 }
 
 const getLocalDateString = (d: Date = new Date()) => {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
+  try {
+    const formatter = new Intl.DateTimeFormat("pt-BR", {
+      timeZone: "America/Sao_Paulo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    });
+    const parts = formatter.formatToParts(d);
+    const yr = parts.find(p => p.type === "year")!.value;
+    const mo = parts.find(p => p.type === "month")!.value;
+    const dy = parts.find(p => p.type === "day")!.value;
+    return `${yr}-${mo}-${dy}`;
+  } catch (err) {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
 };
 
 export interface LeagueInfo {

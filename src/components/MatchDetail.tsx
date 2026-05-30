@@ -851,15 +851,10 @@ export default function MatchDetail({
 
         {/* TAB 2: STATISTICS */}
         {activeTab === "stats" && (
-          <div className="space-y-4 pb-6">
-            {!hasApiStats ? (
-              <div className="py-16 text-center text-gray-400 font-medium flex flex-col items-center gap-2">
-                <ClockIcon className="w-8 h-8 opacity-50"/>
-                As estatísticas da partida estarão disponíveis após o apito inicial.
-              </div>
-            ) : (
+          <div className="space-y-4 pb-6 p-4">
+            {matchStats && matchStats.stats && matchStats.stats.length > 0 && matchStats.stats[0].stats?.length > 0 ? (
               <div className="space-y-1">
-                {matchStats?.stats?.map((category: any, catIdx: number) => (
+                {matchStats.stats.map((category: any, catIdx: number) => (
                   <div key={catIdx} className="mb-8 font-sans">
                     {/* Título da Categoria */}
                     <h3 className="text-xs font-black text-slate-500 dark:text-slate-400 mb-4 uppercase border-b border-slate-200 dark:border-slate-800 pb-2 tracking-wider">
@@ -897,6 +892,11 @@ export default function MatchDetail({
                     })}
                   </div>
                 ))}
+              </div>
+            ) : (
+              <div className="py-16 text-center text-gray-400 font-medium flex flex-col items-center gap-2">
+                <ClockIcon className="w-8 h-8 opacity-50"/>
+                <p>As estatísticas detalhadas estarão disponíveis após o processamento da partida.</p>
               </div>
             )}
           </div>
