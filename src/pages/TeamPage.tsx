@@ -147,7 +147,8 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
           headers: {
             "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
             "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
-          }
+          },
+          cache: "no-store" as RequestCache
         };
         const response = await fetch(url, options);
         const data = await response.json();
@@ -279,7 +280,8 @@ export default function TeamPage({ matches, favorites, onToggleFavoriteTeam, lan
           headers: {
             "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
             "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
-          }
+          },
+          cache: "no-store" as RequestCache
         };
         const response = await fetch(directUrl, options);
         if (!isMounted) return;

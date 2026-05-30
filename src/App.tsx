@@ -909,7 +909,8 @@ export default function App() {
           headers: {
             "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
             "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
-          }
+          },
+          cache: "no-store"
         }).then(res => {
           if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
           return res.json();
@@ -1053,10 +1054,10 @@ export default function App() {
 
             // Fetch incidents, stats, hometeam lineup, awayteam lineup in parallel
             const [detailRes, statsRes, homeLineupRes, awayLineupRes] = await Promise.all([
-              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-match-detail?eventid=${matchId}`, { headers: rapidHeaders }).catch(() => null),
-              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-match-all-stats?eventid=${matchId}`, { headers: rapidHeaders }).catch(() => null),
-              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-hometeam-lineup?eventid=${matchId}`, { headers: rapidHeaders }).catch(() => null),
-              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-awayteam-lineup?eventid=${matchId}`, { headers: rapidHeaders }).catch(() => null)
+              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-match-detail?eventid=${matchId}`, { headers: rapidHeaders, cache: "no-store" }).catch(() => null),
+              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-match-all-stats?eventid=${matchId}`, { headers: rapidHeaders, cache: "no-store" }).catch(() => null),
+              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-hometeam-lineup?eventid=${matchId}`, { headers: rapidHeaders, cache: "no-store" }).catch(() => null),
+              fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-awayteam-lineup?eventid=${matchId}`, { headers: rapidHeaders, cache: "no-store" }).catch(() => null)
             ].map(p => p?.then(r => r && r.ok ? r.json() : null).catch(() => null)));
 
             const infoData = detailRes || {};

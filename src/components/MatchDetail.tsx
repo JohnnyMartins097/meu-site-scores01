@@ -57,7 +57,7 @@ export default function MatchDetail({
   onToggleFavoritePlayer = () => {},
   matches = []
 }: MatchDetailProps) {
-  const [activeTab, setActiveTab] = useState<"events" | "stats" | "lineups" | "h2h" | "standings">("stats");
+  const [activeTab, setActiveTab] = useState<"stats" | "lineups" | "h2h" | "standings">("stats");
   const [standings, setStandings] = useState<any[]>([]);
   const [loadingStandings, setLoadingStandings] = useState(false);
   const [errorStandings, setErrorStandings] = useState<string | null>(null);

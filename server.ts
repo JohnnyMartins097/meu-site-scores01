@@ -799,8 +799,9 @@ async function fetchWithFallback(path: string, options: { bypassRapid?: boolean;
           "x-rapidapi-key": rapidApiKey,
           "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com",
           "Content-Type": "application/json"
-        }
-      });
+        },
+        cache: "no-store"
+      } as any);
       
       // If we are rate-limited or quota exceeded, disable RapidAPI callouts for a 10-minute window
       if (response.status === 429) {

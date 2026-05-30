@@ -50,7 +50,8 @@ export default function PlayerPage({ favorites, onToggleFavoritePlayer, language
             headers: {
               "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
               "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
-            }
+            },
+            cache: "no-store" as RequestCache
           };
           const rawRes = await fetch(url, options);
           data = await rawRes.json();

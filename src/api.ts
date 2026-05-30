@@ -66,7 +66,8 @@ export const getLeagueStandings = async (leagueId: number, tab: "Geral" | "Casa"
         headers: {
           "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
           "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
-        }
+        },
+        cache: "no-store"
       });
       if (response.ok) {
         data = await response.json();
@@ -155,7 +156,8 @@ export const getTeamDetails = async (teamId: number) => {
         headers: {
           "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
           "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
-        }
+        },
+        cache: "no-store"
       });
       if (response.ok) {
         data = await response.json();
@@ -185,7 +187,8 @@ export const getTeamSquad = async (teamId: number) => {
         headers: {
           "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
           "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
-        }
+        },
+        cache: "no-store"
       });
       if (response.ok) {
         data = await response.json();
