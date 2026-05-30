@@ -879,6 +879,7 @@ export default function App() {
 // --- FUNÇÃO PRINCIPAL DE LIGAÇÃO À RAPIDAPI (COM PENEIRA DE FUSO HORÁRIO) ---
   const fetchMatches = async (date: string, isSilent = false) => {
     if (!isSilent) setLoading(true);
+    let nextMatches: Match[] = [];
     try {
       // 1. Calcular o início e fim do dia selecionado no fuso horário local do utilizador
       const localStart = new Date(`${date}T00:00:00`);
@@ -895,52 +896,69 @@ export default function App() {
       }
 
       // 4. Fazer o fetch aos 2 dias simultaneamente para não perdermos os jogos noturnos
-      const fetchPromises = urlsToFetch.map(utcDate => 
-        fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-matches-by-date?date=${utcDate}`, {
-          method: "GET",
-          headers: {
-            "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
-            "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
-          }
-        }).then(res => {
-          if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
-          return res.json();
-        })
-      );
+      let rawResultsSuccessful = false;
+      let allRawMatches: any[] = [];
+      try {
+        const fetchPromises = urlsToFetch.map(utcDate => 
+          fetch(`https://free-api-live-football-data.p.rapidapi.com/football-get-matches-by-date?date=${utcDate}`, {
+            method: "GET",
+            headers: {
+              "x-rapidapi-key": "9b9bc4cde1mshac85de8628281aap1fe278jsna8a022da00be",
+              "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
+            }
+          }).then(res => {
+            if (!res.ok) throw new Error("Erro de servidor ao buscar jogos");
+            return res.json();
+          })
+        );
 
-      const results = await Promise.all(fetchPromises);
-      
-      // 5. Juntar todos os jogos num caldeirão e remover duplicados
-      const allRawMatches: any[] = [];
-      const matchIds = new Set();
-      
-      results.forEach(data => {
-        const matches = data.response?.matches || [];
-        matches.forEach((m: any) => {
-          if (!matchIds.has(m.id)) {
-            matchIds.add(m.id);
-            allRawMatches.push(m);
-          }
+        const results = await Promise.all(fetchPromises);
+        
+        // 5. Juntar todos os jogos num caldeirão e remover duplicados
+        const matchIds = new Set();
+        results.forEach(data => {
+          const matches = data.response?.matches || [];
+          matches.forEach((m: any) => {
+            if (!matchIds.has(m.id)) {
+              matchIds.add(m.id);
+              allRawMatches.push(m);
+            }
+          });
         });
-      });
+        rawResultsSuccessful = allRawMatches.length > 0;
+      } catch (directErr) {
+        console.error("Erro na chamada directa à API (tentando fallback local):", directErr);
+      }
 
-      // 6. A GRANDE PENEIRA: Filtrar APENAS os jogos que caem no NOSSO dia local!
-      const filteredRawMatches = allRawMatches.filter(m => {
-        if (!m.status?.utcTime) return false;
-        
-        // Transforma a data UTC da API no horário do telemóvel/pc do utilizador
-        const matchLocalObj = new Date(m.status.utcTime);
-        const yyyy = matchLocalObj.getFullYear();
-        const mm = String(matchLocalObj.getMonth() + 1).padStart(2, '0');
-        const dd = String(matchLocalObj.getDate()).padStart(2, '0');
-        const matchLocalStr = `${yyyy}-${mm}-${dd}`;
-        
-        // Só passa na peneira se o dia bater certo com o que clicámos no calendário
-        return matchLocalStr === date;
-      });
+      if (rawResultsSuccessful) {
+        // 6. A GRANDE PENEIRA: Filtrar APENAS os jogos que caem no NOSSO dia local!
+        const filteredRawMatches = allRawMatches.filter(m => {
+          if (!m.status?.utcTime) return false;
+          
+          // Transforma a data UTC da API no horário do telemóvel/pc do utilizador
+          const matchLocalObj = new Date(m.status.utcTime);
+          const yyyy = matchLocalObj.getFullYear();
+          const mm = String(matchLocalObj.getMonth() + 1).padStart(2, '0');
+          const dd = String(matchLocalObj.getDate()).padStart(2, '0');
+          const matchLocalStr = `${yyyy}-${mm}-${dd}`;
+          
+          // Só passa na peneira se o dia bater certo com o que clicámos no calendário
+          return matchLocalStr === date;
+        });
 
-      // 7. Passar os jogos filtrados pela nossa máquina de tradução
-      const nextMatches = filteredRawMatches.map(mapApiToMatch);
+        // 7. Passar os jogos filtrados pela nossa máquina de tradução
+        nextMatches = filteredRawMatches.map(mapApiToMatch);
+      } else {
+        // FALLBACK LOCAL PROXY
+        console.log(`[App fetchMatches] Chamada directa falhou ou vazia. Buscando do proxy local: /api/fixtures?date=${date}`);
+        const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Sao_Paulo";
+        const proxyRes = await fetch(`/api/fixtures?date=${date}&timezone=${encodeURIComponent(localTz)}`);
+        if (!proxyRes.ok) {
+          throw new Error("Falha ao carregar jogos de todas as fontes.");
+        }
+        const proxyData = await proxyRes.json();
+        nextMatches = proxyData.response || [];
+      }
 
       // --- Daqui para baixo é o código original dos Toasts de Golos e Updates ---
       if (prevMatchesRef.current.length > 0 && nextMatches.length > 0) {
@@ -989,7 +1007,7 @@ export default function App() {
 
       setError(null);
     } catch (err: any) {
-      console.error(err);
+      console.error("Erro crítico ao buscar partidas para a página inicial (Home):", err);
       if (!isSilent) {
         setError(err.message || "Erro de conexão ao buscar jogos.");
       }

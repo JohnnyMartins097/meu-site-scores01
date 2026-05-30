@@ -91,66 +91,63 @@ export function LeagueLeadersWidget({ leagueId, language }: LeagueLeadersWidgetP
             {isPtStr ? "Tabela indisponível" : "Data not available"}
           </p>
         ) : (
-          <div className="space-y-3">
-            {players.map((player) => {
-              const bgBadge = player.teamColors?.darkMode || "#10b981";
-              const textBadge = player.teamColors?.fontDarkMode || "#ffffff";
-              
-              // Initials for image placeholder
-              const initials = (player.name || "?")
-                .trim()
-                .split(/\s+/)
-                .slice(0, 2)
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase();
+          <div>
+            <div className="space-y-3">
+              {players.map((player) => {
+                // Initials for image placeholder
+                const initials = (player.name || "?")
+                  .trim()
+                  .split(/\s+/)
+                  .slice(0, 2)
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase();
 
-              return (
-                <div
-                  key={player.id}
-                  className="flex items-center justify-between gap-3 group hover:bg-slate-50/50 dark:hover:bg-slate-900/40 p-1.5 rounded-xl transition-all"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="relative shrink-0 w-9 h-9">
-                      {imageErrors[player.id] ? (
-                        <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750 text-[10px] font-black text-slate-500 dark:text-slate-450 flex items-center justify-center select-none shadow-3xs uppercase">
-                          {initials}
-                        </div>
-                      ) : (
-                        <img
-                          src={`https://images.fotmob.com/image_resources/playerimages/${player.id}.png`}
-                          alt={player.name}
-                          className="w-full h-full rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750 shadow-3xs"
-                          onError={() => {
-                            setImageErrors((prev) => ({ ...prev, [player.id]: true }));
-                          }}
-                          referrerPolicy="no-referrer"
-                        />
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <h5 className="text-[12px] font-extrabold text-slate-800 dark:text-slate-100 truncate leading-snug group-hover:text-[#009c3b] dark:group-hover:text-emerald-400 transition-colors">
-                        {player.name}
-                      </h5>
-                      <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 leading-none block mt-0.5 truncate uppercase">
-                        {player.teamName}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Premium numeric badge using actual teamColors */}
+                return (
                   <div
-                    className="shrink-0 px-2 py-1 rounded-md text-[10px] font-mono font-black scale-95 select-none shadow-2xs tracking-tight"
-                    style={{
-                      backgroundColor: bgBadge,
-                      color: textBadge,
-                    }}
+                    key={player.id}
+                    className="flex items-center justify-between gap-3 group hover:bg-slate-50/50 dark:hover:bg-slate-900/40 p-1.5 rounded-xl transition-all"
                   >
-                    {player.value} {suffix}
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="relative shrink-0 w-9 h-9">
+                        {imageErrors[player.id] ? (
+                          <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750 text-[10px] font-black text-slate-500 dark:text-slate-450 flex items-center justify-center select-none shadow-3xs uppercase">
+                            {initials}
+                          </div>
+                        ) : (
+                          <img
+                            src={`https://images.fotmob.com/image_resources/playerimages/${player.id}.png`}
+                            alt={player.name}
+                            className="w-full h-full rounded-full object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-750 shadow-3xs"
+                            onError={() => {
+                              setImageErrors((prev) => ({ ...prev, [player.id]: true }));
+                            }}
+                            referrerPolicy="no-referrer"
+                          />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <h5 className="text-[12px] font-extrabold text-slate-800 dark:text-slate-100 truncate leading-snug group-hover:text-[#009c3b] dark:group-hover:text-emerald-400 transition-colors">
+                          {player.name}
+                        </h5>
+                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 leading-none block mt-0.5 truncate uppercase">
+                          {player.teamName}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Premium uniform numeric badge */}
+                    <div className="shrink-0 bg-slate-800 dark:bg-slate-700 text-white font-bold px-3 py-1 rounded-md text-[10px] font-mono scale-95 select-none shadow-2xs tracking-tight">
+                      {player.value} {suffix}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+            
+            <button className="w-full mt-3 text-xs text-center text-[#009c3b] dark:text-emerald-400 hover:text-green-600 dark:hover:text-emerald-300 font-extrabold py-2 border border-slate-100 dark:border-slate-800/60 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-all cursor-pointer">
+              {isPtStr ? "Ver todos" : "See all"}
+            </button>
           </div>
         )}
       </div>
