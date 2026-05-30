@@ -34,7 +34,7 @@ interface StandingRow {
 // Top scorers datasets
 const SCORERS_DATA: Record<number, Array<{ name: string; teamLogo: string; teamName: string; goals: number; assists: number; matches: number }>> = {
   71: [
-    { name: "Pedro", teamLogo: "https://img.sofascore.com/api/v1/team/5981/image", teamName: "Flamengo", goals: 21, assists: 4, matches: 29 },
+    { name: "Hulk", teamLogo: "https://img.sofascore.com/api/v1/team/1963/image", teamName: "Atlético Mineiro", goals: 21, assists: 4, matches: 29 },
     { name: "Estêvão", teamLogo: "https://img.sofascore.com/api/v1/team/1963/image", teamName: "Palmeiras", goals: 12, assists: 8, matches: 28 },
     { name: "Yuri Alberto", teamLogo: "https://img.sofascore.com/api/v1/team/1957/image", teamName: "Corinthians", goals: 11, assists: 2, matches: 26 }
   ],

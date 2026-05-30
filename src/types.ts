@@ -137,6 +137,31 @@ export interface Match {
   broadcast?: string;
   detailsLoaded?: boolean;
   tier?: number;
+
+  // Raw API representation fields for precise live match component rendering as requested
+  status?: {
+    started?: boolean;
+    finished?: boolean;
+    liveTime?: {
+      short?: string;
+      long?: string;
+    };
+    reason?: {
+      short?: string;
+      long?: string;
+    };
+  };
+  home?: {
+    id: number;
+    name: string;
+    score: number;
+  };
+  away?: {
+    id: number;
+    name: string;
+    score: number;
+  };
+  time?: string;
 }
 
 export interface StandingItem {

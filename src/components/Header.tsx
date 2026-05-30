@@ -114,7 +114,7 @@ export default function Header({
     }
 
     // Standard list of popular athletes and clubs as a robust fallback vocabulary base
-    const fallbackAthletes = ["Pedro", "Gerson", "Arrascaeta", "Gabigol", "Estêvão", "Raphael Veiga", "Robert Lewandowski", "Vinicius Júnior", "Kylian Mbappé"];
+    const fallbackAthletes = ["Hulk", "Gerson", "Arrascaeta", "Gabigol", "Estêvão", "Raphael Veiga", "Robert Lewandowski", "Vinicius Júnior", "Kylian Mbappé"];
     fallbackAthletes.forEach((player) => {
       if (!playerNames.has(player)) {
         playerNames.add(player);

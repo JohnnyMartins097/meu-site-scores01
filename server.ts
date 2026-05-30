@@ -116,7 +116,7 @@ function advanceLiveMatches() {
 
 function getRandomPlayer(teamName: string): string {
   const players: Record<string, string[]> = {
-    Flamengo: ["Gabigol", "Arrascaeta", "Pedro", "Gerson", "Bruno Henrique", "Léo Pereira"],
+    Flamengo: ["Gabigol", "Arrascaeta", "De la Cruz", "Gerson", "Bruno Henrique", "Léo Pereira"],
     Palmeiras: ["Rony", "Raphael Veiga", "Dudu", "Estêvão", "Richard Ríos", "Murilo"],
     "São Paulo": ["Calleri", "Lucas Moura", "Luciano", "Alisson", "Nestor", "Arboleda"],
     Corinthians: ["Garro", "Yuri Alberto", "Depay", "Romero", "Raniele", "Gustavo Henrique"],

@@ -34,6 +34,7 @@ import { Language, translations } from "./i18n";
 import TeamPage from "./pages/TeamPage";
 import LeaguePage from "./pages/LeaguePage";
 import PlayerPage from "./pages/PlayerPage";
+import { MatchRow } from "./components/MatchRow";
 
 function getMockSportMatches(sport: string, date: string): Match[] {
   const timestamp = new Date(date + "T20:00:00").getTime() / 1000;
@@ -873,7 +874,12 @@ export default function App() {
         penalty: { home: null, away: null }
       },
       tier: resolvedTier,
-      events: [], statistics: [], lineups: [], detailsLoaded: false
+      events: [], statistics: [], lineups: [], detailsLoaded: false,
+      // Pass-through raw API properties for exact live match rendering compatibility
+      status: item.status,
+      home: item.home,
+      away: item.away,
+      time: item.time
     };
   };
 
@@ -2810,80 +2816,14 @@ export default function App() {
                                             </span>
                                           )}
                                           <div className="flex flex-col gap-2">
-                                            {liveGroups[groupName].map((match) => {
-                                              const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
-                                                match.fixture.status.short
-                                              );
-                                              const isSelected = selectedMatch?.fixture.id === match.fixture.id;
-                                              return (
-                                                <div
-                                                  key={match.fixture.id}
-                                                  onClick={() => setSelectedMatch(match)}
-                                                  className={`rounded-xl shadow-2xs p-3.5 flex items-center justify-between cursor-pointer border transition-all ${
-                                                    isSelected 
-                                                      ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
-                                                      : "bg-white dark:bg-slate-900 border-l-4 border-l-[#ffdf00] border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
-                                                  }`}
-                                                >
-                                                  <div className="mr-3 shrink-0 select-none bg-slate-100/50 dark:bg-slate-800 p-1 rounded-lg flex items-center justify-center">
-                                                    <SafeImage 
-                                                      src={match.league.logo} 
-                                                      alt={match.league.name} 
-                                                      className="w-5 h-5 object-contain"
-                                                      fallbackType="league"
-                                                    />
-                                                  </div>
-
-                                                  <div className="flex-1 overflow-hidden pr-3 font-sans">
-                                                    <div className="flex flex-col gap-1.5 py-0.5">
-                                                      {/* Home Team Row */}
-                                                      <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5 min-w-0">
-                                                          <SafeImage 
-                                                            src={match.teams.home.logo} 
-                                                            alt={match.teams.home.name} 
-                                                            className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                                                            fallbackType="team"
-                                                          />
-                                                          <span className="font-bold text-slate-800 dark:text-slate-105 text-xs truncate">
-                                                            {match.teams.home.name}
-                                                          </span>
-                                                        </div>
-                                                        <span className="font-mono text-xs font-black text-slate-705 dark:text-slate-250 pr-1">
-                                                          {match.goals.home !== null ? match.goals.home : "-"}
-                                                        </span>
-                                                      </div>
-
-                                                      {/* Away Team Row */}
-                                                      <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5 min-w-0">
-                                                          <SafeImage 
-                                                            src={match.teams.away.logo} 
-                                                            alt={match.teams.away.name} 
-                                                            className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                                                            fallbackType="team"
-                                                          />
-                                                          <span className="font-bold text-slate-800 dark:text-slate-105 text-xs truncate">
-                                                            {match.teams.away.name}
-                                                          </span>
-                                                        </div>
-                                                        <span className="font-mono text-xs font-black text-slate-705 dark:text-slate-250 pr-1">
-                                                          {match.goals.away !== null ? match.goals.away : "-"}
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                  <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
-                                                    <span className="text-[#009c3b] dark:text-emerald-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
-                                                      {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
-                                                    </span>
-                                                    <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
-                                                      {isPt ? "VIVO" : language === "en" ? "LIVE" : language === "es" ? "VIVO" : language === "fr" ? "DIRECT" : language === "it" ? "LIVE" : "LIVE"}
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                              );
-                                            })}
+                                            {liveGroups[groupName].map((match) => (
+                                              <MatchRow 
+                                                key={match.fixture.id}
+                                                match={match}
+                                                onSelect={setSelectedMatch}
+                                                isSelected={selectedMatch?.fixture.id === match.fixture.id}
+                                              />
+                                            ))}
                                           </div>
                                         </div>
                                       );
@@ -2910,83 +2850,14 @@ export default function App() {
                                             </span>
                                           )}
                                           <div className="flex flex-col gap-2">
-                                            {finishedGroups[groupName].map((match) => {
-                                              const isFinished = match.fixture.status.short === "FT";
-                                              const isSelected = selectedMatch?.fixture.id === match.fixture.id;
-                                              return (
-                                                <div
-                                                  key={match.fixture.id}
-                                                  onClick={() => setSelectedMatch(match)}
-                                                  className={`rounded-xl shadow-2xs p-3.5 flex items-center justify-between cursor-pointer border transition-all ${
-                                                    isSelected 
-                                                      ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
-                                                      : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
-                                                  }`}
-                                                >
-                                                  <div className="mr-3 shrink-0 select-none bg-slate-100/50 dark:bg-slate-800 p-1 rounded-lg flex items-center justify-center">
-                                                    <SafeImage 
-                                                      src={match.league.logo} 
-                                                      alt={match.league.name} 
-                                                      className="w-5 h-5 object-contain"
-                                                      fallbackType="league"
-                                                    />
-                                                  </div>
-
-                                                  <div className="flex-1 overflow-hidden pr-3 font-sans">
-                                                    <div className="flex flex-col gap-1.5 py-0.5">
-                                                      {/* Home Team Row */}
-                                                      <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5 min-w-0">
-                                                          <SafeImage 
-                                                            src={match.teams.home.logo} 
-                                                            alt={match.teams.home.name} 
-                                                            className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                                                            fallbackType="team"
-                                                          />
-                                                          <span className={`text-xs truncate ${
-                                                            isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-800 dark:text-slate-105"
-                                                          }`}>
-                                                            {match.teams.home.name}
-                                                          </span>
-                                                        </div>
-                                                        <span className={`font-mono text-xs font-black pr-1 ${
-                                                          isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-250"
-                                                        }`}>
-                                                          {match.goals.home !== null ? match.goals.home : "-"}
-                                                        </span>
-                                                      </div>
-
-                                                      {/* Away Team Row */}
-                                                      <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5 min-w-0">
-                                                          <SafeImage 
-                                                            src={match.teams.away.logo} 
-                                                            alt={match.teams.away.name} 
-                                                            className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                                                            fallbackType="team"
-                                                          />
-                                                          <span className={`text-xs truncate ${
-                                                            isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-800 dark:text-slate-105"
-                                                          }`}>
-                                                            {match.teams.away.name}
-                                                          </span>
-                                                        </div>
-                                                        <span className={`font-mono text-xs font-black pr-1 ${
-                                                          isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-250"
-                                                        }`}>
-                                                          {match.goals.away !== null ? match.goals.away : "-"}
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                  <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
-                                                    <span className="text-slate-404 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
-                                                      FT
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                              );
-                                            })}
+                                            {finishedGroups[groupName].map((match) => (
+                                              <MatchRow 
+                                                key={match.fixture.id}
+                                                match={match}
+                                                onSelect={setSelectedMatch}
+                                                isSelected={selectedMatch?.fixture.id === match.fixture.id}
+                                              />
+                                            ))}
                                           </div>
                                         </div>
                                       );
@@ -3013,73 +2884,14 @@ export default function App() {
                                             </span>
                                           )}
                                           <div className="flex flex-col gap-2">
-                                            {upcomingGroups[groupName].map((match) => {
-                                              const isSelected = selectedMatch?.fixture.id === match.fixture.id;
-                                              return (
-                                                <div
-                                                  key={match.fixture.id}
-                                                  onClick={() => setSelectedMatch(match)}
-                                                  className={`rounded-xl shadow-2xs p-3.5 flex items-center justify-between cursor-pointer border transition-all ${
-                                                    isSelected 
-                                                      ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
-                                                      : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
-                                                  }`}
-                                                >
-                                                  <div className="mr-3 shrink-0 select-none bg-slate-100/50 dark:bg-slate-800 p-1 rounded-lg flex items-center justify-center">
-                                                    <SafeImage 
-                                                      src={match.league.logo} 
-                                                      alt={match.league.name} 
-                                                      className="w-5 h-5 object-contain"
-                                                      fallbackType="league"
-                                                    />
-                                                  </div>
-
-                                                  <div className="flex-1 overflow-hidden pr-3 font-sans">
-                                                    <div className="flex items-center justify-between w-full h-fit gap-2">
-                                                      <div className="flex items-center gap-1.5 flex-1 min-w-0 justify-end text-right">
-                                                        <span className="font-bold text-slate-800 dark:text-slate-105 text-xs tracking-tight truncate">
-                                                          {match.teams.home.name}
-                                                        </span>
-                                                        <SafeImage 
-                                                          src={match.teams.home.logo} 
-                                                          alt={match.teams.home.name} 
-                                                          className="w-5 h-5 object-contain bg-slate-100/40 dark:bg-slate-800 rounded-md p-0.5 shrink-0"
-                                                          fallbackType="team"
-                                                        />
-                                                      </div>
-                                                      <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 bg-slate-100/50 dark:bg-slate-800/40 rounded-lg min-w-[50px] justify-center text-center select-none font-mono border border-slate-100/40 dark:border-slate-800/20">
-                                                        <span className="text-xs font-extrabold text-slate-400 dark:text-slate-500">
-                                                          -
-                                                        </span>
-                                                        <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold">-</span>
-                                                        <span className="text-xs font-extrabold text-slate-400 dark:text-slate-500">
-                                                          -
-                                                        </span>
-                                                      </div>
-                                                      <div className="flex items-center gap-1.5 flex-1 min-w-0 text-left">
-                                                        <SafeImage 
-                                                          src={match.teams.away.logo} 
-                                                          alt={match.teams.away.name} 
-                                                          className="w-5 h-5 object-contain bg-slate-100/40 dark:bg-slate-800 rounded-md p-0.5 shrink-0"
-                                                          fallbackType="team"
-                                                        />
-                                                        <span className="font-bold text-slate-800 dark:text-slate-105 text-xs tracking-tight truncate">
-                                                          {match.teams.away.name}
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                  <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-800/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
-                                                    <span className="text-slate-500 dark:text-slate-400 font-mono text-[10.5px] font-bold bg-slate-100/80 dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200/10 shadow-3xs">
-                                                      {new Date(match.fixture.date).toLocaleTimeString(localeStr, {
-                                                        hour: "2-digit",
-                                                        minute: "2-digit"
-                                                      })}
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                              );
-                                            })}
+                                            {upcomingGroups[groupName].map((match) => (
+                                              <MatchRow 
+                                                key={match.fixture.id}
+                                                match={match}
+                                                onSelect={setSelectedMatch}
+                                                isSelected={selectedMatch?.fixture.id === match.fixture.id}
+                                              />
+                                            ))}
                                           </div>
                                         </div>
                                       );
@@ -3133,106 +2945,14 @@ export default function App() {
 
                                 {/* Actual Games Cards */}
                                 <div className="flex flex-col gap-2">
-                                  {leagueMatches.map((match) => {
-                                    const isLive = ["1H", "2H", "HT", "ET", "BT", "P", "SUSP", "INT"].includes(
-                                      match.fixture.status.short
-                                    );
-                                    const isFinished = match.fixture.status.short === "FT";
-                                    const isSelected = selectedMatch?.fixture.id === match.fixture.id;
-                                    return (
-                                      <div
-                                        key={match.fixture.id}
-                                        onClick={() => setSelectedMatch(match)}
-                                        className={`rounded-xl shadow-2xs p-3.5 flex items-center justify-between cursor-pointer border transition-all ${
-                                          isSelected 
-                                            ? "ring-2 ring-emerald-500/40 border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/25" 
-                                            : isLive
-                                            ? "bg-white dark:bg-slate-900 border-l-4 border-l-[#ffdf00] border-y border-r border-slate-150/80 dark:border-slate-800/80 hover:border-slate-300"
-                                            : "bg-slate-50/30 dark:bg-slate-950/40 border-slate-200/50 dark:border-slate-850/80 hover:border-slate-300 hover:bg-white dark:hover:bg-slate-900"
-                                        }`}
-                                      >
-                                        <div className="mr-3 shrink-0 select-none bg-slate-100/50 dark:bg-slate-800 p-1 rounded-lg flex items-center justify-center">
-                                          <SafeImage 
-                                            src={match.league.logo} 
-                                            alt={match.league.name} 
-                                            className="w-5 h-5 object-contain"
-                                            fallbackType="league"
-                                          />
-                                        </div>
-
-                                                  <div className="flex-1 overflow-hidden pr-3 font-sans">
-                                                    <div className="flex flex-col gap-1.5 py-0.5">
-                                                      {/* Home Team Row */}
-                                                      <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5 min-w-0">
-                                                          <SafeImage 
-                                                            src={match.teams.home.logo} 
-                                                            alt={match.teams.home.name} 
-                                                            className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                                                            fallbackType="team"
-                                                          />
-                                                          <span className={`text-xs truncate ${
-                                                            isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-800 dark:text-slate-105"
-                                                          }`}>
-                                                            {match.teams.home.name}
-                                                          </span>
-                                                        </div>
-                                                        <span className={`font-mono text-xs font-black pr-1 ${
-                                                          isFinished && match.teams.home.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
-                                                        }`}>
-                                                          {match.goals.home ?? "-"}
-                                                        </span>
-                                                      </div>
-
-                                                      {/* Away Team Row */}
-                                                      <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5 min-w-0">
-                                                          <SafeImage 
-                                                            src={match.teams.away.logo} 
-                                                            alt={match.teams.away.name} 
-                                                            className="w-4.5 h-4.5 object-contain bg-slate-100/40 dark:bg-slate-800/60 rounded-md p-0.5 shrink-0"
-                                                            fallbackType="team"
-                                                          />
-                                                          <span className={`text-xs truncate ${
-                                                            isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505 font-medium" : "font-bold text-slate-800 dark:text-slate-105"
-                                                          }`}>
-                                                            {match.teams.away.name}
-                                                          </span>
-                                                        </div>
-                                                        <span className={`font-mono text-xs font-black pr-1 ${
-                                                          isFinished && match.teams.away.winner === false ? "text-slate-400 dark:text-slate-505" : "text-slate-705 dark:text-slate-200"
-                                                        }`}>
-                                                          {match.goals.away ?? "-"}
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                        <div className="ml-2 pl-3 border-l border-slate-100/60 dark:border-slate-850/60 flex flex-col items-center justify-center shrink-0 min-w-[#48px] select-none">
-                                          {isLive ? (
-                                            <>
-                                              <span className="text-[#009c3b] dark:text-emerald-400 text-xs font-black tracking-tighter flex items-center gap-0.5 font-mono">
-                                                {match.fixture.status.short === "HT" ? (isPt ? "INT" : language === "en" ? "HT" : language === "es" ? "DESC" : language === "fr" ? "MT" : language === "it" ? "INT" : "HZ") : `${match.fixture.status.elapsed}'`}
-                                              </span>
-                                              <span className="text-[8px] font-black text-[#009c3b] dark:text-emerald-400 uppercase tracking-wider mt-0.5">
-                                                {isPt ? "VIVO" : language === "en" ? "LIVE" : language === "es" ? "VIVO" : language === "fr" ? "DIRECT" : language === "it" ? "LIVE" : "LIVE"}
-                                              </span>
-                                            </>
-                                          ) : isFinished ? (
-                                            <span className="text-slate-404 dark:text-slate-500 text-[10px] font-bold uppercase font-mono">
-                                              FT
-                                            </span>
-                                          ) : (
-                                            <span className="text-slate-500 dark:text-slate-400 font-mono text-[10.5px] font-bold bg-slate-100/80 dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200/10 shadow-3xs">
-                                              {new Date(match.fixture.date).toLocaleTimeString(localeStr, {
-                                                hour: "2-digit",
-                                                minute: "2-digit"
-                                              })}
-                                            </span>
-                                          )}
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
+                                  {leagueMatches.map((match) => (
+                                    <MatchRow 
+                                      key={match.fixture.id}
+                                      match={match}
+                                      onSelect={setSelectedMatch}
+                                      isSelected={selectedMatch?.fixture.id === match.fixture.id}
+                                    />
+                                  ))}
                                 </div>
                               </div>
                             );
